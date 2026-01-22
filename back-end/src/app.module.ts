@@ -6,6 +6,10 @@ import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { HashingModule } from './common/hashing/hashing.module';
+import { OtpService } from './common/otp/otp.service';
+import { OtpModule } from './common/otp/otp.module';
+import { RedisProvider } from './common/redis/redis.provider';
+import { MailModule } from './common/mail/mail.module';
 
 @Module({
   imports: [
@@ -14,9 +18,11 @@ import { HashingModule } from './common/hashing/hashing.module';
     UsersModule,
     AuthModule,
     HashingModule,
+    OtpModule,
+    MailModule,
   ],
 
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, OtpService, RedisProvider],
 })
 export class AppModule {}

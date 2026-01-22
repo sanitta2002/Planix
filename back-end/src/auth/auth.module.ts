@@ -3,9 +3,11 @@ import { AuthService } from './Service/auth.service';
 import { AuthController } from './Controller/auth.controller';
 import { UsersModule } from 'src/users/users.module';
 import { HashingModule } from 'src/common/hashing/hashing.module';
+import { OtpModule } from 'src/common/otp/otp.module';
+import { MailModule } from 'src/common/mail/mail.module';
 
 @Module({
-  imports: [UsersModule, HashingModule],
+  imports: [UsersModule, HashingModule,OtpModule,MailModule],
   providers: [AuthService],
   controllers: [AuthController],
 })

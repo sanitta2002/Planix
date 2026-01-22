@@ -16,6 +16,9 @@ export class UserRepository
   async findByEmail(email: string): Promise<User | null> {
     return await this.model.findOne({ email });
   }
+  async updateByEmail(email: string, data: Partial<User>): Promise<void | null> {
+    return await this.model.findOneAndUpdate({ email }, { $set: data });
+  }
   async blockUser(id: string): Promise<User | null> {
     return await this.updateById(id, { isBlocked: true });
   }

@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { IsString } from 'class-validator';
+import { IsString, MinLength } from 'class-validator';
 import { Document } from 'mongoose';
 
 @Schema({ timestamps: true })
@@ -12,7 +12,9 @@ export class User extends Document {
   email: string;
   @Prop()
   phone: string;
+  @Prop({required:false})
   @IsString()
+  @MinLength(6)
   password: string;
   @Prop({ default: false })
   isBlocked: boolean;

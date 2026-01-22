@@ -4,6 +4,7 @@ import { IBaseRepository } from 'src/users/interfaces/baseRepo.interface';
 export abstract class BaseRepository<T> implements IBaseRepository<T> {
   protected constructor(protected readonly model: Model<T>) {}
   async create(data: Partial<T>): Promise<T> {
+    console.log("data",data)
     return await this.model.create(data);
   }
   async findById(id: string): Promise<T | null> {
@@ -15,4 +16,5 @@ export abstract class BaseRepository<T> implements IBaseRepository<T> {
   async deleteById(id: string): Promise<boolean | null> {
     return await this.model.findByIdAndDelete(id);
   }
+
 }
