@@ -10,6 +10,7 @@ import { OtpService } from './common/otp/otp.service';
 import { OtpModule } from './common/otp/otp.module';
 import { RedisProvider } from './common/redis/redis.provider';
 import { MailModule } from './common/mail/mail.module';
+import { AppJwtModule } from './common/jwt/jwt.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { MailModule } from './common/mail/mail.module';
     HashingModule,
     OtpModule,
     MailModule,
+    AppJwtModule,
   ],
 
   controllers: [AppController],

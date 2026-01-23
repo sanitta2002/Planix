@@ -5,9 +5,10 @@ import { UsersModule } from 'src/users/users.module';
 import { HashingModule } from 'src/common/hashing/hashing.module';
 import { OtpModule } from 'src/common/otp/otp.module';
 import { MailModule } from 'src/common/mail/mail.module';
+import { AppJwtModule } from 'src/common/jwt/jwt.module';
 
 @Module({
-  imports: [UsersModule, HashingModule,OtpModule,MailModule],
+  imports: [UsersModule, HashingModule,OtpModule,MailModule , AppJwtModule],
   providers: [AuthService],
   controllers: [AuthController],
 })

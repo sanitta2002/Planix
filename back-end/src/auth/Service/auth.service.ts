@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { IuserService } from '../interfaces/user.service.interface';
 import type { IUserRepository } from 'src/users/interfaces/user.repository.interface';
 import { User } from 'src/users/Models/user.schema';
@@ -8,6 +8,9 @@ import type { IMailService } from 'src/common/mail/interfaces/mail.interface';
 import type{ IOtpService } from 'src/common/otp/interfaces/otp.service.interface';
 import { VerifyEmailDto } from '../dto/RequestDTO/verify-email.dto';
 import { Resendotp } from '../dto/RequestDTO/resend-otp.dto';
+import { LoginRequestDto } from '../dto/RequestDTO/Login.dto';
+import type { IJwtService } from 'src/common/jwt/interfaces/jwt.service.interface';
+import { LoginResponseDto } from '../dto/ResponseDTO/login.res.dto';
 
 
 @Injectable()
@@ -17,6 +20,7 @@ export class AuthService implements IuserService {
     @Inject('IHashingService') private readonly hashingService: IHashingService,
     @Inject('IOtpService') private readonly otpService: IOtpService,
     @Inject('IMailService') private readonly mailService: IMailService,
+    @Inject('IJwtService') private readonly jwtService:IJwtService
   ) {}
   async registerUser(dto: RegisterUserDto): Promise<User> {
     const existingUser = await this.userRepository.findByEmail(dto.email);
@@ -67,5 +71,28 @@ export class AuthService implements IuserService {
       throw new ConflictException('failed to generate OTP')
     }
     await this.mailService.sendOtpMail(email,otp)
+  }
+  async login(dto: LoginRequestDto): Promise<LoginResponseDto> {
+    const {email,password}=dto
+    const user=await this.userRepository.findByEmail(email)
+    if(!user){
+      throw new UnauthorizedException('invalid email')
+    }
+    if(!user.isEmailVerified){
+      throw new UnauthorizedException('please verify your email')
+    }
+    const IsMatch = await this.hashingService.comparePassword(password,user.password)
+    if(!IsMatch){
+      throw new UnauthorizedException('invalid password')
+    }
+    const payload = {
+      userId :user._id.toString(),
+      email:user.email
+    }
+    const accessToken = this.jwtService.signAccessToken(payload)
+    const refreshToken =this.jwtService.signRefreshToken(payload)
+    console.log('accessToken' ,accessToken)
+    console.log('refreshToken' ,refreshToken)
+    return {accessToken,refreshToken,}
   }
 }
