@@ -1,10 +1,13 @@
 
+import UserRoutes from "./routes/User/UserRoutes"
+
+
 function App() {
-  
+
 
   return (
     <>
-     
+     <UserRoutes/>
     </>
   )
 }
