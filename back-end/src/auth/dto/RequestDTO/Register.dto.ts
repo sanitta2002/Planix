@@ -19,7 +19,7 @@ export class RegisterUserDto {
   email: string;
 
   @IsString()
-  @MinLength(6)
+  @MinLength(8)
   password: string;
 
   @Matches(/^[0-9]{10}$/, {

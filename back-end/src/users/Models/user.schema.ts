@@ -14,7 +14,7 @@ export class User extends Document {
   phone: string;
   @Prop({required:false})
   @IsString()
-  @MinLength(6)
+  @MinLength(8)
   password: string;
   @Prop({ default: false })
   isBlocked: boolean;

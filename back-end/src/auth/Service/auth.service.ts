@@ -46,7 +46,7 @@ export class AuthService implements IuserService {
   }
   async verifyEmail(dto: VerifyEmailDto): Promise<void> {
  
-     const {email,otp}=dto
+    const {email,otp}=dto
     await this.otpService.verifyOtp(`otp:${email}`,otp)
     const user= await this.userRepository.findByEmail(email)
     if(!user){
