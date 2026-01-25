@@ -1,48 +1,59 @@
 
 import { ArrowLeft, ArrowRight, CheckCircle2, Layers } from "lucide-react"
 import { useState } from "react"
-import { cn } from "../lib/utils"
-import { Input } from "../components/ui/Input"
-import { Button } from "../components/ui/Button"
+import { useForm } from "react-hook-form";
+import { cn } from "../../lib/utils"
+import { Input } from "../ui/Input"
+import { Button } from "../ui/Button"
 import { Link } from "react-router"
-import { FRONTEND_ROUTES } from "../constants/frontRoutes"
+import { FRONTEND_ROUTES } from "../../constants/frontRoutes"
+import { signupSchema, type SignupFormData } from "../../lib/validations/signup.schema"
+import { zodResolver } from "@hookform/resolvers/zod";
 
-// import OtpModal from "../Modal/OtpModal"
 
-function SignupFrom() {
+interface SignupFormProps {
+    onSubmit: (data: SignupFormData) => void;
+    isLoading: boolean;
+}
+
+
+function SignupFrom({ onSubmit, isLoading }: SignupFormProps) {
     const [step, setStep] = useState(1)
-    // const [isOtpOpen, setIsOtpOpen] = useState(false)
-
-    // Simple mock form state
-    const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        password: '',
-        confirmPassword: ''
-    })
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
-        setFormData(prev => ({ ...prev, [name]: value }))
-    }
-
-    const nextStep = (e: React.FormEvent) => {
+    const {
+        register,
+        handleSubmit,
+        trigger,
+        formState: { errors },
+    } = useForm<SignupFormData>({
+        resolver: zodResolver(signupSchema),
+        defaultValues: {
+            firstName: "",
+            lastName: "",
+            email: "",
+            phone: "",
+            password: "",
+            confirmPassword: "",
+        },
+    });
+    const nextStep = async (e: React.FormEvent) => {
         e.preventDefault()
-        setStep(2)
+        const isValid = await trigger(["firstName",
+            "lastName",
+            "email",
+            "phone",])
+        if (isValid) {
+            setStep(2)
+        }
+
     }
 
     const prevStep = () => {
         setStep(1)
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault()
-        // Here you would trigger the API call to signup
-        // On success, open OTP modal
-        // setIsOtpOpen(true)
-    }
+    const submitForm = (data: SignupFormData) => {
+        onSubmit(data);
+    };
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#0B0E14] relative overflow-hidden p-4">
@@ -79,7 +90,7 @@ function SignupFrom() {
                     </div>
 
                     {/* Form */}
-                    <form className="space-y-4" onSubmit={step === 1 ? nextStep : handleSubmit}>
+                    <form className="space-y-4" onSubmit={handleSubmit(submitForm)}>
 
                         {/* Step 1: Personal Info */}
                         {step === 1 && (
@@ -88,49 +99,44 @@ function SignupFrom() {
                                     <div className="space-y-2">
                                         <label className="text-xs font-medium text-slate-300 ml-1">First Name</label>
                                         <Input
-                                            name="firstName"
                                             placeholder="firstName"
-                                            value={formData.firstName}
-                                            onChange={handleInputChange}
+                                            {...register("firstName")}
                                             className="bg-[#1A1F2E]/50 border-slate-700/50 text-white placeholder:text-slate-500 focus-visible:ring-primary/50"
                                         />
+                                        {errors.firstName && <p className="text-red-500 text-xs">{errors.firstName.message}</p>}
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-xs font-medium text-slate-300 ml-1">Last Name</label>
                                         <Input
-                                            name="lastName"
                                             placeholder="lastName"
-                                            value={formData.lastName}
-                                            onChange={handleInputChange}
+                                            {...register("lastName")}
                                             className="bg-[#1A1F2E]/50 border-slate-700/50 text-white placeholder:text-slate-500 focus-visible:ring-primary/50"
                                         />
+                                        {errors.lastName && <p className="text-red-500 text-xs">{errors.lastName.message}</p>}
                                     </div>
                                 </div>
 
                                 <div className="space-y-2">
                                     <label className="text-xs font-medium text-slate-300 ml-1">Email</label>
                                     <Input
-                                        name="email"
                                         placeholder="name@example.com"
                                         type="email"
-                                        value={formData.email}
-                                        onChange={handleInputChange}
+                                        {...register("email")}
                                         className="bg-[#1A1F2E]/50 border-slate-700/50 text-white placeholder:text-slate-500 focus-visible:ring-primary/50"
                                     />
+                                    {errors.email && <p className="text-red-500 text-xs">{errors.email.message}</p>}
                                 </div>
 
                                 <div className="space-y-2">
                                     <label className="text-xs font-medium text-slate-300 ml-1">Phone Number</label>
                                     <Input
-                                        name="phone"
                                         placeholder="+1 (555) 000-0000"
-                                        value={formData.phone}
-                                        onChange={handleInputChange}
+                                        {...register("phone")}
                                         className="bg-[#1A1F2E]/50 border-slate-700/50 text-white placeholder:text-slate-500 focus-visible:ring-primary/50"
                                     />
                                 </div>
 
-                                <Button type="submit" className="w-full h-11 text-base font-medium bg-primary hover:bg-primary/90 mt-2 shadow-lg shadow-primary/20 group">
+                                <Button type="submit" onClick={nextStep} className="w-full h-11 text-base font-medium bg-primary hover:bg-primary/90 mt-2 shadow-lg shadow-primary/20 group">
                                     Continue
                                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                                 </Button>
@@ -143,30 +149,30 @@ function SignupFrom() {
                                 <div className="space-y-2">
                                     <label className="text-xs font-medium text-slate-300 ml-1">Password</label>
                                     <Input
-                                        name="password"
                                         placeholder="Min 8 characters"
                                         type="password"
-                                        value={formData.password}
-                                        onChange={handleInputChange}
+                                        {...register("password")}
                                         className="bg-[#1A1F2E]/50 border-slate-700/50 text-white placeholder:text-slate-500 focus-visible:ring-primary/50"
                                     />
+                                    {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}
                                 </div>
 
                                 <div className="space-y-2">
                                     <label className="text-xs font-medium text-slate-300 ml-1">Confirm Password</label>
                                     <Input
-                                        name="confirmPassword"
                                         placeholder="Re-enter password"
                                         type="password"
-                                        value={formData.confirmPassword}
-                                        onChange={handleInputChange}
+                                        {...register("confirmPassword")}
                                         className="bg-[#1A1F2E]/50 border-slate-700/50 text-white placeholder:text-slate-500 focus-visible:ring-primary/50"
                                     />
+                                    {errors.confirmPassword && (
+                                        <p className="text-red-500 text-xs">{errors.confirmPassword.message}</p>
+                                    )}
                                 </div>
 
                                 <div className="space-y-3 pt-2">
                                     <Button type="submit" className="w-full h-11 text-base font-semibold bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25">
-                                        Create Account
+                                        {isLoading ? "Creating..." : "Create Account"}
                                         <CheckCircle2 className="ml-2 h-4 w-4" />
                                     </Button>
                                     <Button

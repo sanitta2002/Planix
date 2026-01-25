@@ -1,5 +1,6 @@
 
 import UserRoutes from "./routes/User/UserRoutes"
+import { Toaster } from "sonner";
 
 
 function App() {
@@ -7,6 +8,7 @@ function App() {
 
   return (
     <>
+    <Toaster   richColors position="top-right" />
      <UserRoutes/>
     </>
   )

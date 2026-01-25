@@ -5,7 +5,7 @@ import Redis from 'ioredis';
 
 @Injectable()
 export class OtpService implements IOtpService {
-  private readonly TTL = 120;
+  private readonly TTL = 15;
   constructor(@Inject('REDIS_CLIENT') private redis: Redis) {}
   async sendOtp(key: string): Promise<string | null> {
     const otp = generateOTP();

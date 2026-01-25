@@ -1,10 +1,35 @@
-import SignupFrom from "../../Auth/SignupFrom"
-
+import { toast } from "sonner";
+import SignupFrom from "../../components/Auth/SignupFrom"
+import { useUserSignUp } from "../../hooks/Auth/authHook";
+import type { SignupFormData } from "../../lib/validations/signup.schema"
+import OtpModal from "../../Modal/OtpModal"
+import { useState } from "react";
 
 function SignupPage() {
+  const { mutate: signup, isPending } = useUserSignUp();
+  const [isOtpOpen, setIsOtpOpen] = useState(false);
+  const [email, setEmail] = useState<string>("");
+  const handleSignup = (data: SignupFormData) => {
+    signup(data, {
+      onSuccess: () => {
+        toast.success("signup success")
+        setEmail(data.email);
+        setIsOtpOpen(true);
+      },
+      onError: (err) => {
+        toast.error("Signup failed")
+        console.log(err)
+      }
+    })
+  }
   return (
     <div>
-      <SignupFrom/>
+      <SignupFrom onSubmit={handleSignup} isLoading={isPending} />
+      <OtpModal
+        isOpen={isOtpOpen}
+        onClose={() => setIsOtpOpen(false)}
+        email={email}
+      />
     </div>
   )
 }
