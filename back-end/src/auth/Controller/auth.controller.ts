@@ -5,6 +5,8 @@ import { VerifyEmailDto } from '../dto/RequestDTO/verify-email.dto';
 import { Resendotp } from '../dto/RequestDTO/resend-otp.dto';
 import { LoginRequestDto } from '../dto/RequestDTO/Login.dto';
 import { LoginResponseDto } from '../dto/ResponseDTO/login.res.dto';
+import { ForgotPasswordDTO } from '../dto/RequestDTO/ForgotPassword.dto';
+import { ResetPasswordDto } from '../dto/RequestDTO/ResetPassword.dto';
 
 
 @Controller('auth')
@@ -28,5 +30,15 @@ export class AuthController {
   @Post('login')
   async login(@Body() dto:LoginRequestDto):Promise<LoginResponseDto>{
     return this.authService.login(dto)
+  }
+  @Post('forgot-password')
+  async forgotPassword(@Body() dto:ForgotPasswordDTO){
+    await this.authService.forgotPassword(dto)
+    return {message:'password reset OTP has been sent'}
+  }
+  @Post('reset-password')
+  async resetPassword(@Body() dto:ResetPasswordDto){
+    await this.authService.resetPassword(dto)
+    return{message: 'password reset successful.',}
   }
 }
