@@ -29,6 +29,7 @@ function SignupPage() {
         isOpen={isOtpOpen}
         onClose={() => setIsOtpOpen(false)}
         email={email}
+        flow="register"
       />
     </div>
   )

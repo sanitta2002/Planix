@@ -1,5 +1,5 @@
 
-import { ArrowLeft, ArrowRight, CheckCircle2, Layers } from "lucide-react"
+import { ArrowLeft, ArrowRight, CheckCircle2, Eye, EyeOff, Layers } from "lucide-react"
 import { useState } from "react"
 import { useForm } from "react-hook-form";
 import { cn } from "../../lib/utils"
@@ -19,6 +19,8 @@ interface SignupFormProps {
 
 function SignupFrom({ onSubmit, isLoading }: SignupFormProps) {
     const [step, setStep] = useState(1)
+     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const {
         register,
         handleSubmit,
@@ -67,10 +69,11 @@ function SignupFrom({ onSubmit, isLoading }: SignupFormProps) {
 
                     {/* Header with Logo */}
                     <div className="text-center space-y-4">
-                        <div className="flex justify-center">
+                        <div className="flex flex-col items-center justify-center gap-4">
                             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/20">
                                 <Layers className="h-6 w-6 text-primary" />
                             </div>
+                            <span className="text-2xl font-bold text-white tracking-tight">Plani<span className="text-primary">X</span></span>
                         </div>
 
                         <div className="space-y-1">
@@ -148,26 +151,52 @@ function SignupFrom({ onSubmit, isLoading }: SignupFormProps) {
                             <div className="space-y-4 animate-in slide-in-from-right-4 fade-in duration-300">
                                 <div className="space-y-2">
                                     <label className="text-xs font-medium text-slate-300 ml-1">Password</label>
+                                    <div className="relative">
                                     <Input
                                         placeholder="Min 8 characters"
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                         {...register("password")}
                                         className="bg-[#1A1F2E]/50 border-slate-700/50 text-white placeholder:text-slate-500 focus-visible:ring-primary/50"
                                     />
+                                    <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-2.5 text-slate-500 hover:text-slate-300 transition-colors"
+                                >
+                                    {showPassword ? (
+                                        <EyeOff className="h-4 w-4" />
+                                    ) : (
+                                        <Eye className="h-4 w-4" />
+                                    )}
+                                </button>
                                     {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}
+                                </div>
                                 </div>
 
                                 <div className="space-y-2">
                                     <label className="text-xs font-medium text-slate-300 ml-1">Confirm Password</label>
+                                    <div className="relative">
                                     <Input
                                         placeholder="Re-enter password"
-                                        type="password"
+                                        type={showConfirmPassword ? "text" : "password"}
                                         {...register("confirmPassword")}
                                         className="bg-[#1A1F2E]/50 border-slate-700/50 text-white placeholder:text-slate-500 focus-visible:ring-primary/50"
                                     />
+                                     <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute right-3 top-2.5 text-slate-500 hover:text-slate-300 transition-colors"
+                                >
+                                    {showConfirmPassword ? (
+                                        <EyeOff className="h-4 w-4" />
+                                    ) : (
+                                        <Eye className="h-4 w-4" />
+                                    )}
+                                </button>
                                     {errors.confirmPassword && (
                                         <p className="text-red-500 text-xs">{errors.confirmPassword.message}</p>
                                     )}
+                                </div>
                                 </div>
 
                                 <div className="space-y-3 pt-2">

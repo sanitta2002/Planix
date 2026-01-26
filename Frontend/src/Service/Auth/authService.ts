@@ -25,6 +25,16 @@ interface loginPayload{
      password: string;
 }
 
+interface ForgotPasswordPayload {
+  email: string
+}
+
+interface resetPasswordPayload {
+  email: string,
+  password: string,
+  confirmPassword: string
+}
+
 export const registerUser = async (data:RegisterPayload)=>{
     const response = await AxiosInstance.post(API_ROUTES.Auth.REGISTER,data)
     return response.data
@@ -42,5 +52,15 @@ export const resendOtp = async (data:ResendOtpPayload)=>{
 
 export const LoginUser = async (data:loginPayload)=>{
     const response = await AxiosInstance.post(API_ROUTES.Auth.LOGIN,data)
+    return response.data
+}
+
+export  const forgotPassword = async(data:ForgotPasswordPayload)=>{
+    const response = await AxiosInstance.post(API_ROUTES.Auth.FORGOT_PASSWORD,data)
+    return response.data
+}
+
+export const resetPassword = async(data:resetPasswordPayload)=>{
+    const response = await AxiosInstance.post(API_ROUTES.Auth.RESET_PASSWORD,data)
     return response.data
 }
