@@ -4,6 +4,8 @@ import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { useResendOtp, useVerifyOtp } from '../hooks/Auth/authHook';
 import { toast } from 'sonner';
+import { FRONTEND_ROUTES } from '../constants/frontRoutes';
+import { useNavigate } from 'react-router';
 
 interface OtpModalProps {
     isOpen: boolean;
@@ -14,6 +16,7 @@ interface OtpModalProps {
 function OtpModal({ isOpen, onClose, email }: OtpModalProps) {
     const [otp, setOtp] = useState(['', '', '', '', '', ''])
     const [timeLeft, setTimeLeft] = useState(15)
+    const navigate = useNavigate()
 
     const { mutate: verifyOtp, isPending } = useVerifyOtp()
     const { mutate: resendOtp, isPending:isResending } = useResendOtp()
@@ -39,7 +42,7 @@ function OtpModal({ isOpen, onClose, email }: OtpModalProps) {
         newOtp[index] = element.value
         setOtp(newOtp)
 
-        // Focus next input
+        
         if (element.value !== '' && element.nextSibling) {
             (element.nextSibling as HTMLInputElement).focus()
         }
@@ -65,8 +68,8 @@ function OtpModal({ isOpen, onClose, email }: OtpModalProps) {
             {
                 onSuccess: () => {
                     toast.success("Email verified successfully");
-
                     onClose();
+                    navigate(FRONTEND_ROUTES.LOGIN)
                 },
                 onError: () => {
                     toast.error("Invalid or expired OTP");
