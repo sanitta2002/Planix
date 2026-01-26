@@ -11,9 +11,10 @@ interface OtpModalProps {
     isOpen: boolean;
     onClose: () => void;
     email: string;
+    flow: "register" | "forgot-password";
 }
 
-function OtpModal({ isOpen, onClose, email }: OtpModalProps) {
+function OtpModal({ isOpen, onClose, email ,flow}: OtpModalProps) {
     const [otp, setOtp] = useState(['', '', '', '', '', ''])
     const [timeLeft, setTimeLeft] = useState(15)
     const navigate = useNavigate()
@@ -62,14 +63,20 @@ function OtpModal({ isOpen, onClose, email }: OtpModalProps) {
             toast.error("Please enter 6-digit OTP");
             return;
         }
-
         verifyOtp(
             { email, otp: otpValue },
             {
                 onSuccess: () => {
                     toast.success("Email verified successfully");
                     onClose();
+                    if(flow==='register'){
                     navigate(FRONTEND_ROUTES.LOGIN)
+                    }
+                    if(flow=== "forgot-password"){
+                        navigate(FRONTEND_ROUTES.RESET_PASSWORD,{
+                            state:{email}
+                        })
+                    }
                 },
                 onError: () => {
                     toast.error("Invalid or expired OTP");
@@ -157,7 +164,7 @@ function OtpModal({ isOpen, onClose, email }: OtpModalProps) {
                                 {timeLeft > 0 ? (
                                     <p>Resend OTP in <span className="text-white font-medium">{timeLeft}s</span></p>
                                 ) : (
-                                    <button onClick={handleResendOtp} className="text-primary hover:underline font-medium">Resend Code {isResending ? "Resending..." : "Resend Code"}</button>
+                                    <button onClick={handleResendOtp} className="text-primary hover:underline font-medium">{isResending ? "Resending..." : "Resend Code"}</button>
 
                                 )}
                             </div>

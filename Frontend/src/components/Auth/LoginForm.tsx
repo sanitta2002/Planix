@@ -46,11 +46,14 @@ export default function LoginForm({ onSubmit, isLoading = false }: LoginFormProp
 
                     {/* Header with Logo */}
                     <div className="text-center space-y-4">
-                        <div className="flex justify-center">
+                        <div className="flex flex-col items-center justify-center gap-4">
                             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 ring-1 ring-primary/20">
                                 <Layers className="h-6 w-6 text-primary" />
                             </div>
+                            <span className="text-2xl font-bold text-white tracking-tight">Plani<span className="text-primary">X</span></span>
                         </div>
+                            
+                        
 
                         <div className="space-y-1">
                             <h1 className="text-2xl font-bold text-white tracking-tight">
@@ -84,7 +87,10 @@ export default function LoginForm({ onSubmit, isLoading = false }: LoginFormProp
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between">
                                     <label className="text-xs font-medium text-slate-300 ml-1">Password</label>
-                                    <a href="#" className="text-xs text-primary hover:text-primary/80 hover:underline">Forgot password?</a>
+                                    <Link to={FRONTEND_ROUTES.FORGOT_PASSWORD} className="text-xs text-primary hover:text-primary/80 hover:underline">
+                                     Forgot password?
+                                    </Link>
+                                    
                                 </div>
                                 <Input
                                     placeholder="Enter your password"
