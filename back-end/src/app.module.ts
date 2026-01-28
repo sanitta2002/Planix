@@ -11,6 +11,8 @@ import { OtpModule } from './common/otp/otp.module';
 import { RedisProvider } from './common/redis/redis.provider';
 import { MailModule } from './common/mail/mail.module';
 import { AppJwtModule } from './common/jwt/jwt.module';
+import { TempStoreUserService } from './common/temp-store-user/temp-store-user.service';
+import { TempStoreUserModule } from './common/temp-store-user/temp-store-user.module';
 
 @Module({
   imports: [
@@ -22,9 +24,10 @@ import { AppJwtModule } from './common/jwt/jwt.module';
     OtpModule,
     MailModule,
     AppJwtModule,
+    TempStoreUserModule
   ],
 
   controllers: [AppController],
-  providers: [AppService, OtpService, RedisProvider],
+  providers: [AppService, OtpService, RedisProvider, TempStoreUserService],
 })
 export class AppModule {}

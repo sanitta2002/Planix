@@ -5,7 +5,7 @@ import Redis from 'ioredis';
 
 @Injectable()
 export class OtpService implements IOtpService {
-  private readonly TTL = 15;
+  private readonly TTL = 60;
   constructor(@Inject('REDIS_CLIENT') private redis: Redis) {}
   async sendOtp(key: string): Promise<string | null> {
     const otp = generateOTP();
@@ -14,6 +14,7 @@ export class OtpService implements IOtpService {
   }
   async verifyOtp(key: string, value: string): Promise<void> {
     const storedOtp = await this.redis.get(key);
+     console.log('stored OTP:', storedOtp);
     if (!storedOtp || storedOtp !== value) {
       throw new UnauthorizedException('invalid or expired otp');
     }
