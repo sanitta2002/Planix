@@ -17,7 +17,9 @@ function SignupPage() {
         setIsOtpOpen(true);
       },
       onError: (err) => {
-        toast.error("Signup failed")
+        toast.error("Email already registered")
+        setIsOtpOpen(false);   
+       setEmail(""); 
         console.log(err)
       }
     })

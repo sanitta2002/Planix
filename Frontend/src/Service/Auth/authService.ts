@@ -35,6 +35,10 @@ interface resetPasswordPayload {
   confirmPassword: string
 }
 
+interface googleLoginPayload{
+    idToken: string
+}
+
 export const registerUser = async (data:RegisterPayload)=>{
     const response = await AxiosInstance.post(API_ROUTES.Auth.REGISTER,data)
     return response.data
@@ -62,5 +66,10 @@ export  const forgotPassword = async(data:ForgotPasswordPayload)=>{
 
 export const resetPassword = async(data:resetPasswordPayload)=>{
     const response = await AxiosInstance.post(API_ROUTES.Auth.RESET_PASSWORD,data)
+    return response.data
+}
+
+export const googleLogin =async(data:googleLoginPayload)=>{
+    const response = await AxiosInstance.post(API_ROUTES.Auth.GOOGLE_LOGIN,data)
     return response.data
 }
