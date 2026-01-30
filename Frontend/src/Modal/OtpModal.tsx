@@ -16,7 +16,8 @@ interface OtpModalProps {
 
 function OtpModal({ isOpen, onClose, email ,flow}: OtpModalProps) {
     const [otp, setOtp] = useState(['', '', '', '', '', ''])
-    const [timeLeft, setTimeLeft] = useState(15)
+    const OTP_EXPIRY_SECONDS = 60;
+    const [timeLeft, setTimeLeft] = useState(OTP_EXPIRY_SECONDS)
     const navigate = useNavigate()
 
     const { mutate: verifyOtp, isPending } = useVerifyOtp()
@@ -27,7 +28,7 @@ function OtpModal({ isOpen, onClose, email ,flow}: OtpModalProps) {
         if (!isOpen) return
 
         setOtp(['', '', '', '', '', ''])
-        setTimeLeft(15)
+        setTimeLeft(OTP_EXPIRY_SECONDS)
 
         const timer = setInterval(() => {
             setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0))
@@ -92,7 +93,7 @@ function OtpModal({ isOpen, onClose, email ,flow}: OtpModalProps) {
             {
                 onSuccess: () => {
                     toast.success("OTP resent to your email");
-                    setTimeLeft(15);
+                    setTimeLeft(OTP_EXPIRY_SECONDS);
                     setOtp(["", "", "", "", "", ""]);
                 },
                 onError: () => {

@@ -6,9 +6,17 @@ import { HashingModule } from 'src/common/hashing/hashing.module';
 import { OtpModule } from 'src/common/otp/otp.module';
 import { MailModule } from 'src/common/mail/mail.module';
 import { AppJwtModule } from 'src/common/jwt/jwt.module';
+import { TempStoreUserModule } from 'src/common/temp-store-user/temp-store-user.module';
 
 @Module({
-  imports: [UsersModule, HashingModule,OtpModule,MailModule , AppJwtModule],
+  imports: [
+    UsersModule,
+    HashingModule,
+    OtpModule,
+    MailModule,
+    AppJwtModule,
+    TempStoreUserModule,
+  ],
   providers: [AuthService],
   controllers: [AuthController],
 })
