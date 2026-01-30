@@ -73,3 +73,8 @@ export const googleLogin =async(data:googleLoginPayload)=>{
     const response = await AxiosInstance.post(API_ROUTES.Auth.GOOGLE_LOGIN,data)
     return response.data
 }
+
+export const logout = async()=>{
+    const response = await AxiosInstance.post(API_ROUTES.Auth.LOGOUT)
+    return response
+}

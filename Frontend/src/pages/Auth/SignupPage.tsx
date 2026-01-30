@@ -5,6 +5,7 @@ import type { SignupFormData } from "../../lib/validations/signup.schema"
 import OtpModal from "../../Modal/OtpModal"
 import { useState } from "react";
 
+
 function SignupPage() {
   const { mutate: signup, isPending } = useUserSignUp();
   const [isOtpOpen, setIsOtpOpen] = useState(false);

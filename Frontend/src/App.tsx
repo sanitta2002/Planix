@@ -9,7 +9,7 @@ function App() {
   return (
     <>
     <Toaster   richColors position="top-right" />
-     <UserRoutes/>
+     <UserRoutes />
     </>
   )
 }

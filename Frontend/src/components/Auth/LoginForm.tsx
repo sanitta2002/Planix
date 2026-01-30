@@ -150,7 +150,7 @@ export default function LoginForm({ onSubmit, isLoading = false }: LoginFormProp
 
                     {/* Social Auth */}
                     
-                    <GoogleAuthButton onSuccess={()=>navigate(FRONTEND_ROUTES.HOME)}/>
+                    <GoogleAuthButton onSuccess={()=>navigate(FRONTEND_ROUTES.DASHBOARD)}/>
 
 
                     {/* Footer */}

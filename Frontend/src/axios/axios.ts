@@ -1,8 +1,46 @@
 import axios from "axios";
+import { Store } from "../store/Store";
+import { clearAccessToken, setAccessToken } from "../store/tokenSlice";
+import { clearAuth } from "../store/authSlice";
 
 export const AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
-  withCredentials:true
+  withCredentials: true,
 });
 
+AxiosInstance.interceptors.request.use(
+  (config) => {
+    const token = Store.getState().token.accessToken;
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
 
+AxiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    const status = error.response?.status;
+
+    if (status === 401 && !originalRequest._retry && error.message === "invalid AccessToken") {
+      originalRequest._retry = true;
+      try {
+        const res = await AxiosInstance.post(import.meta.env.VITE_API_BASE_URL);
+        const newAccessToken = res.data.accessToken;
+
+        Store.dispatch(setAccessToken(newAccessToken));
+
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return AxiosInstance(originalRequest);
+      } catch (refreshError) {
+        Store.dispatch(clearAccessToken());
+        Store.dispatch(clearAuth());
+        return Promise.reject(refreshError);
+      }
+    }
+    return Promise.reject(error);
+  },
+);

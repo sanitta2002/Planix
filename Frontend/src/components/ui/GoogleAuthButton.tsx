@@ -3,6 +3,9 @@ import {useGoogleLogin, type CodeResponse} from "@react-oauth/google";
 import { useBackendGoogleLogin } from "../../hooks/Auth/authHook";
 import { Button } from "./Button"
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { setAccessToken } from "../../store/tokenSlice";
+import { setAuthUser } from "../../store/authSlice";
 
 interface GoogleAuthButtonProps {
     onSuccess?: () => void;
@@ -10,6 +13,7 @@ interface GoogleAuthButtonProps {
 
 function GoogleAuthButton({ onSuccess }: GoogleAuthButtonProps) {
     const { mutate: googleLogin } = useBackendGoogleLogin()
+    const dispatch = useDispatch()
     const handleSuccess = (response: CodeResponse) => {
         if (!response.code) {
             toast.error("No ID token received from Google");
@@ -19,7 +23,9 @@ function GoogleAuthButton({ onSuccess }: GoogleAuthButtonProps) {
         googleLogin(
             { idToken: response.code },
             {
-                onSuccess: () => {
+                onSuccess: (res) => {
+                    dispatch(setAccessToken(res.accessToken))
+                    dispatch(setAuthUser(res.user))
                     toast.success("Google login successful");
                     onSuccess?.();
                 },

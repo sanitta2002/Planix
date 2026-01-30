@@ -234,7 +234,7 @@ function SignupFrom({ onSubmit, isLoading }: SignupFormProps) {
 
                     {/* Social Auth */}
                      
-                        <GoogleAuthButton onSuccess={()=>navigate(FRONTEND_ROUTES.HOME)}/>
+                        <GoogleAuthButton onSuccess={()=>navigate(FRONTEND_ROUTES.DASHBOARD)}/>
 
                     {/* Footer */}
                     <div className="space-y-4 text-center">
