@@ -15,4 +15,5 @@ export interface IuserService {
   forgotPassword(dto: ForgotPasswordDTO): Promise<void>;
   resetPassword(dto: ResetPasswordDto): Promise<void>;
   googleLogin(dto: GoogleLoginDto): Promise<LoginResponseDto>;
+  refreshToken(refreshToken: string);
 }

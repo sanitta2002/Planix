@@ -83,8 +83,8 @@ export class AuthService implements IuserService {
 
   async ResentOtp(dto: Resendotp): Promise<void> {
     const { email } = dto;
-    const user = await this.userRepository.findByEmail(email);
-    if (!user) {
+    const tempUser = await this.tempStore.get(`register:${email}`);
+    if (!tempUser) {
       throw new BadRequestException('user not found');
     }
     const otp = await this.otpService.sendOtp(`otp:${email}`);
@@ -177,9 +177,9 @@ export class AuthService implements IuserService {
       throw new UnauthorizedException('invalid Google token');
     }
     let user = await this.userRepository.findByEmail(payload.email);
-    if (user) {
-      throw new ConflictException('Email already registered ');
-    }
+    // if (user) {
+    //   throw new ConflictException('Email already registered ');
+    // }
     if (!user) {
       user = await this.userRepository.create({
         firstName: payload.given_name,
@@ -197,5 +197,16 @@ export class AuthService implements IuserService {
     console.log('accessToken', accessToken);
     console.log('refreshToken', refreshToken);
     return { accessToken, refreshToken };
+  }
+  refreshToken(refreshToken: string) {
+    const payload = this.jwtService.verifyRefreshToken(refreshToken);
+    if (!payload?.userId || !payload?.email) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+    const accessToken = this.jwtService.signAccessToken({
+      userId: payload?.userId,
+      email: payload?.email,
+    });
+    return { accessToken };
   }
 }

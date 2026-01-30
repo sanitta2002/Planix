@@ -12,7 +12,7 @@ export class User extends Document {
   email: string;
   @Prop()
   phone: string;
-  @Prop({required:false})
+  @Prop({ required: false })
   @IsString()
   @MinLength(8)
   password: string;

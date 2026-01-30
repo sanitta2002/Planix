@@ -1,14 +1,26 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthService } from '../Service/auth.service';
 import { RegisterUserDto } from '../dto/RequestDTO/Register.dto';
 import { VerifyEmailDto } from '../dto/RequestDTO/verify-email.dto';
 import { Resendotp } from '../dto/RequestDTO/resend-otp.dto';
 import { LoginRequestDto } from '../dto/RequestDTO/Login.dto';
-import { LoginResponseDto } from '../dto/ResponseDTO/login.res.dto';
 import { ForgotPasswordDTO } from '../dto/RequestDTO/ForgotPassword.dto';
 import { ResetPasswordDto } from '../dto/RequestDTO/ResetPassword.dto';
 import { GoogleLoginDto } from '../dto/RequestDTO/google-login.dto';
+import type { Request, Response } from 'express';
 
+interface RefreshTokenCookies {
+  refreshToken?: string;
+}
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -32,9 +44,20 @@ export class AuthController {
     return { message: 'OTP resent successfully' };
   }
   @Post('login')
-  async login(@Body() dto: LoginRequestDto): Promise<LoginResponseDto> {
-    return this.authService.login(dto);
+  async login(
+    @Body() dto: LoginRequestDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { accessToken, refreshToken } = await this.authService.login(dto);
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    return { accessToken };
   }
+
   @Post('forgot-password')
   async forgotPassword(@Body() dto: ForgotPasswordDTO) {
     await this.authService.forgotPassword(dto);
@@ -46,7 +69,35 @@ export class AuthController {
     return { message: 'password reset successful.' };
   }
   @Post('google')
-  async googleLogin(@Body() dto: GoogleLoginDto): Promise<LoginResponseDto> {
-    return this.authService.googleLogin(dto);
+  async googleLogin(
+    @Body() dto: GoogleLoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const { accessToken, refreshToken } =
+      await this.authService.googleLogin(dto);
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    return { accessToken };
+  }
+  @Post('refresh')
+  refresh(@Req() req: Request) {
+    const cookies = req.cookies as RefreshTokenCookies;
+    const refreshToken = cookies.refreshToken;
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token not found');
+    }
+    return this.authService.refreshToken(refreshToken);
+  }
+  @Post('logout')
+  logout(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: true,
+    });
   }
 }
