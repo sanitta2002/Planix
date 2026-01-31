@@ -22,7 +22,7 @@ function UserRoutes() {
         <Route path={FRONTEND_ROUTES.RESET_PASSWORD} element={<ResetPasswordPage />} />
       </Route>
 
-      <Route element={<ProtectedRoute />}>
+      <Route element={<ProtectedRoute allowedRoles={'USER'} redirectTo={FRONTEND_ROUTES.LANDING} />}>
         <Route element={<DashboardLayout />}>
           <Route path={FRONTEND_ROUTES.DASHBOARD} element={<DashboardPage />} />
         </Route>

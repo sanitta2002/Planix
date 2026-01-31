@@ -13,9 +13,10 @@ import GoogleAuthButton from "../ui/GoogleAuthButton";
 interface LoginFormProps {
     onSubmit?: (data: LoginFormData) => void;
     isLoading?: boolean;
+    variant?: "user" | "admin";
 }
 
-export default function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
+export default function LoginForm({ onSubmit, isLoading = false, variant = "user" }: LoginFormProps) {
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
     const {
@@ -61,7 +62,7 @@ export default function LoginForm({ onSubmit, isLoading = false }: LoginFormProp
 
                         <div className="space-y-1">
                             <h1 className="text-2xl font-bold text-white tracking-tight">
-                                Welcome Back
+                               {variant==='user' ? "Welcome Back" : "Welcome Admin"} 
                             </h1>
                             <p className="text-slate-400 text-sm">
                                 Sign in to continue to your account
@@ -89,13 +90,16 @@ export default function LoginForm({ onSubmit, isLoading = false }: LoginFormProp
                             </div>
 
                             <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                    <label className="text-xs font-medium text-slate-300 ml-1">Password</label>
-                                    <Link to={FRONTEND_ROUTES.FORGOT_PASSWORD} className="text-xs text-primary hover:text-primary/80 hover:underline">
-                                        Forgot password?
-                                    </Link>
+                                {variant === 'user' && (
+                                    <div className="flex items-center justify-between">
+                                        <label className="text-xs font-medium text-slate-300 ml-1">Password</label>
+                                        <Link to={FRONTEND_ROUTES.FORGOT_PASSWORD} className="text-xs text-primary hover:text-primary/80 hover:underline">
+                                            Forgot password?
+                                        </Link>
 
-                                </div>
+                                    </div>
+                                )}
+
                                 <div className="relative">
                                     <Input
                                         placeholder="Enter your password"
@@ -139,32 +143,41 @@ export default function LoginForm({ onSubmit, isLoading = false }: LoginFormProp
                     </form>
 
                     {/* Divider */}
-                    <div className="relative py-2">
-                        <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t border-slate-800" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-[#121620] px-2 text-slate-500">or continue with</span>
-                        </div>
-                    </div>
+                    {variant === 'user' && (
+                        <>
+                            <div className="relative py-2">
+                                <div className="absolute inset-0 flex items-center">
+                                    <span className="w-full border-t border-slate-800" />
+                                </div>
+                                <div className="relative flex justify-center text-xs uppercase">
+                                    <span className="bg-[#121620] px-2 text-slate-500">or continue with</span>
+                                </div>
+                            </div>
 
-                    {/* Social Auth */}
-                    
-                    <GoogleAuthButton onSuccess={()=>navigate(FRONTEND_ROUTES.DASHBOARD)}/>
+                            {/* Social Auth */}
+
+                            <GoogleAuthButton onSuccess={() => navigate(FRONTEND_ROUTES.DASHBOARD)} />
+                        </>
+                    )}
 
 
                     {/* Footer */}
-                    <div className="space-y-4 text-center">
-                        <p className="text-sm text-slate-400">
-                            Don't have an account?{' '}
-                            <Link
-                                to={FRONTEND_ROUTES.SIGNUP || "/signup"}
-                                className="font-medium text-primary hover:underline hover:text-primary/80 transition-colors"
-                            >
-                                Sign Up
-                            </Link>
-                        </p>
-                    </div>
+                    {variant === 'user' && (
+                        <>
+                            <div className="space-y-4 text-center">
+                                <p className="text-sm text-slate-400">
+                                    Don't have an account?{' '}
+                                    <Link
+                                        to={FRONTEND_ROUTES.SIGNUP || "/signup"}
+                                        className="font-medium text-primary hover:underline hover:text-primary/80 transition-colors"
+                                    >
+                                        Sign Up
+                                    </Link>
+                                </p>
+                            </div>
+                        </>
+                    )}
+
                 </div>
             </div>
         </div>

@@ -8,5 +8,11 @@ export const API_ROUTES ={
         RESET_PASSWORD:"/auth/reset-password",
         GOOGLE_LOGIN: "/auth/google",
         LOGOUT:"/auth/logout"
+    },
+
+    Admin:{
+        LOGIN:"/admin/login"
     }
 }
+
+

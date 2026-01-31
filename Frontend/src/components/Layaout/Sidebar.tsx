@@ -14,6 +14,8 @@ import {
     Layers
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../store/Store';
 
 interface SidebarItemProps {
     icon: React.ElementType;
@@ -59,6 +61,16 @@ const SidebarSection = ({ title, children }: SidebarSectionProps) => (
 );
 
 export const Sidebar = ({ className }: { className?: string }) => {
+    const user = useSelector((state: RootState) => state.auth.user);
+    const initials = user
+  ? `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase()
+  : "U";
+
+const fullName = user
+  ? `${user.firstName} ${user.lastName}`.trim()
+  : "User";
+
+const roleLabel = "Team Member";
     return (
         <aside className={cn("w-64 h-screen bg-background border-r border-border flex flex-col shrink-0 sticky top-0", className)}>
             {/* Logo Area */}
@@ -103,14 +115,14 @@ export const Sidebar = ({ className }: { className?: string }) => {
                         {/* Replaced Avatar component with standard img/div */}
                         <div className="h-10 w-10 rounded-full border border-border overflow-hidden bg-muted flex items-center justify-center">
                             <img src="/avatar-placeholder.png" alt="Alex" className="h-full w-full object-cover opacity-0 duration-0" onLoad={(e) => e.currentTarget.classList.remove('opacity-0')} onError={(e) => e.currentTarget.style.display = 'none'} />
-                            <span className="absolute inset-0 flex items-center justify-center bg-primary/20 text-primary text-xs font-bold">AM</span>
+                            <span className="absolute inset-0 flex items-center justify-center bg-primary/20 text-primary text-xs font-bold">{initials}</span>
                         </div>
                         <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full"></span>
                     </div>
 
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium leading-none text-foreground truncate">Alex Morgan</p>
-                        <p className="text-xs text-muted-foreground truncate mt-1">Team Member - Standard</p>
+                        <p className="text-sm font-medium leading-none text-foreground truncate">{fullName}</p>
+                        <p className="text-xs text-muted-foreground truncate mt-1">{roleLabel}</p>
                     </div>
                     <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                 </div>

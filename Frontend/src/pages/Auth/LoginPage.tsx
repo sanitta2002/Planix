@@ -16,8 +16,10 @@ function LoginPage() {
     const handleLogin =(data:LoginFormData)=>{
         login(data,{
             onSuccess:(res)=>{
+              console.log("LOGIN RESPONSE:", res);
+              console.log("LOGIN USER:", res.user);
                dispatch(setAccessToken(res.accessToken))
-               dispatch(setAuthUser(res.user))
+               dispatch(setAuthUser({...res.user, role:"USER"}))
                 toast.success("login successful")
                 navigate(FRONTEND_ROUTES.DASHBOARD)
             },
@@ -28,7 +30,7 @@ function LoginPage() {
     }
   return (
     <div>
-      <LoginForm onSubmit={handleLogin} isLoading={isPending}/>
+      <LoginForm onSubmit={handleLogin} isLoading={isPending} variant="user"/>
     </div>
   )
 }
