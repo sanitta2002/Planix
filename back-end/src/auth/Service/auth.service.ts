@@ -119,7 +119,19 @@ export class AuthService implements IuserService {
     const refreshToken = this.jwtService.signRefreshToken(payload);
     console.log('accessToken', accessToken);
     console.log('refreshToken', refreshToken);
-    return { accessToken, refreshToken };
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user._id.toString(),
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone,
+        isEmailVerified: user.isEmailVerified,
+        avatarUrl: user.avatarUrl,
+      },
+    };
   }
 
   async forgotPassword(dto: ForgotPasswordDTO): Promise<void> {
@@ -196,7 +208,19 @@ export class AuthService implements IuserService {
     const refreshToken = this.jwtService.signRefreshToken(JWTpayload);
     console.log('accessToken', accessToken);
     console.log('refreshToken', refreshToken);
-    return { accessToken, refreshToken };
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user._id.toString(),
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone,
+        isEmailVerified: user.isEmailVerified,
+        avatarUrl: user.avatarUrl,
+      },
+    };
   }
   refreshToken(refreshToken: string) {
     const payload = this.jwtService.verifyRefreshToken(refreshToken);
