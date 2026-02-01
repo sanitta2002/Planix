@@ -104,6 +104,9 @@ export class AuthService implements IuserService {
     if (!user.isEmailVerified) {
       throw new UnauthorizedException('please verify your email');
     }
+    if (user.isBlocked) {
+      throw new UnauthorizedException('your account has been blocked by admin');
+    }
     const IsMatch = await this.hashingService.comparePassword(
       password,
       user.password,
