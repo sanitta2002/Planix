@@ -2,7 +2,7 @@ import { toast } from "sonner";
 import ForgotPasswordForm from "../../components/Auth/ForgotPasswordForm"
 import { useForgotPassword } from "../../hooks/Auth/authHook";
 import type { ForgotPasswordFormData } from "../../lib/validations/forgotPassword.schema";
-import OtpModal from "../../Modal/OtpModal";
+import OtpModal from "../../components/modal/OtpModal";
 import { useState } from "react";
 
 function ForgotPasswordPage() {

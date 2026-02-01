@@ -98,7 +98,7 @@ const roleLabel = "Team Member";
                 </SidebarSection>
 
                 <SidebarSection title="Organization">
-                    <SidebarItem icon={Users} label="Teams & Members" to="/teams" />
+                    <SidebarItem icon={Users} label="Teams & Members" to="/users" />
                     <SidebarItem icon={FolderKanban} label="Projects" to="/projects" />
                 </SidebarSection>
 

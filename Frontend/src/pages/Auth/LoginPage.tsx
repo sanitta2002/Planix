@@ -10,27 +10,30 @@ import { setAuthUser } from "../../store/authSlice"
 
 
 function LoginPage() {
-    const {mutate:login,isPending}=useLogin()
-    const navigate=useNavigate()
-    const dispatch = useDispatch()
-    const handleLogin =(data:LoginFormData)=>{
-        login(data,{
-            onSuccess:(res)=>{
-              console.log("LOGIN RESPONSE:", res);
-              console.log("LOGIN USER:", res.user);
-               dispatch(setAccessToken(res.accessToken))
-               dispatch(setAuthUser({...res.user, role:"USER"}))
-                toast.success("login successful")
-                navigate(FRONTEND_ROUTES.DASHBOARD)
-            },
-            onError:()=>{
-                toast.error("invalid email or password")
-            }
-        })
-    }
+  const { mutate: login, isPending } = useLogin()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const handleLogin = (data: LoginFormData) => {
+    login(data, {
+      onSuccess: (res) => {
+        dispatch(setAccessToken(res.accessToken))
+        dispatch(setAuthUser({ ...res.user, role: "USER" }))
+        toast.success("login successful")
+        navigate(FRONTEND_ROUTES.DASHBOARD)
+      },
+      onError: (err) => {
+        if (err instanceof Error) {
+          toast.error(err.message)
+        }else{
+
+          toast.error("invalid email or password")
+        }
+      }
+    })
+  }
   return (
     <div>
-      <LoginForm onSubmit={handleLogin} isLoading={isPending} variant="user"/>
+      <LoginForm onSubmit={handleLogin} isLoading={isPending} variant="user" />
     </div>
   )
 }

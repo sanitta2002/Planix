@@ -11,7 +11,9 @@ export const API_ROUTES ={
     },
 
     Admin:{
-        LOGIN:"/admin/login"
+        LOGIN:"/admin/login",
+        GETUSERS:'/admin/users',
+        BASE: "/admin",
     }
 }
 
