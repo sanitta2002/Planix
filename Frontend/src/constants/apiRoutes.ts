@@ -14,6 +14,10 @@ export const API_ROUTES ={
         LOGIN:"/admin/login",
         GETUSERS:'/admin/users',
         BASE: "/admin",
+    },
+    USER :{
+        UPDATE_PROFILE : "/users/profile",
+        CHANGE_PASSWORD: "/users/change-password"
     }
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard,
     ListTodo,
@@ -16,6 +16,7 @@ import {
 import { cn } from '../../lib/utils';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store/Store';
+import { FRONTEND_ROUTES } from '../../constants/frontRoutes';
 
 interface SidebarItemProps {
     icon: React.ElementType;
@@ -71,6 +72,7 @@ const fullName = user
   : "User";
 
 const roleLabel = "Team Member";
+const navigate=useNavigate()
     return (
         <aside className={cn("w-64 h-screen bg-background border-r border-border flex flex-col shrink-0 sticky top-0", className)}>
             {/* Logo Area */}
@@ -109,6 +111,7 @@ const roleLabel = "Team Member";
             </div>
 
             {/* User Footer */}
+            <button onClick={()=>navigate(FRONTEND_ROUTES.PROFILE)}>
             <div className="p-4 border-t border-border ">
                 <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors group">
                     <div className="relative">
@@ -124,9 +127,11 @@ const roleLabel = "Team Member";
                         <p className="text-sm font-medium leading-none text-foreground truncate">{fullName}</p>
                         <p className="text-xs text-muted-foreground truncate mt-1">{roleLabel}</p>
                     </div>
+
                     <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
                 </div>
             </div>
+            </button>
         </aside>
     );
 };
