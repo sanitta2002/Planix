@@ -69,6 +69,12 @@ export class AuthService implements IuserService {
     const { email, otp } = dto;
     await this.otpService.verifyOtp(`otp:${email}`, otp);
     this.logger.log(`${otp} verifyed`);
+    const existingUser = await this.userRepository.findByEmail(email);
+    if (existingUser) {
+      await this.otpService.delete(`otp:${email}`);
+      await this.tempStore.delete(`register:${email}`);
+      return;
+    }
     const tempUser = await this.tempStore.get(`register:${email}`);
     if (!tempUser) {
       throw new BadRequestException('Registration expired');
@@ -77,6 +83,7 @@ export class AuthService implements IuserService {
       ...tempUser,
       isEmailVerified: true,
     });
+
     await this.tempStore.delete(`register:${email}`);
     await this.otpService.delete(`otp:${email}`);
   }
@@ -157,12 +164,10 @@ export class AuthService implements IuserService {
   }
 
   async resetPassword(dto: ResetPasswordDto): Promise<void> {
-    const { email, password, confirmPassword, otp } = dto;
+    const { email, password, confirmPassword } = dto;
     if (password !== confirmPassword) {
       throw new BadRequestException('password do not match');
     }
-    await this.otpService.verifyOtp(`otp:${email}`, otp);
-    this.logger.log(`${otp} verifyed`);
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
       throw new BadRequestException('invalid request');

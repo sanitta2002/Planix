@@ -14,7 +14,7 @@ export class OtpService implements IOtpService {
   }
   async verifyOtp(key: string, value: string): Promise<void> {
     const storedOtp = await this.redis.get(key);
-     console.log('stored OTP:', storedOtp);
+    console.log('stored OTP:', storedOtp);
     if (!storedOtp || storedOtp !== value) {
       throw new UnauthorizedException('invalid or expired otp');
     }
