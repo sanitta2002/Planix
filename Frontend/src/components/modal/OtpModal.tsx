@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { ShieldCheck, Mail, ArrowLeft, Layers } from 'lucide-react'
-import { Button } from '../components/ui/Button'
-import { Input } from '../components/ui/Input'
-import { useResendOtp, useVerifyOtp } from '../hooks/Auth/authHook';
+import { Button } from '../ui/Button'
+import { Input } from '../ui/Input'
+import { useResendOtp, useVerifyOtp } from '../../hooks/Auth/authHook';
 import { toast } from 'sonner';
-import { FRONTEND_ROUTES } from '../constants/frontRoutes';
+import { FRONTEND_ROUTES } from '../../constants/frontRoutes';
 import { useNavigate } from 'react-router';
 
 interface OtpModalProps {

@@ -24,11 +24,11 @@ AxiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
     const status = error.response?.status;
-
-    if (status === 401 && !originalRequest._retry && error.message === "invalid AccessToken") {
+    console.log(error)
+    if (status === 401 && !originalRequest._retry && error.response.data.message === "Unauthorized") {
       originalRequest._retry = true;
       try {
-        const res = await AxiosInstance.post(import.meta.env.VITE_API_BASE_URL);
+        const res = await AxiosInstance.post(`${import.meta.env.VITE_API_URL}/auth/refresh`);
         const newAccessToken = res.data.accessToken;
 
         Store.dispatch(setAccessToken(newAccessToken));

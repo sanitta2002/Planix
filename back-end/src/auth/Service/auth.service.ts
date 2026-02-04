@@ -69,6 +69,12 @@ export class AuthService implements IuserService {
     const { email, otp } = dto;
     await this.otpService.verifyOtp(`otp:${email}`, otp);
     this.logger.log(`${otp} verifyed`);
+    const existingUser = await this.userRepository.findByEmail(email);
+    if (existingUser) {
+      await this.otpService.delete(`otp:${email}`);
+      await this.tempStore.delete(`register:${email}`);
+      return;
+    }
     const tempUser = await this.tempStore.get(`register:${email}`);
     if (!tempUser) {
       throw new BadRequestException('Registration expired');
@@ -77,6 +83,7 @@ export class AuthService implements IuserService {
       ...tempUser,
       isEmailVerified: true,
     });
+
     await this.tempStore.delete(`register:${email}`);
     await this.otpService.delete(`otp:${email}`);
   }
@@ -104,6 +111,9 @@ export class AuthService implements IuserService {
     if (!user.isEmailVerified) {
       throw new UnauthorizedException('please verify your email');
     }
+    if (user.isBlocked) {
+      throw new UnauthorizedException('your account has been blocked by admin');
+    }
     const IsMatch = await this.hashingService.comparePassword(
       password,
       user.password,
@@ -119,7 +129,19 @@ export class AuthService implements IuserService {
     const refreshToken = this.jwtService.signRefreshToken(payload);
     console.log('accessToken', accessToken);
     console.log('refreshToken', refreshToken);
-    return { accessToken, refreshToken };
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user._id.toString(),
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone,
+        isEmailVerified: user.isEmailVerified,
+        avatarUrl: user.avatarUrl,
+      },
+    };
   }
 
   async forgotPassword(dto: ForgotPasswordDTO): Promise<void> {
@@ -142,12 +164,10 @@ export class AuthService implements IuserService {
   }
 
   async resetPassword(dto: ResetPasswordDto): Promise<void> {
-    const { email, password, confirmPassword, otp } = dto;
+    const { email, password, confirmPassword } = dto;
     if (password !== confirmPassword) {
       throw new BadRequestException('password do not match');
     }
-    await this.otpService.verifyOtp(`otp:${email}`, otp);
-    this.logger.log(`${otp} verifyed`);
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
       throw new BadRequestException('invalid request');
@@ -196,7 +216,19 @@ export class AuthService implements IuserService {
     const refreshToken = this.jwtService.signRefreshToken(JWTpayload);
     console.log('accessToken', accessToken);
     console.log('refreshToken', refreshToken);
-    return { accessToken, refreshToken };
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user._id.toString(),
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone,
+        isEmailVerified: user.isEmailVerified,
+        avatarUrl: user.avatarUrl,
+      },
+    };
   }
   refreshToken(refreshToken: string) {
     const payload = this.jwtService.verifyRefreshToken(refreshToken);

@@ -26,7 +26,7 @@ import { AdminModule } from './admin/admin.module';
     MailModule,
     AppJwtModule,
     TempStoreUserModule,
-    AdminModule
+    AdminModule,
   ],
 
   controllers: [AppController],

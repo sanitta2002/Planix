@@ -6,13 +6,20 @@ import {
     Menu
 } from 'lucide-react';
 import LogoutButton from '../ui/LogoutButton';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../store/Store';
 
 interface DashboardNavbarProps {
     onMenuClick?: () => void;
     isSidebarOpen?: boolean;
 }
 
-export const DashboardNavbar = ({ onMenuClick,}: DashboardNavbarProps) => {
+export const DashboardNavbar = ({ onMenuClick, }: DashboardNavbarProps) => {
+    const user = useSelector((state: RootState) => state.auth.user);
+    const initials = user
+        ? `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase() : "User"
+        
+
     return (
         <header className="h-16 px-6 border-b border-border bg-background flex items-center justify-between sticky top-0 z-10 transition-all duration-300">
             {/* Left: Selectors & Mobile Toggle */}
@@ -76,7 +83,7 @@ export const DashboardNavbar = ({ onMenuClick,}: DashboardNavbarProps) => {
                 {/* User Actions */}
                 <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-blue-900 flex items-center justify-center text-xs font-bold text-white shadow-lg shadow-indigo-500/20 cursor-pointer hover:opacity-90 transition-opacity">
-                        AM
+                        {initials}
                     </div>
                     <LogoutButton />
                 </div>

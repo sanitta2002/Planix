@@ -1,4 +1,5 @@
 
+import AdminRoutes from "./routes/Admin/AdminRoutes";
 import UserRoutes from "./routes/User/UserRoutes"
 import { Toaster } from "sonner";
 
@@ -10,6 +11,7 @@ function App() {
     <>
     <Toaster   richColors position="top-right" />
      <UserRoutes />
+     <AdminRoutes/>
     </>
   )
 }

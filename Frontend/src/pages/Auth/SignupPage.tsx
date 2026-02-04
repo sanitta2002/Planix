@@ -2,7 +2,7 @@ import { toast } from "sonner";
 import SignupFrom from "../../components/Auth/SignupFrom"
 import { useUserSignUp } from "../../hooks/Auth/authHook";
 import type { SignupFormData } from "../../lib/validations/signup.schema"
-import OtpModal from "../../Modal/OtpModal"
+import OtpModal from "../../components/modal/OtpModal"
 import { useState } from "react";
 
 

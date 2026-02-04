@@ -48,14 +48,15 @@ export class AuthController {
     @Body() dto: LoginRequestDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const { accessToken, refreshToken } = await this.authService.login(dto);
+    const { accessToken, refreshToken, user } =
+      await this.authService.login(dto);
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       sameSite: 'strict',
       secure: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    return { accessToken };
+    return { accessToken, user };
   }
 
   @Post('forgot-password')
@@ -73,7 +74,7 @@ export class AuthController {
     @Body() dto: GoogleLoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const { accessToken, refreshToken } =
+    const { accessToken, refreshToken, user } =
       await this.authService.googleLogin(dto);
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
@@ -81,7 +82,7 @@ export class AuthController {
       secure: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    return { accessToken };
+    return { accessToken, user };
   }
   @Post('refresh')
   refresh(@Req() req: Request) {

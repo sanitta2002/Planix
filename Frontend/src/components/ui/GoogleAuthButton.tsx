@@ -25,7 +25,7 @@ function GoogleAuthButton({ onSuccess }: GoogleAuthButtonProps) {
             {
                 onSuccess: (res) => {
                     dispatch(setAccessToken(res.accessToken))
-                    dispatch(setAuthUser(res.user))
+                    dispatch(setAuthUser({...res.user,role:"USER"}))
                     toast.success("Google login successful");
                     onSuccess?.();
                 },
