@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState,} from 'react';
 import { X, User, Mail } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store/Store';
@@ -18,27 +18,17 @@ interface EditProfileModalProps {
 }
 
 const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, onSave }) => {
+    const user = useSelector((state: RootState) => state.auth.user);
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
+        firstName: user?.firstName,
+        lastName: user?.lastName,
+        email: user?.email,
+        phone: user?.phone,
     });
     const [errors, setErrors] = useState<Partial<Record<keyof EditProfileFormData, string>>>({});
 
-    const user = useSelector((state: RootState) => state.auth.user);
 
-    useEffect(() => {
-        if (user && isOpen) {
-            setFormData({
-                firstName: user.firstName,
-                lastName: user.lastName ?? "",
-                email: user.email,
-                phone: user.phone ?? "",
-            });
-            setErrors({});
-        }
-    }, [user, isOpen]);
+
 
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,7 +66,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, on
         }
 
         onSave({
-            firstName: formData.firstName,
+            firstName: formData.firstName ?? "",
             lastName: formData.lastName ?? "",
             phone: formData.phone ?? "",
         });
@@ -158,13 +148,13 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, on
                         <label className="text-sm font-medium text-slate-400">Phone Number</label>
                         <input
                             type="tel"
-                            name="phoneNumber"
+                            name="phone"
                             value={formData.phone}
                             onChange={handleChange}
-                            className={`w-full bg-[#0F172A] border ${errors.phoneNumber ? 'border-red-500' : 'border-[#1E293B]'} rounded-lg px-4 py-3 text-slate-200 focus:outline-none focus:border-blue-500 transition-colors`}
+                            className={`w-full bg-[#0F172A] border ${errors.phone ? 'border-red-500' : 'border-[#1E293B]'} rounded-lg px-4 py-3 text-slate-200 focus:outline-none focus:border-blue-500 transition-colors`}
                             placeholder="+1 (555) 123-4567"
                         />
-                        {errors.phoneNumber && <p className="text-red-400 text-xs mt-1.5 font-medium">{errors.phoneNumber}</p>}
+                        {errors.phone && <p className="text-red-400 text-xs mt-1.5 font-medium">{errors.phone}</p>}
                     </div>
                 </div>
 

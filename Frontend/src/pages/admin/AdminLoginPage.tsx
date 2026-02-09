@@ -10,27 +10,33 @@ import { setAuthUser } from "../../store/authSlice"
 
 
 const AdminLoginPage = () => {
-    const {mutate:AdminLogin , isPending}=useAdminLogin()
-    const navigate=useNavigate()
-    const dispatch=useDispatch()
-    const adminHandleLogin =(data:LoginFormData)=>{
-     AdminLogin(data,{
-        onSuccess:(res)=>{
-            console.log("LOGIN RESPONSE:", res);
-              console.log("LOGIN USER:", res.admin);
-            dispatch(setAccessToken(res.accessToken))
-            dispatch(setAuthUser({...res.user, role:"ADMIN"}))
-            toast.success("login successful")
-            navigate(FRONTEND_ROUTES.ADMIN)
-        },
-        onError:()=>{
-            toast.error("invalid email or password")
-        }
-     })
+    const { mutate: AdminLogin, isPending } = useAdminLogin()
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const adminHandleLogin = (data: LoginFormData) => {
+        AdminLogin(data, {
+            onSuccess: (res) => {
+                console.log("LOGIN RESPONSE:", res);
+                console.log("LOGIN USER:", res.admin);
+                dispatch(setAccessToken(res.data.accessToken))
+
+                dispatch(setAuthUser({
+                    id: res.data.admin.id,
+                    email: res.data.admin.email,
+                    role: "ADMIN",
+                }))
+
+                toast.success("login successful")
+                navigate(FRONTEND_ROUTES.ADMIN)
+            },
+            onError: () => {
+                toast.error("invalid email or password")
+            }
+        })
     }
     return (
         <div>
-           <LoginForm onSubmit={adminHandleLogin} isLoading={isPending} variant="admin"/>
+            <LoginForm onSubmit={adminHandleLogin} isLoading={isPending} variant="admin" />
         </div>
     )
 }

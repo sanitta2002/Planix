@@ -11,6 +11,7 @@ function SignupPage() {
   const [isOtpOpen, setIsOtpOpen] = useState(false);
   const [email, setEmail] = useState<string>("");
   const handleSignup = (data: SignupFormData) => {
+    
     signup(data, {
       onSuccess: () => {
         toast.success("signup success")

@@ -10,7 +10,7 @@ import { persistor, Store } from './store/Store.ts'
 import { PersistGate } from 'redux-persist/integration/react'
 
 
-const queryClient = new QueryClient()
+export const queryClient = new QueryClient()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

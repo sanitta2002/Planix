@@ -1,5 +1,5 @@
-import { useMutation } from "@tanstack/react-query"
-import { changePassword, updateProfile } from "../../Service/user/userService"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { changePassword, getProfile, updateProfile, uploadAvatar } from "../../Service/user/userService"
 
 
 export const useUpdateProfile =()=>{
@@ -13,3 +13,16 @@ export const useChangePassword =()=>{
         mutationFn:changePassword
     })
 }
+
+export const useUploadAvatar =()=>{
+    return useMutation({
+        mutationFn:uploadAvatar
+    })
+}
+
+export const useGetProfile = () => {
+  return useQuery({
+    queryKey: ["user-profile"],
+    queryFn: getProfile,
+  });
+};

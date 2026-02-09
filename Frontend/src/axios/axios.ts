@@ -10,7 +10,9 @@ export const AxiosInstance = axios.create({
 
 AxiosInstance.interceptors.request.use(
   (config) => {
-    const token = Store.getState().token.accessToken;
+    const state = Store.getState();
+    const token = state.token?.accessToken;
+    console.log("Access token from store:", token);
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -25,14 +27,13 @@ AxiosInstance.interceptors.response.use(
     const originalRequest = error.config;
     const status = error.response?.status;
     console.log(error)
-    if (status === 401 && !originalRequest._retry && error.response.data.message === "Unauthorized") {
+    if (status === 401 && !originalRequest._retry && error.response.data.error === "Unauthorized") {
       originalRequest._retry = true;
       try {
         const res = await AxiosInstance.post(`${import.meta.env.VITE_API_URL}/auth/refresh`);
-        const newAccessToken = res.data.accessToken;
+        const newAccessToken = res.data.data.accessToken;
 
         Store.dispatch(setAccessToken(newAccessToken));
-
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return AxiosInstance(originalRequest);
       } catch (refreshError) {

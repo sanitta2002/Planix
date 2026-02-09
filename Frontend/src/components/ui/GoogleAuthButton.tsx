@@ -1,5 +1,5 @@
 
-import {useGoogleLogin, type CodeResponse} from "@react-oauth/google";
+import { useGoogleLogin, type CodeResponse } from "@react-oauth/google";
 import { useBackendGoogleLogin } from "../../hooks/Auth/authHook";
 import { Button } from "./Button"
 import { toast } from "sonner";
@@ -14,6 +14,12 @@ interface GoogleAuthButtonProps {
 function GoogleAuthButton({ onSuccess }: GoogleAuthButtonProps) {
     const { mutate: googleLogin } = useBackendGoogleLogin()
     const dispatch = useDispatch()
+
+    const googleLoginHandler = useGoogleLogin({
+        onSuccess: (res) => handleSuccess(res),
+        flow: "auth-code"
+
+    })
     const handleSuccess = (response: CodeResponse) => {
         if (!response.code) {
             toast.error("No ID token received from Google");
@@ -24,28 +30,24 @@ function GoogleAuthButton({ onSuccess }: GoogleAuthButtonProps) {
             { idToken: response.code },
             {
                 onSuccess: (res) => {
-                    dispatch(setAccessToken(res.accessToken))
-                    dispatch(setAuthUser({...res.user,role:"USER"}))
+                    dispatch(setAccessToken(res.data.accessToken))
+                    dispatch(setAuthUser({ ...res.data.user, role: "USER" }))
                     toast.success("Google login successful");
                     onSuccess?.();
                 },
-                onError:()=>{
+                onError: () => {
                     toast.error('Email already registered')
                 }
             }
         );
     };
 
-    const googleLoginHandler = useGoogleLogin({
-        onSuccess: (res) => handleSuccess(res),
-        flow:"auth-code"
 
-    })
     return (
         <div>
-           
+
             <div className="grid gap-3">
-                <Button onClick={()=>googleLoginHandler()} variant="outline" className="w-full h-11 bg-[#1A1F2E]/50 border-slate-700/50 hover:bg-slate-800 text-slate-200 hover:text-white transition-all">
+                <Button onClick={() => googleLoginHandler()} variant="outline" className="w-full h-11 bg-[#1A1F2E]/50 border-slate-700/50 hover:bg-slate-800 text-slate-200 hover:text-white transition-all">
                     <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                         <path
                             d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
