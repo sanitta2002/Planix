@@ -3,12 +3,12 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  Inject,
   Post,
   Req,
   Res,
   UnauthorizedException,
 } from '@nestjs/common';
-import { AuthService } from '../Service/auth.service';
 import { RegisterUserDto } from '../dto/RequestDTO/Register.dto';
 import { VerifyEmailDto } from '../dto/RequestDTO/verify-email.dto';
 import { Resendotp } from '../dto/RequestDTO/resend-otp.dto';
@@ -17,32 +17,51 @@ import { ForgotPasswordDTO } from '../dto/RequestDTO/ForgotPassword.dto';
 import { ResetPasswordDto } from '../dto/RequestDTO/ResetPassword.dto';
 import { GoogleLoginDto } from '../dto/RequestDTO/google-login.dto';
 import type { Request, Response } from 'express';
+import type { IuserService } from '../interfaces/user.service.interface';
+import { ConfigService } from '@nestjs/config';
+import { ApiResponse } from 'src/common/utils/api-response.util';
+import {
+  AUTH_MESSAGES,
+  OTP_MESSAGES,
+  USER_MESSAGES,
+} from 'src/common/constants/messages.constant';
 
 interface RefreshTokenCookies {
   refreshToken?: string;
 }
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    @Inject('IuserService') private readonly authService: IuserService,
+    private readonly configService: ConfigService,
+  ) {}
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() dto: RegisterUserDto) {
     await this.authService.registerUser(dto);
-    return {
-      message:
-        'OTP sent to your email. please verify to complete registration.',
-    };
+    return ApiResponse.success(
+      HttpStatus.CREATED,
+      AUTH_MESSAGES.REGISTER_SUCCESS,
+    );
   }
+
   @Post('verify-email')
   async verifyEmail(@Body() dto: VerifyEmailDto) {
-    return await this.authService.verifyEmail(dto);
+    const user = await this.authService.verifyEmail(dto);
+    return ApiResponse.success(
+      HttpStatus.OK,
+      AUTH_MESSAGES.EMAIL_VERIFIED,
+      user,
+    );
   }
+
   @Post('resend-otp')
   async resendOtp(@Body() dto: Resendotp) {
     await this.authService.ResentOtp(dto);
-    return { message: 'OTP resent successfully' };
+    return ApiResponse.success(HttpStatus.OK, OTP_MESSAGES.SENT);
   }
+
   @Post('login')
   async login(
     @Body() dto: LoginRequestDto,
@@ -50,25 +69,31 @@ export class AuthController {
   ) {
     const { accessToken, refreshToken, user } =
       await this.authService.login(dto);
+    const maxAge = Number(this.configService.get<string>('Max_Age'));
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       sameSite: 'strict',
       secure: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge,
     });
-    return { accessToken, user };
+    return ApiResponse.success(HttpStatus.OK, AUTH_MESSAGES.LOGIN_SUCCESS, {
+      accessToken,
+      user,
+    });
   }
 
   @Post('forgot-password')
   async forgotPassword(@Body() dto: ForgotPasswordDTO) {
     await this.authService.forgotPassword(dto);
-    return { message: 'password reset OTP has been sent' };
+    return ApiResponse.success(HttpStatus.OK, OTP_MESSAGES.RESENT);
   }
+
   @Post('reset-password')
   async resetPassword(@Body() dto: ResetPasswordDto) {
     await this.authService.resetPassword(dto);
-    return { message: 'password reset successful.' };
+    return ApiResponse.success(HttpStatus.OK, USER_MESSAGES.PASSWORD_CHANGED);
   }
+
   @Post('google')
   async googleLogin(
     @Body() dto: GoogleLoginDto,
@@ -76,23 +101,42 @@ export class AuthController {
   ) {
     const { accessToken, refreshToken, user } =
       await this.authService.googleLogin(dto);
+    const maxAge = Number(this.configService.get<string>('Max_Age'));
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       sameSite: 'strict',
       secure: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge,
     });
-    return { accessToken, user };
+    return ApiResponse.success(
+      HttpStatus.OK,
+      AUTH_MESSAGES.GOOGLE_LOGIN_SUCCESS,
+      {
+        accessToken,
+        user,
+      },
+    );
   }
+
   @Post('refresh')
   refresh(@Req() req: Request) {
     const cookies = req.cookies as RefreshTokenCookies;
     const refreshToken = cookies.refreshToken;
+
     if (!refreshToken) {
-      throw new UnauthorizedException('Refresh token not found');
+      throw new UnauthorizedException(
+        ApiResponse.error(HttpStatus.UNAUTHORIZED, 'Refresh token not found'),
+      );
     }
-    return this.authService.refreshToken(refreshToken);
+    const tokens = this.authService.refreshToken(refreshToken);
+    console.log(tokens);
+    return ApiResponse.success(
+      HttpStatus.OK,
+      AUTH_MESSAGES.TOKEN_REFRESHED,
+      tokens,
+    );
   }
+
   @Post('logout')
   logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('refreshToken', {
@@ -100,5 +144,6 @@ export class AuthController {
       sameSite: 'strict',
       secure: true,
     });
+    return ApiResponse.success(HttpStatus.OK, AUTH_MESSAGES.LOGOUT_SUCCESS);
   }
 }

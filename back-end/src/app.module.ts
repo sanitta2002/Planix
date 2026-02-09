@@ -14,6 +14,7 @@ import { AppJwtModule } from './common/jwt/jwt.module';
 import { TempStoreUserService } from './common/temp-store-user/temp-store-user.service';
 import { TempStoreUserModule } from './common/temp-store-user/temp-store-user.module';
 import { AdminModule } from './admin/admin.module';
+import { S3Module } from './common/s3/s3.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AdminModule } from './admin/admin.module';
     AppJwtModule,
     TempStoreUserModule,
     AdminModule,
+    S3Module,
   ],
 
   controllers: [AppController],

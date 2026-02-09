@@ -6,6 +6,7 @@ import { LoginResponseDto } from '../dto/ResponseDTO/login.res.dto';
 import { ForgotPasswordDTO } from '../dto/RequestDTO/ForgotPassword.dto';
 import { ResetPasswordDto } from '../dto/RequestDTO/ResetPassword.dto';
 import { GoogleLoginDto } from '../dto/RequestDTO/google-login.dto';
+import { RefreshTokenResponseDto } from '../dto/ResponseDTO/RefreshTokenResponseDto';
 
 export interface IuserService {
   registerUser(dto: RegisterUserDto): Promise<void>;
@@ -15,5 +16,5 @@ export interface IuserService {
   forgotPassword(dto: ForgotPasswordDTO): Promise<void>;
   resetPassword(dto: ResetPasswordDto): Promise<void>;
   googleLogin(dto: GoogleLoginDto): Promise<LoginResponseDto>;
-  refreshToken(refreshToken: string);
+  refreshToken(refreshToken: string): RefreshTokenResponseDto;
 }

@@ -8,6 +8,6 @@ import { MailService } from './mail.service';
       useClass: MailService,
     },
   ],
-  exports:['IMailService']
+  exports: ['IMailService'],
 })
 export class MailModule {}

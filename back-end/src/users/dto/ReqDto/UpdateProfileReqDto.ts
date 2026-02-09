@@ -1,8 +1,6 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, Matches } from 'class-validator';
 
 export class UpdateProfileReqDto {
-  @IsString()
-  userId: string;
   @IsString()
   @IsNotEmpty()
   firstName: string;
@@ -12,5 +10,9 @@ export class UpdateProfileReqDto {
   lastName: string;
 
   @IsString()
+  @IsNotEmpty()
+  @Matches(/^\d{10}$/, {
+    message: 'Phone number must be exactly 10 digits',
+  })
   phone: string;
 }

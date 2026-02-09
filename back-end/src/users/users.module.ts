@@ -5,10 +5,12 @@ import { UserRepository } from './repository/user.Repository';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { HashingService } from 'src/common/hashing/Service/hashing.service';
+import { S3Module } from 'src/common/s3/s3.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    S3Module,
   ],
   controllers: [UsersController],
   providers: [
