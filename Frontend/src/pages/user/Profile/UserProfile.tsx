@@ -1,15 +1,15 @@
 import {
-Building2,
-Crown,
-Users,
-// MoreVertical,
-// Search,
-// Filter,
-Shield,
-User,
-Settings,
-ChevronRight,
-Pencil,
+    Building2,
+    Crown,
+    Users,
+    // MoreVertical,
+    // Search,
+    // Filter,
+    Shield,
+    User,
+    Settings,
+    ChevronRight,
+    Pencil,
 
 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,147 +23,147 @@ import { toast } from 'sonner';
 import { queryClient } from '../../../main';
 
 type UserData = {
-firstName: string;
-lastName: string;
-phone: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
 }
 
 type UserPass = {
-currentPassword: string;
-newPassword: string;
+    currentPassword: string;
+    newPassword: string;
 }
 
 const UserProfile = () => {
-const user = useSelector((state: RootState) => state.auth.user);
-const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
-const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
-const { mutate: updateProfile } = useUpdateProfile();
-const { mutate: changePassword } = useChangePassword();
-const dispatch = useDispatch()
-const { mutate: uploadAvatar } = useUploadAvatar();
-const { data: profileData } = useGetProfile();
+    const user = useSelector((state: RootState) => state.auth.user);
+    const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
+    const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
+    const { mutate: updateProfile } = useUpdateProfile();
+    const { mutate: changePassword } = useChangePassword();
+    const dispatch = useDispatch()
+    const { mutate: uploadAvatar } = useUploadAvatar();
+    const { data: profileData } = useGetProfile();
 
 
 
 
-const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
 
 
-const handleSaveProfile = (data: UserData): void => {
-    updateProfile(data, {
-        onSuccess: () => {
-            dispatch(setAuthUser({ ...user!, ...data }))
-            setIsEditProfileModalOpen(false)
-            toast.success('profile updated successfully')
-        },
-        onError: () => {
-            toast.error('failed to update profile')
-        }
-    })
+    const handleSaveProfile = (data: UserData): void => {
+        updateProfile(data, {
+            onSuccess: () => {
+                dispatch(setAuthUser({ ...user!, ...data }))
+                setIsEditProfileModalOpen(false)
+                toast.success('profile updated successfully')
+            },
+            onError: () => {
+                toast.error('failed to update profile')
+            }
+        })
 
-};
+    };
 
-const handleChangePassword = (data: UserPass) => {
-    changePassword(data, {
-        onSuccess: () => {
-            toast.success("Password changed successfully")
-            setIsChangePasswordModalOpen(false);
-        },
-        onError: () => {
-            toast.error("Failed to change password")
-        }
-    })
+    const handleChangePassword = (data: UserPass) => {
+        changePassword(data, {
+            onSuccess: () => {
+                toast.success("Password changed successfully")
+                setIsChangePasswordModalOpen(false);
+            },
+            onError: () => {
+                toast.error("Failed to change password")
+            }
+        })
 
-};
+    };
 
-const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    uploadAvatar(file, {
-        onSuccess: () => {
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+        uploadAvatar(file, {
+            onSuccess: () => {
 
-            toast.success("Avatar updated successfully");
-            queryClient.invalidateQueries({ queryKey: ["user-profile"] })
-        },
-        onError: () => {
-            toast.error("Failed to upload avatar");
-        }
-    })
+                toast.success("Avatar updated successfully");
+                queryClient.invalidateQueries({ queryKey: ["user-profile"] })
+            },
+            onError: () => {
+                toast.error("Failed to upload avatar");
+            }
+        })
 
-}
-useEffect(() => {
-    if (profileData && user?.id) {
-        dispatch(
-            setAuthUser({
-                ...user,
-                ...profileData.data,
-            })
-        );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [profileData]);
+    useEffect(() => {
+        if (profileData && user?.id) {
+            dispatch(
+                setAuthUser({
+                    ...user,
+                    ...profileData.data,
+                })
+            );
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [profileData]);
 
 
-return (
-    <div className="mi-h-screen  bg-[#0A0E27] text-slate-200 p-4 md:p-8 font-sans">
-        <div className="max-w-5xl mx-auto space-y-8">
+    return (
+        <div className="mi-h-screen  bg-[#0A0E27] text-slate-200 p-4 md:p-8 font-sans">
+            <div className="max-w-5xl mx-auto space-y-8">
 
-            {/* Header Section */}
-            <div className="relative">
-                {/* Gradient Banner */}
-                <div className="h-28 rounded-t-2xl bg-gradient-to-r from-[#7E3FF2] via-[#7542d4] opacity-90"></div>
+                {/* Header Section */}
+                <div className="relative">
+                    {/* Gradient Banner */}
+                    <div className="h-28 rounded-t-2xl bg-gradient-to-r from-[#7E3FF2] via-[#7542d4] opacity-90"></div>
 
-                {/* User Info Overlay */}
-                <div className="absolute -bottom-16 left-8 flex items-end space-x-6">
-                    <div className="relative">
-                        <div className="h-32 w-32 rounded-full border-4 border-[#131729] overflow-hidden bg-slate-700">
-                            {/* Placeholder for user image */}
-                            <img src={user?.avatarUrl || "https://github.com/shadcn.png"} alt="Profile" className="h-full w-full object-cover" />
+                    {/* User Info Overlay */}
+                    <div className="absolute -bottom-16 left-8 flex items-end space-x-6">
+                        <div className="relative">
+                            <div className="h-32 w-32 rounded-full border-4 border-[#131729] overflow-hidden bg-slate-700">
+                                {/* Placeholder for user image */}
+                                <img src={user?.avatarUrl || "https://github.com/shadcn.png"} alt="Profile" className="h-full w-full object-cover" />
+                            </div>
+                            <button onClick={() => fileInputRef.current?.click()} className="absolute bottom-2 right-2 p-2 bg-[#626FF6]  rounded-full hover:bg-[#626FF6] transition-colors border border-[#0F172A]">
+                                <Pencil className="h-4 w-4 text-white cursor-pointer" />
+                            </button>
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleAvatarChange}
+                                hidden
+                            />
                         </div>
-                        <button onClick={() => fileInputRef.current?.click()} className="absolute bottom-2 right-2 p-2 bg-[#626FF6]  rounded-full hover:bg-[#626FF6] transition-colors border border-[#0F172A]">
-                            <Pencil className="h-4 w-4 text-white cursor-pointer" />
-                        </button>
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            onChange={handleAvatarChange}
-                            hidden
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <h1 className="text-3xl font-bold text-white">{user?.firstName}</h1>
-                        <p className="text-slate-400">{user?.email}</p>
-                        <div className="flex items-center mt-2 space-x-2">
-                            <span className="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse"></span>
-                            <span className="text-sm text-green-500 font-medium">Online</span>
+                        <div className="mb-4">
+                            <h1 className="text-3xl font-bold text-white">{user?.firstName}</h1>
+                            <p className="text-slate-400">{user?.email}</p>
+                            <div className="flex items-center mt-2 space-x-2">
+                                <span className="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse"></span>
+                                <span className="text-sm text-green-500 font-medium">Online</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Stats Cards */}
-            <div className="pt-20 grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[
-                    { label: 'Workspaces', value: '', icon: Building2 },
-                    { label: 'Owned', value: '', icon: Crown },
-                    { label: 'Member Of', value: '', icon: Users },
-                ].map((stat, index) => (
-                    <div key={index} className="bg-[#131729] p-6 rounded-xl border border-slate-800/50 flex items-center space-x-4">
-                        <div className="p-3 bg-slate-800/50 rounded-lg text-blue-400">
-                            <stat.icon className="h-6 w-6" />
+                {/* Stats Cards */}
+                <div className="pt-20 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {[
+                        { label: 'Workspaces', value: '', icon: Building2 },
+                        { label: 'Owned', value: '', icon: Crown },
+                        { label: 'Member Of', value: '', icon: Users },
+                    ].map((stat, index) => (
+                        <div key={index} className="bg-[#131729] p-6 rounded-xl border border-slate-800/50 flex items-center space-x-4">
+                            <div className="p-3 bg-slate-800/50 rounded-lg text-blue-400">
+                                <stat.icon className="h-6 w-6" />
+                            </div>
+                            <div>
+                                <div className="text-2xl font-bold text-white">{stat.value}</div>
+                                <div className="text-slate-400 text-sm">{stat.label}</div>
+                            </div>
                         </div>
-                        <div>
-                            <div className="text-2xl font-bold text-white">{stat.value}</div>
-                            <div className="text-slate-400 text-sm">{stat.label}</div>
-                        </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
 
-            {/* Workspaces You Own */}
-            {/* <div className="space-y-4">
+                {/* Workspaces You Own */}
+                {/* <div className="space-y-4">
                 <h2 className="text-lg font-semibold text-slate-100">Workspaces You Own</h2>
                 <div className="bg-[#131729] rounded-xl border border-slate-800/50 p-6">
                     <div className="flex justify-between items-start mb-8">
@@ -178,7 +178,7 @@ return (
                         </button>
                     </div> */}
 
-            {/* <p className="text-slate-500 text-xs mb-6 -mt-6">Created: Jan 15, 2024</p>
+                {/* <p className="text-slate-500 text-xs mb-6 -mt-6">Created: Jan 15, 2024</p>
 
                     <div className="bg-[#1E293B]/50 rounded-lg p-6 border border-slate-700/30">
                         <h4 className="text-sm font-medium text-slate-300 mb-4">Plan Details</h4>
@@ -203,8 +203,8 @@ return (
                 </div>
             </div> */}
 
-            {/* Workspaces You're a Member Of */}
-            {/* <div className="space-y-4">
+                {/* Workspaces You're a Member Of */}
+                {/* <div className="space-y-4">
                 <div className="flex justify-between items-center">
                     <h2 className="text-lg font-semibold text-slate-100">Workspaces You're a Member Of</h2>
                     <div className="flex space-x-2">
@@ -248,57 +248,61 @@ return (
                 </div>
             </div> */}
 
-            {/* Account Settings */}
-            <div className="space-y-4 pb-8">
-                <h2 className="text-lg font-semibold text-slate-100">Account Settings</h2>
-                <div className="bg-[#0F172A] rounded-xl border border-slate-800/50 divide-y divide-slate-800/50 overflow-hidden">
-                    {[
-                        { icon: Shield, label: 'Security', desc: 'Change password' },
-                        { icon: User, label: 'Edit Profile', desc: 'Name, email, phone number' },
-                        { icon: Settings, label: 'Role Preferences', desc: 'Permissions and access control' },
-                    ].map((item, index) => (
-                        <div
-                            key={index}
-                            onClick={() => {
-                                if (item.label === 'Edit Profile') {
-                                    setIsEditProfileModalOpen(true);
-                                } else if (item.label === 'Security') {
-                                    setIsChangePasswordModalOpen(true);
-                                }
-                            }}
-                            className="p-4 flex items-center justify-between hover:bg-slate-800/30 cursor-pointer transition-colors group"
-                        >
-                            <div className="flex items-center space-x-4">
-                                <div className="h-10 w-10 rounded-lg bg-[#020617] border border-slate-800 flex items-center justify-center text-slate-400 group-hover:text-blue-400 group-hover:border-blue-500/30 transition-all">
-                                    <item.icon className="h-5 w-5" />
+                {/* Account Settings */}
+                <div className="space-y-4 pb-8">
+                    <h2 className="text-lg font-semibold text-slate-100">Account Settings</h2>
+                    <div className="bg-[#0F172A] rounded-xl border border-slate-800/50 divide-y divide-slate-800/50 overflow-hidden">
+                        {[
+                            { icon: Shield, label: 'Security', desc: 'Change password' },
+                            { icon: User, label: 'Edit Profile', desc: 'Name, email, phone number' },
+                            { icon: Settings, label: 'Role Preferences', desc: 'Permissions and access control' },
+                        ].map((item, index) => (
+                            <div
+                                key={index}
+                                onClick={() => {
+                                    if (item.label === 'Edit Profile') {
+                                        setIsEditProfileModalOpen(true);
+                                    } else if (item.label === 'Security') {
+                                        if (!user?.hasPassword) {
+                                            toast.error("Google users cannot change password");
+                                            return;
+                                        }
+                                        setIsChangePasswordModalOpen(true);
+                                    }
+                                }}
+                                className="p-4 flex items-center justify-between hover:bg-slate-800/30 cursor-pointer transition-colors group"
+                            >
+                                <div className="flex items-center space-x-4">
+                                    <div className="h-10 w-10 rounded-lg bg-[#020617] border border-slate-800 flex items-center justify-center text-slate-400 group-hover:text-blue-400 group-hover:border-blue-500/30 transition-all">
+                                        <item.icon className="h-5 w-5" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-medium text-slate-200">{item.label}</h3>
+                                        <p className="text-sm text-slate-500">{item.desc}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 className="font-medium text-slate-200">{item.label}</h3>
-                                    <p className="text-sm text-slate-500">{item.desc}</p>
-                                </div>
+                                <ChevronRight className="h-5 w-5 text-slate-600 group-hover:text-slate-300 transition-colors" />
                             </div>
-                            <ChevronRight className="h-5 w-5 text-slate-600 group-hover:text-slate-300 transition-colors" />
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
+
+
+                <EditProfileModal
+                    isOpen={isEditProfileModalOpen}
+                    onClose={() => setIsEditProfileModalOpen(false)}
+                    // user={user}
+                    onSave={handleSaveProfile}
+                />
+
+                <ChangePasswordModal
+                    isOpen={isChangePasswordModalOpen}
+                    onClose={() => setIsChangePasswordModalOpen(false)}
+                    onSave={handleChangePassword}
+                />
             </div>
-
-
-            <EditProfileModal
-                isOpen={isEditProfileModalOpen}
-                onClose={() => setIsEditProfileModalOpen(false)}
-                // user={user}
-                onSave={handleSaveProfile}
-            />
-
-            <ChangePasswordModal
-                isOpen={isChangePasswordModalOpen}
-                onClose={() => setIsChangePasswordModalOpen(false)}
-                onSave={handleChangePassword}
-            />
         </div>
-    </div>
-);
+    );
 };
 
 export default UserProfile;

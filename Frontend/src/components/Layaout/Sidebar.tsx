@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard,
@@ -14,9 +14,12 @@ import {
     Layers
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import type { RootState } from '../../store/Store';
 import { FRONTEND_ROUTES } from '../../constants/frontRoutes';
+import { useGetProfile } from '../../hooks/user/userHook';
+import { setAuthUser } from '../../store/authSlice';
+
 
 interface SidebarItemProps {
     icon: React.ElementType;
@@ -63,16 +66,28 @@ const SidebarSection = ({ title, children }: SidebarSectionProps) => (
 
 export const Sidebar = ({ className }: { className?: string }) => {
     const user = useSelector((state: RootState) => state.auth.user);
-    const initials = user
-  ? `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase()
-  : "U";
 
-const fullName = user
-  ? `${user.firstName} ${user.lastName}`.trim()
-  : "User";
 
-const roleLabel = "Team Member";
-const navigate=useNavigate()
+    const fullName = user
+        ? `${user.firstName} ${user.lastName}`.trim()
+        : "User";
+
+    const roleLabel = "Team Member";
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const { data: profileData } = useGetProfile();
+    useEffect(() => {
+        if (profileData && user?.id) {
+            dispatch(
+                setAuthUser({
+                    ...user,
+                    ...profileData.data,
+                })
+            );
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [profileData]);
+
     return (
         <aside className={cn("w-64 h-screen bg-background border-r border-border flex flex-col shrink-0 sticky top-0", className)}>
             {/* Logo Area */}
@@ -111,26 +126,32 @@ const navigate=useNavigate()
             </div>
 
             {/* User Footer */}
-            <button onClick={()=>navigate(FRONTEND_ROUTES.PROFILE)}>
-            <div className="p-4 border-t border-border ">
-                <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors group">
-                    <div className="relative">
-                        {/* Replaced Avatar component with standard img/div */}
-                        <div className="h-10 w-10 rounded-full border border-border overflow-hidden bg-muted flex items-center justify-center">
-                            <img src="/avatar-placeholder.png" alt="Alex" className="h-full w-full object-cover opacity-0 duration-0" onLoad={(e) => e.currentTarget.classList.remove('opacity-0')} onError={(e) => e.currentTarget.style.display = 'none'} />
-                            <span className="absolute inset-0 flex items-center justify-center bg-primary/20 text-primary text-xs font-bold">{initials}</span>
+            <button onClick={() => navigate(FRONTEND_ROUTES.PROFILE)}>
+                <div className="p-4 border-t border-border ">
+                    <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors group">
+                        <div className="relative">
+                            {/* Replaced Avatar component with standard img/div */}
+                            <div className="h-10 w-10 rounded-full border border-border overflow-hidden bg-muted flex items-center justify-center">
+                                <img
+                                    src={user?.avatarUrl || "/avatar-placeholder.png"}
+                                    alt={fullName}
+                                    className="h-full w-full object-cover duration-0"
+                                    onLoad={(e) => e.currentTarget.classList.remove('opacity-0')}
+                                    onError={(e) => e.currentTarget.style.display = 'none'}
+                                />
+
+                            </div>
+                            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full"></span>
                         </div>
-                        <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full"></span>
-                    </div>
 
-                    <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium leading-none text-foreground truncate">{fullName}</p>
-                        <p className="text-xs text-muted-foreground truncate mt-1">{roleLabel}</p>
-                    </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium leading-none text-foreground truncate">{fullName}</p>
+                            <p className="text-xs text-muted-foreground truncate mt-1">{roleLabel}</p>
+                        </div>
 
-                    <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                    </div>
                 </div>
-            </div>
             </button>
         </aside>
     );

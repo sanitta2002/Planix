@@ -9,8 +9,8 @@ export interface AuthUser {
   isEmailVerified?: boolean;
   avatarUrl?: string;
   role: "USER" | "ADMIN";
+ hasPassword?: boolean
 }
-
 interface AuthState {
   user: AuthUser | null;
   isAuthenticated: boolean;
