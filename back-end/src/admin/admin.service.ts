@@ -30,7 +30,7 @@ export class AdminService implements IAdminService {
     @Inject('IS3Service') private readonly s3Service: IS3Service,
   ) {}
   login(dto: AdminLoginDto): AdminResponseDto {
-    this.logger.log(`Admin login attempt: ${dto.email}`);
+    this.logger.log(`admin login attempt: ${dto.email}`);
     const { email, password } = dto;
     if (
       email !== process.env.ADMIN_EMAIL ||

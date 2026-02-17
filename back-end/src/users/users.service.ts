@@ -55,10 +55,15 @@ export class UsersService implements IUserServicePRO {
     if (!user) {
       throw new UnauthorizedException(USER_MESSAGES.NOT_FOUND);
     }
+
+    if (!user?.password) {
+      throw new BadRequestException(USER_MESSAGES.PASSWORD_NOT_AVAILABLE);
+    }
     const isMatch = await this.hashingService.comparePassword(
       currentPassword,
       user.password,
     );
+
     if (!isMatch) {
       throw new BadRequestException(USER_MESSAGES.CURRENT_PASSWORD_INCORRECT);
     }
@@ -109,6 +114,9 @@ export class UsersService implements IUserServicePRO {
     const avatarUrl = user.avatarKey
       ? await this.S3Service.createSignedUrl(user.avatarKey)
       : null;
-    return UserMapper.toProfileResponse(user, avatarUrl);
+    return {
+      ...UserMapper.toProfileResponse(user, avatarUrl),
+      hasPassword: !!user.password,
+    };
   }
 }

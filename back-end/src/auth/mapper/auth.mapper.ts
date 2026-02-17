@@ -3,9 +3,6 @@ import { LoginResponseDto } from '../dto/ResponseDTO/login.res.dto';
 import { RefreshTokenResponseDto } from '../dto/ResponseDTO/RefreshTokenResponseDto';
 import { RegisterUserDto } from '../dto/RequestDTO/Register.dto';
 
-/**
- * Type used for Redis temporary storage
- */
 export interface TempUser {
   firstName: string;
   lastName: string;
@@ -15,9 +12,6 @@ export interface TempUser {
 }
 
 export class AuthMapper {
-  /**
-   * Map Register DTO → TempUser (Redis)
-   */
   static toTempUser(dto: RegisterUserDto, hashedPassword: string): TempUser {
     return {
       firstName: dto.firstName,
@@ -28,9 +22,6 @@ export class AuthMapper {
     };
   }
 
-  /**
-   * Map TempUser → User Entity (Database)
-   */
   static toUserEntity(tempUser: TempUser) {
     return {
       ...tempUser,
@@ -38,9 +29,6 @@ export class AuthMapper {
     };
   }
 
-  /**
-   * Map User Entity → LoginResponseDto
-   */
   static toLoginResponse(
     accessToken: string,
     refreshToken: string,
@@ -61,9 +49,6 @@ export class AuthMapper {
     };
   }
 
-  /**
-   * Map User Entity → RefreshTokenResponseDto
-   */
   static toRefreshTokenResponse(
     accessToken: string,
     // user: User,

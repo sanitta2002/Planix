@@ -33,6 +33,8 @@ export const USER_MESSAGES = {
   PASSWORD_CHANGED: 'Password changed successfully',
   CURRENT_PASSWORD_INCORRECT: 'Current password is incorrect',
   AVATAR_UPLOADED: 'Avatar uploaded successfully',
+  PASSWORD_NOT_AVAILABLE:
+    'Password change is not available for Google login users',
 };
 
 export const ADMIN_MESSAGES = {

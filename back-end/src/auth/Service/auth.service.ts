@@ -93,7 +93,8 @@ export class AuthService implements IuserService {
   async ResentOtp(dto: Resendotp): Promise<void> {
     const { email } = dto;
     const tempUser = await this.tempStore.get(`register:${email}`);
-    if (!tempUser) {
+    const user = await this.userRepository.findByEmail(email);
+    if (!tempUser && !user) {
       throw new BadRequestException(USER_MESSAGES.NOT_FOUND);
     }
     const otp = await this.otpService.sendOtp(`otp:${email}`);
@@ -102,9 +103,11 @@ export class AuthService implements IuserService {
       throw new ConflictException(OTP_MESSAGES.FAILED_TO_GENERATE);
     }
     await this.mailService.sendOtpMail(email, otp);
+    this.logger.log(`OTP resent successfully  ${email}`);
   }
 
   async login(dto: LoginRequestDto): Promise<LoginResponseDto> {
+    this.logger.log('login attempted');
     const { email, password } = dto;
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
@@ -127,6 +130,7 @@ export class AuthService implements IuserService {
       userId: user._id.toString(),
       email: user.email,
     };
+    this.logger.log(payload);
     const accessToken = this.jwtService.signAccessToken(payload);
     const refreshToken = this.jwtService.signRefreshToken(payload);
     console.log('accessToken', accessToken);
@@ -187,9 +191,6 @@ export class AuthService implements IuserService {
       throw new UnauthorizedException(AUTH_MESSAGES.INVALID_TOKEN);
     }
     let user = await this.userRepository.findByEmail(payload.email);
-    // if (user) {
-    //   throw new ConflictException('Email already registered ');
-    // }
     if (!user) {
       user = await this.userRepository.create({
         firstName: payload.given_name,
@@ -213,11 +214,6 @@ export class AuthService implements IuserService {
     if (!payload?.userId || !payload?.email) {
       throw new UnauthorizedException(AUTH_MESSAGES.INVALID_REFRESH_TOKEN);
     }
-    // const user = await this.userRepository.findById(payload.userId);
-
-    // if (!user || user.isBlocked) {
-    //   throw new UnauthorizedException(AUTH_MESSAGES.USER_NOT_AUTHORIZED);
-    // }
     const accessToken = this.jwtService.signAccessToken({
       userId: payload?.userId,
       email: payload?.email,

@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Patch,
   Req,
   UploadedFile,
@@ -11,7 +12,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { UsersService } from './users.service';
 import type { Request } from 'express';
 import { UpdateProfileReqDto } from './dto/ReqDto/UpdateProfileReqDto';
 import { ChangePasswordDto } from './dto/ReqDto/ChangePasswordDto';
@@ -19,6 +19,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadAvatarReqDto } from './dto/ReqDto/UploadAvatarReqDto';
 import { ApiResponse } from 'src/common/utils/api-response.util';
 import { USER_MESSAGES } from 'src/common/constants/messages.constant';
+import type { IUserServicePRO } from './interfaces/user/IUserService';
 
 export interface AuthRequest extends Request {
   user: {
@@ -30,7 +31,9 @@ export interface AuthRequest extends Request {
 @Controller('users')
 @UseGuards(JwtAuthGuard)
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    @Inject('IUserServicePRO') private readonly usersService: IUserServicePRO,
+  ) {}
   @Patch('profile')
   @HttpCode(HttpStatus.OK)
   updateProfile(@Req() req: AuthRequest, @Body() dto: UpdateProfileReqDto) {

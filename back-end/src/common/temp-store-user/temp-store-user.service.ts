@@ -11,7 +11,7 @@ export class TempStoreUserService implements ITempStoreService {
   }
   async get<T>(key: string): Promise<T | null> {
     const data = await this.redis.get(key);
-    return data ? JSON.parse(data) : null;
+    return data ? (JSON.parse(data) as T) : null;
   }
   async delete(key: string): Promise<void> {
     await this.redis.del(key);
