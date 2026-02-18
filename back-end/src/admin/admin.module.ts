@@ -43,6 +43,8 @@ export class AdminModule implements NestModule {
         path: 'admin/:id/unblock',
         method: RequestMethod.PATCH,
       },
+      { path: 'admin/subscriptionPlan', method: RequestMethod.POST },
+      { path: 'admin/subscriptionPlan', method: RequestMethod.GET },
     );
   }
 }

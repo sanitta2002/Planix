@@ -63,3 +63,11 @@ export const GENERAL_MESSAGES = {
   INTERNAL_SERVER_ERROR: 'Internal server error',
   FILE_REQUIRED: 'File is required',
 };
+
+export const SUBSCRIPTION_MESSAGE = {
+  NOT_FOUND: 'Subscription plan not found',
+  SUBSCRIPTION_SUCCESS: 'Subscription plan created successfully',
+  SUBSCRIPTION_FETCH: 'Subcription plan frtched successfully ',
+  SUBSCRIPTION_UPDATE: 'Subcription plan update successfully',
+  SUBSCRIPTION_DELETE: 'Subcription plan delete successfully',
+};

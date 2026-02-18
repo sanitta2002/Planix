@@ -27,6 +27,8 @@ export class SubscriptionPlan {
 
   @Prop({ default: true })
   isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export const SubscriptionPlanSchema =
