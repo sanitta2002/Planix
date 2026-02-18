@@ -16,8 +16,8 @@ function LoginPage() {
   const handleLogin = (data: LoginFormData) => {
     login(data, {
       onSuccess: (res) => {
-        dispatch(setAccessToken(res.accessToken))
-        dispatch(setAuthUser({ ...res.user, role: "USER" }))
+        dispatch(setAccessToken(res.data.accessToken))
+        dispatch(setAuthUser({ ...res.data.user, role: "USER" }))
         toast.success("login successful")
         navigate(FRONTEND_ROUTES.DASHBOARD)
       },

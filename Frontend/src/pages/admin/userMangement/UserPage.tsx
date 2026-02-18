@@ -131,8 +131,18 @@ const UserPage = () => {
                                         {/* Name */}
                                         <td className="py-4 px-6">
                                             <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-xs font-bold text-white">
-                                                    {user.firstName.charAt(0)}
+                                                <div className="w-11 h-10 rounded-full overflow-hidden bg-gray-700">
+                                                    {user.avatarUrl ? (
+                                                        <img
+                                                            src={user.avatarUrl}
+                                                            alt={user.firstName}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center text-xs font-bold text-white bg-gradient-to-br from-blue-600 to-purple-600">
+                                                            {user.firstName.charAt(0)}
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <span className="font-medium text-gray-200">
                                                     {user.firstName} {user.lastName}

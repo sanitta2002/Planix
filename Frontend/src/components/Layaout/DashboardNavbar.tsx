@@ -6,7 +6,7 @@ import {
     Menu
 } from 'lucide-react';
 import LogoutButton from '../ui/LogoutButton';
-import { useSelector } from 'react-redux';
+import {useSelector } from 'react-redux';
 import type { RootState } from '../../store/Store';
 
 interface DashboardNavbarProps {
@@ -18,6 +18,8 @@ export const DashboardNavbar = ({ onMenuClick, }: DashboardNavbarProps) => {
     const user = useSelector((state: RootState) => state.auth.user);
     const initials = user
         ? `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`.toUpperCase() : "User"
+    
+    
         
 
     return (

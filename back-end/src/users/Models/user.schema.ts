@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsString, MinLength } from 'class-validator';
-import { Document } from 'mongoose';
-
+import { Document, HydratedDocument } from 'mongoose';
+export type UserDocument = HydratedDocument<User>;
 @Schema({ timestamps: true })
 export class User extends Document {
   @Prop({ required: true })
@@ -19,7 +19,7 @@ export class User extends Document {
   @Prop({ default: false })
   isBlocked: boolean;
   @Prop()
-  avatarUrl?: string;
+  avatarKey?: string;
   @Prop({ default: false })
   isEmailVerified: boolean;
   @Prop()

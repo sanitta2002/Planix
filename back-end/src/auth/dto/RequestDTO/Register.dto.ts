@@ -22,6 +22,9 @@ export class RegisterUserDto {
   @MinLength(8)
   password: string;
 
+  @IsString()
+  @MinLength(8)
+  confirmPassword: string;
   @Matches(/^[0-9]{10}$/, {
     message: 'Phone number must be 10 digits',
   })

@@ -13,21 +13,22 @@ import {
 
 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import EditProfileModal from '../../../components/modal/EditProfileModal';
 import ChangePasswordModal from '../../../components/modal/ChangePasswordModal';
 import type { RootState } from '../../../store/Store';
-import { useChangePassword, useUpdateProfile } from '../../../hooks/user/userHook';
+import { useChangePassword, useGetProfile, useUpdateProfile, useUploadAvatar } from '../../../hooks/user/userHook';
 import { setAuthUser } from '../../../store/authSlice';
 import { toast } from 'sonner';
+import { queryClient } from '../../../main';
 
 type UserData = {
     firstName: string;
     lastName: string;
-    phoneNumber: string;
+    phone: string;
 }
 
-type UserPass= {
+type UserPass = {
     currentPassword: string;
     newPassword: string;
 }
@@ -37,13 +38,22 @@ const UserProfile = () => {
     const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
     const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
     const { mutate: updateProfile } = useUpdateProfile();
-    const { mutate: changePassword} = useChangePassword();
+    const { mutate: changePassword } = useChangePassword();
     const dispatch = useDispatch()
+    const { mutate: uploadAvatar } = useUploadAvatar();
+    const { data: profileData } = useGetProfile();
 
-    const handleSaveProfile = (data: UserData) => {
+
+
+
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+
+
+    const handleSaveProfile = (data: UserData): void => {
         updateProfile(data, {
-            onSuccess: (res) => {
-                dispatch(setAuthUser({ ...user, ...res.data }))
+            onSuccess: () => {
+                dispatch(setAuthUser({ ...user!, ...data }))
                 setIsEditProfileModalOpen(false)
                 toast.success('profile updated successfully')
             },
@@ -54,18 +64,46 @@ const UserProfile = () => {
 
     };
 
-    const handleChangePassword = (data:UserPass) => {
-        changePassword(data,{
-            onSuccess:()=>{
+    const handleChangePassword = (data: UserPass) => {
+        changePassword(data, {
+            onSuccess: () => {
                 toast.success("Password changed successfully")
                 setIsChangePasswordModalOpen(false);
             },
-            onError:()=>{
+            onError: () => {
                 toast.error("Failed to change password")
             }
         })
-        
+
     };
+
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+        uploadAvatar(file, {
+            onSuccess: () => {
+
+                toast.success("Avatar updated successfully");
+                queryClient.invalidateQueries({ queryKey: ["user-profile"] })
+            },
+            onError: () => {
+                toast.error("Failed to upload avatar");
+            }
+        })
+
+    }
+    useEffect(() => {
+        if (profileData && user?.id) {
+            dispatch(
+                setAuthUser({
+                    ...user,
+                    ...profileData.data,
+                })
+            );
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [profileData]);
+
 
     return (
         <div className="mi-h-screen  bg-[#0A0E27] text-slate-200 p-4 md:p-8 font-sans">
@@ -81,11 +119,18 @@ const UserProfile = () => {
                         <div className="relative">
                             <div className="h-32 w-32 rounded-full border-4 border-[#131729] overflow-hidden bg-slate-700">
                                 {/* Placeholder for user image */}
-                                <img src="https://github.com/shadcn.png" alt="Profile" className="h-full w-full object-cover" />
+                                <img src={user?.avatarUrl || "https://github.com/shadcn.png"} alt="Profile" className="h-full w-full object-cover" />
                             </div>
-                            <button className="absolute bottom-2 right-2 p-2 bg-[#626FF6] rounded-full hover:bg-[#626FF6] transition-colors border border-[#0F172A]">
-                                <Pencil className="h-4 w-4 text-white" />
+                            <button onClick={() => fileInputRef.current?.click()} className="absolute bottom-2 right-2 p-2 bg-[#626FF6]  rounded-full hover:bg-[#626FF6] transition-colors border border-[#0F172A]">
+                                <Pencil className="h-4 w-4 text-white cursor-pointer" />
                             </button>
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleAvatarChange}
+                                hidden
+                            />
                         </div>
                         <div className="mb-4">
                             <h1 className="text-3xl font-bold text-white">{user?.firstName}</h1>
@@ -119,89 +164,89 @@ const UserProfile = () => {
 
                 {/* Workspaces You Own */}
                 {/* <div className="space-y-4">
-                    <h2 className="text-lg font-semibold text-slate-100">Workspaces You Own</h2>
-                    <div className="bg-[#131729] rounded-xl border border-slate-800/50 p-6">
-                        <div className="flex justify-between items-start mb-8">
-                            <div className="flex items-center space-x-3">
-                                <h3 className="text-xl font-bold text-white">MySpace</h3>
-                                <span className="px-2.5 py-0.5 rounded-full bg-green-500/10 text-green-500 text-xs font-medium border border-green-500/20">
-                                    Active
-                                </span>
-                            </div>
-                            <button className="text-slate-400 hover:text-white transition-colors">
-                                <MoreVertical className="h-5 w-5" />
-                            </button>
-                        </div> */}
+                <h2 className="text-lg font-semibold text-slate-100">Workspaces You Own</h2>
+                <div className="bg-[#131729] rounded-xl border border-slate-800/50 p-6">
+                    <div className="flex justify-between items-start mb-8">
+                        <div className="flex items-center space-x-3">
+                            <h3 className="text-xl font-bold text-white">MySpace</h3>
+                            <span className="px-2.5 py-0.5 rounded-full bg-green-500/10 text-green-500 text-xs font-medium border border-green-500/20">
+                                Active
+                            </span>
+                        </div>
+                        <button className="text-slate-400 hover:text-white transition-colors">
+                            <MoreVertical className="h-5 w-5" />
+                        </button>
+                    </div> */}
 
                 {/* <p className="text-slate-500 text-xs mb-6 -mt-6">Created: Jan 15, 2024</p>
 
-                        <div className="bg-[#1E293B]/50 rounded-lg p-6 border border-slate-700/30">
-                            <h4 className="text-sm font-medium text-slate-300 mb-4">Plan Details</h4>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
-                                <div>
-                                    <div className="text-xs text-slate-500 mb-1">Plan</div>
-                                    <div className="font-semibold text-white">Professional</div>
-                                </div>
-                                <div>
-                                    <div className="text-xs text-slate-500 mb-1">Renewal</div>
-                                    <div className="font-semibold text-white">Monthly</div>
-                                </div>
-                                <div>
-                                    <div className="text-xs text-slate-500 mb-1">Expires</div>
-                                    <div className="font-semibold text-white">Feb 15, 2025</div>
-                                </div>
+                    <div className="bg-[#1E293B]/50 rounded-lg p-6 border border-slate-700/30">
+                        <h4 className="text-sm font-medium text-slate-300 mb-4">Plan Details</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
+                            <div>
+                                <div className="text-xs text-slate-500 mb-1">Plan</div>
+                                <div className="font-semibold text-white">Professional</div>
                             </div>
-                            <button className="px-4 py-2 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg text-sm font-medium hover:bg-red-500/20 transition-colors">
-                                Cancel Plan
-                            </button>
+                            <div>
+                                <div className="text-xs text-slate-500 mb-1">Renewal</div>
+                                <div className="font-semibold text-white">Monthly</div>
+                            </div>
+                            <div>
+                                <div className="text-xs text-slate-500 mb-1">Expires</div>
+                                <div className="font-semibold text-white">Feb 15, 2025</div>
+                            </div>
                         </div>
+                        <button className="px-4 py-2 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg text-sm font-medium hover:bg-red-500/20 transition-colors">
+                            Cancel Plan
+                        </button>
                     </div>
-                </div> */}
+                </div>
+            </div> */}
 
                 {/* Workspaces You're a Member Of */}
                 {/* <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                        <h2 className="text-lg font-semibold text-slate-100">Workspaces You're a Member Of</h2>
-                        <div className="flex space-x-2">
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-                                <input
-                                    type="text"
-                                    placeholder="Search workspaces..."
-                                    className="bg-[#0F172A] border border-slate-700 rounded-lg pl-9 pr-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors w-64"
-                                />
-                            </div>
-                            <button className="p-2 bg-[#0F172A] border border-slate-700 rounded-lg text-slate-400 hover:text-white hover:border-slate-500 transition-colors">
-                                <Filter className="h-4 w-4" />
-                            </button>
+                <div className="flex justify-between items-center">
+                    <h2 className="text-lg font-semibold text-slate-100">Workspaces You're a Member Of</h2>
+                    <div className="flex space-x-2">
+                        <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                            <input
+                                type="text"
+                                placeholder="Search workspaces..."
+                                className="bg-[#0F172A] border border-slate-700 rounded-lg pl-9 pr-4 py-2 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors w-64"
+                            />
                         </div>
+                        <button className="p-2 bg-[#0F172A] border border-slate-700 rounded-lg text-slate-400 hover:text-white hover:border-slate-500 transition-colors">
+                            <Filter className="h-4 w-4" />
+                        </button>
                     </div>
+                </div>
 
-                    <div className="space-y-4">
-                        {[
-                            { name: 'Design Team', members: '24 members', role: 'Owner' },
-                            { name: 'Marketing Hub', members: '8 members', role: 'Manager' },
-                        ].map((workspace, index) => (
-                            <div key={index} className="bg-[#0F172A] p-4 rounded-xl border border-slate-800/50 flex items-center justify-between group hover:border-slate-700 transition-colors">
-                                <div className="flex items-center space-x-4">
-                                    <div className="h-12 w-12 rounded-lg bg-blue-600/20 flex items-center justify-center text-blue-400">
-                                        <Building2 className="h-6 w-6" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-medium text-white group-hover:text-blue-400 transition-colors">{workspace.name}</h3>
-                                        <p className="text-sm text-slate-500">{workspace.members}</p>
-                                    </div>
+                <div className="space-y-4">
+                    {[
+                        { name: 'Design Team', members: '24 members', role: 'Owner' },
+                        { name: 'Marketing Hub', members: '8 members', role: 'Manager' },
+                    ].map((workspace, index) => (
+                        <div key={index} className="bg-[#0F172A] p-4 rounded-xl border border-slate-800/50 flex items-center justify-between group hover:border-slate-700 transition-colors">
+                            <div className="flex items-center space-x-4">
+                                <div className="h-12 w-12 rounded-lg bg-blue-600/20 flex items-center justify-center text-blue-400">
+                                    <Building2 className="h-6 w-6" />
                                 </div>
-                                <span className={`px-3 py-1 rounded-full text-xs font-medium border ${workspace.role === 'Owner'
-                                        ? 'bg-blue-500/10 text-blue-400 border-blue-500/20'
-                                        : 'bg-slate-700/50 text-slate-400 border-slate-600/50'
-                                    }`}>
-                                    {workspace.role}
-                                </span>
+                                <div>
+                                    <h3 className="font-medium text-white group-hover:text-blue-400 transition-colors">{workspace.name}</h3>
+                                    <p className="text-sm text-slate-500">{workspace.members}</p>
+                                </div>
                             </div>
-                        ))}
-                    </div>
-                </div> */}
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium border ${workspace.role === 'Owner'
+                                    ? 'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                                    : 'bg-slate-700/50 text-slate-400 border-slate-600/50'
+                                }`}>
+                                {workspace.role}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+            </div> */}
 
                 {/* Account Settings */}
                 <div className="space-y-4 pb-8">
@@ -218,6 +263,10 @@ const UserProfile = () => {
                                     if (item.label === 'Edit Profile') {
                                         setIsEditProfileModalOpen(true);
                                     } else if (item.label === 'Security') {
+                                        if (!user?.hasPassword) {
+                                            toast.error("Google users cannot change password");
+                                            return;
+                                        }
                                         setIsChangePasswordModalOpen(true);
                                     }
                                 }}
@@ -242,7 +291,7 @@ const UserProfile = () => {
                 <EditProfileModal
                     isOpen={isEditProfileModalOpen}
                     onClose={() => setIsEditProfileModalOpen(false)}
-                    user={user}
+                    // user={user}
                     onSave={handleSaveProfile}
                 />
 

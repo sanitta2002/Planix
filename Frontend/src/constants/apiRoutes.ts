@@ -17,7 +17,9 @@ export const API_ROUTES ={
     },
     USER :{
         UPDATE_PROFILE : "/users/profile",
-        CHANGE_PASSWORD: "/users/change-password"
+        CHANGE_PASSWORD: "/users/change-password",
+        UPLOAD_AVATAR: "/users/avatar",
+        GET_PROFILE:"/users/profile"
     }
 }
 

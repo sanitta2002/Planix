@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { IMailService } from './interfaces/mail.interface';
-import nodemailer from 'nodemailer';
+import nodemailer, { Transporter } from 'nodemailer';
 import { OtpTemplate } from './emailOtpTemplate';
 @Injectable()
 export class MailService implements IMailService {
-  private transporter;
+  private transporter: Transporter;
   constructor() {
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -15,12 +15,12 @@ export class MailService implements IMailService {
     });
   }
   async sendOtpMail(email: string, otp: string): Promise<void> {
-    const html=OtpTemplate.generate(otp)
+    const html = OtpTemplate.generate(otp);
     await this.transporter.sendMail({
       from: process.env.EMAIL_FROM,
       to: email,
-      Subject: 'Verify Your Planix Account',
-      html:html
+      subject: 'Verify Your Planix Account',
+      html: html,
     });
   }
 }

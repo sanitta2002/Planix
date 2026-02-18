@@ -1,6 +1,7 @@
 import {
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -13,20 +14,30 @@ import { GetUsersRequestDto } from './dto/get-users.request.dto';
 import { PaginatedUsersResponseDto } from './dto/paginated-users.response.dto';
 import { BlockUserDto } from './dto/block-user.dto';
 import { UserStatusResponseDto } from './dto/UserStatusResponseDto';
+import {
+  ADMIN_MESSAGES,
+  OTP_MESSAGES,
+} from 'src/common/constants/messages.constant';
+import { AdminMapper } from './mapper/admin.mapper';
+import type { IS3Service } from 'src/common/s3/interfaces/s3.service.interface';
 
 @Injectable()
 export class AdminService implements IAdminService {
+  private readonly logger = new Logger(AdminService.name);
   constructor(
     @Inject('IJwtService') private readonly jwtService: IJwtService,
     @Inject('IUserRepository') private readonly userRepository: UserRepository,
+    @Inject('IS3Service') private readonly s3Service: IS3Service,
   ) {}
-  async login(dto: AdminLoginDto): Promise<AdminResponseDto> {
+  login(dto: AdminLoginDto): AdminResponseDto {
+    this.logger.log(`admin login attempt: ${dto.email}`);
     const { email, password } = dto;
     if (
       email !== process.env.ADMIN_EMAIL ||
       password !== process.env.ADMIN_PASSWORD
     ) {
-      throw new UnauthorizedException('Invalid admin credentials');
+      this.logger.warn(`invalid admin login: ${email}`);
+      throw new UnauthorizedException(ADMIN_MESSAGES.INVALID_CREDENTIALS);
     }
     const payload = {
       userId: 'ADMIN',
@@ -35,11 +46,12 @@ export class AdminService implements IAdminService {
     };
     const accessToken = this.jwtService.signAccessToken(payload);
     const refreshToken = this.jwtService.signRefreshToken(payload);
-    return {
+    this.logger.log(`admin login successful: ${email}`);
+    return AdminMapper.toAdminLoginResponse(
       accessToken,
       refreshToken,
-      admin: { id: 'ADMIN', email: process.env.ADMIN_EMAIL },
-    };
+      process.env.ADMIN_EMAIL,
+    );
   }
   async getUsers(
     query: GetUsersRequestDto,
@@ -54,39 +66,44 @@ export class AdminService implements IAdminService {
       query.search,
       isBlocked,
     );
-    return {
-      users: users.map((user) => ({
-        id: user._id.toString(),
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        phone: user.phone,
-        isBlocked: user.isBlocked,
-        isEmailVerified: user.isEmailVerified,
-        avatarUrl: user.avatarUrl,
-      })),
+    const usersWithAvatar = await Promise.all(
+      users.map(async (user) => {
+        const avatarUrl = user.avatarKey
+          ? await this.s3Service.createSignedUrl(user.avatarKey)
+          : null;
+
+        return {
+          user,
+          avatarUrl,
+        };
+      }),
+    );
+    return AdminMapper.toPaginatedUsersResponse(
+      usersWithAvatar,
       total,
       page,
       limit,
-    };
+    );
   }
   async blockUser(dto: BlockUserDto): Promise<UserStatusResponseDto> {
+    this.logger.log(`block user: ${dto.userId}`);
     const { userId } = dto;
     const user = await this.userRepository.blockUser(userId);
     if (!user) {
-      throw new NotFoundException('User not found');
+      this.logger.warn(`block failed:${userId}`);
+      throw new NotFoundException(OTP_MESSAGES.USER_NOT_FOUND);
     }
-    return {
-      id: user._id.toString(),
-      isBlocked: user.isBlocked,
-    };
+    this.logger.log(`user blocked successfully: ${userId}`);
+    return { id: user._id.toString(), isBlocked: user.isBlocked };
   }
   async unblockUser(dto: BlockUserDto): Promise<UserStatusResponseDto> {
+    this.logger.log(`unblock user: ${dto.userId}`);
     const { userId } = dto;
     const user = await this.userRepository.unblockUser(userId);
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException(OTP_MESSAGES.USER_NOT_FOUND);
     }
+    this.logger.log(`user unblocked successfully: ${userId}`);
     return { id: user._id.toString(), isBlocked: user.isBlocked };
   }
 }
