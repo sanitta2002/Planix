@@ -70,4 +70,11 @@ export const SUBSCRIPTION_MESSAGE = {
   SUBSCRIPTION_FETCH: 'Subcription plan frtched successfully ',
   SUBSCRIPTION_UPDATE: 'Subcription plan update successfully',
   SUBSCRIPTION_DELETE: 'Subcription plan delete successfully',
+  ALLACTIVEPLAN: 'Active plans fetched',
+};
+
+export const WORKSPACE_MESSAGE = {
+  NOT_FOUND: 'workspace not found',
+  CREATED: 'workspace created',
+  FETCHED: 'workspace fetched',
 };

@@ -1,10 +1,11 @@
+import { Type } from 'class-transformer';
 import {
-  IsString,
-  IsNumber,
   IsArray,
-  IsOptional,
   IsBoolean,
   IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
 } from 'class-validator';
 
 export class CreatePlanDto {
@@ -12,28 +13,31 @@ export class CreatePlanDto {
   @IsNotEmpty()
   name: string;
 
+  @Type(() => Number)
   @IsNumber()
   price: number;
 
+  @IsOptional()
+  @Type(() => Number)
   @IsNumber()
-  maxMembers: number;
+  maxMembers?: number;
 
+  @IsOptional()
+  @Type(() => Number)
   @IsNumber()
-  maxProjects: number;
+  maxProjects?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  storage?: number;
 
   @IsArray()
   @IsString({ each: true })
   features: string[];
 
   @IsOptional()
-  @IsString()
-  stripeProductId?: string;
-
-  @IsOptional()
-  @IsString()
-  stripePriceId?: string;
-
-  @IsOptional()
+  @Type(() => Boolean)
   @IsBoolean()
   isActive?: boolean;
 }

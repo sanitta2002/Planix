@@ -25,6 +25,6 @@ import { SubPlanController } from './controller/sub-plan.controller';
       useClass: SubscriptionPlanService,
     },
   ],
-  exports: ['ISubscriptionPlanService'],
+  exports: ['ISubscriptionPlanService', 'ISubscriptionPlanRepository'],
 })
 export class SubscriptionPlanModule {}

@@ -5,6 +5,7 @@ import { PlanResponseDto } from '../subscription-plan/dto/res/PlanResponseDTO';
 export interface ISubscriptionPlanService {
   createPlan(data: CreatePlanDto): Promise<PlanResponseDto>;
   getAllPlans(): Promise<PlanResponseDto[]>;
+  getActivePlans(): Promise<PlanResponseDto[]>;
   updatePlan(planId: string, data: UpdatePlanDto): Promise<PlanResponseDto>;
   deletePlan(planId: string): Promise<void>;
 }

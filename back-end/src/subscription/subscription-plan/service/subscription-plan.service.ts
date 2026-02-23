@@ -29,6 +29,7 @@ export class SubscriptionPlanService implements ISubscriptionPlanService {
     data: UpdatePlanDto,
   ): Promise<PlanResponseDto> {
     this.logger.log(`update plan : ${planId}`);
+    console.log(planId);
     const updatePlan = await this.subscriptionPlanRepository.updateById(
       planId,
       data,
@@ -41,5 +42,12 @@ export class SubscriptionPlanService implements ISubscriptionPlanService {
   async deletePlan(planId: string): Promise<void> {
     this.logger.log(`delete plan : ${planId}`);
     await this.subscriptionPlanRepository.deleteById(planId);
+  }
+  async getActivePlans(): Promise<PlanResponseDto[]> {
+    this.logger.log(`fetch active subscription plans`);
+
+    const plans = await this.subscriptionPlanRepository.findActivePlans();
+
+    return planMapper.toResponseList(plans);
   }
 }
