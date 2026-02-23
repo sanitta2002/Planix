@@ -7,6 +7,7 @@ import { FRONTEND_ROUTES } from "../../constants/frontRoutes"
 import { useDispatch } from "react-redux"
 import { setAccessToken } from "../../store/tokenSlice"
 import { setAuthUser } from "../../store/authSlice"
+import { getUserWorkspaces } from "../../Service/user/userService"
 
 
 function LoginPage() {
@@ -15,11 +16,20 @@ function LoginPage() {
   const dispatch = useDispatch()
   const handleLogin = (data: LoginFormData) => {
     login(data, {
-      onSuccess: (res) => {
+      onSuccess:async (res) => {
         dispatch(setAccessToken(res.data.accessToken))
         dispatch(setAuthUser({ ...res.data.user, role: "USER" }))
         toast.success("login successful")
-        navigate(FRONTEND_ROUTES.DASHBOARD)
+        try {
+          const workspaces = await getUserWorkspaces()
+          if(!workspaces.data || workspaces.data.length===0){
+            navigate(FRONTEND_ROUTES.WORKSPACE)
+          }else{
+            navigate(FRONTEND_ROUTES.DASHBOARD)
+          }
+        } catch {
+          navigate(FRONTEND_ROUTES.WORKSPACE)
+        }
       },
       onError: (err) => {
         if (err instanceof Error) {

@@ -11,6 +11,8 @@ import DashboardPage from '../../pages/user/Dashboard/DashboardPage';
 import { PublicRoute } from '../PublicRoute'
 import { ProtectedRoute } from '../ProtectedRoute'
 import UserProfile from '../../pages/user/Profile/UserProfile'
+import WorkspacePage from '../../pages/user/workspace/Workspacepage'
+import SubscriptionPage from '../../pages/user/subscription/Subscriptionpage'
 
 function UserRoutes() {
   return (
@@ -26,7 +28,9 @@ function UserRoutes() {
       <Route element={<ProtectedRoute allowedRoles={'USER'} redirectTo={FRONTEND_ROUTES.LANDING} />}>
         <Route element={<DashboardLayout />}>
           <Route path={FRONTEND_ROUTES.DASHBOARD} element={<DashboardPage />} />
-          <Route path={FRONTEND_ROUTES.PROFILE} element={<UserProfile/>} />
+          <Route path={FRONTEND_ROUTES.PROFILE} element={<UserProfile />} />
+          <Route path={FRONTEND_ROUTES.WORKSPACE} element={<WorkspacePage />} />
+          <Route path={FRONTEND_ROUTES.PLAN} element={<SubscriptionPage />} />
         </Route>
       </Route>
     </Routes>

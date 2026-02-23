@@ -2,9 +2,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   adminLogin,
   blockUser,
+  createPlan,
+  deletePlan,
+  getPlans,
   getUsers,
   unblockUser,
+  updatePlan,
   type GetUsersPayload,
+  type UpdatePlanPayload,
 } from "../../Service/admin/adminService";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
@@ -63,3 +68,59 @@ export const useDebounce = (value:string, delay = 500)=>{
   },[value,delay])
   return debouncedValue
 }
+
+
+export const useGetPlans = () => {
+  return useQuery({
+    queryKey: ["subscription-plans"],
+    queryFn: getPlans,
+  });
+};
+
+export const useCreatePlan = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: createPlan,
+    onSuccess: () => {
+      toast.success("Plan created successfully");
+      queryClient.invalidateQueries({ queryKey: ["subscription-plans"] });
+    },
+    onError: () => {
+      toast.error("Failed to create plan");
+    },
+  });
+};
+
+export const useUpdatePlan = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ planId, data }: { planId: string; data: UpdatePlanPayload  }) =>
+      updatePlan(planId, data),
+
+    onSuccess: () => {
+      toast.success("Plan updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["subscription-plans"] });
+    },
+    onError: () => {
+      toast.error("Failed to update plan");
+    },
+  });
+};
+
+export const useDeletePlan = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deletePlan,
+    onSuccess: () => {
+      toast.success("Plan deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["subscription-plans"] });
+    },
+    onError: () => {
+      toast.error("Failed to delete plan");
+    },
+  });
+};
+

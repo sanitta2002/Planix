@@ -14,12 +14,23 @@ export const API_ROUTES ={
         LOGIN:"/admin/login",
         GETUSERS:'/admin/users',
         BASE: "/admin",
+        SUBSCRIPTION_PLAN: '/admin/subscriptionPlan'
+
     },
     USER :{
         UPDATE_PROFILE : "/users/profile",
         CHANGE_PASSWORD: "/users/change-password",
         UPLOAD_AVATAR: "/users/avatar",
         GET_PROFILE:"/users/profile"
+    },
+    WORKSPACE :{
+        CREATE : "workspaces/workspace",
+        GETWORKSPACE:"workspaces/workspace"
+    },
+
+    SUBSCRIPTION : {
+        GET_PLANS:'subscriptions/plans',
+        CREATE: '/subscriptions',
     }
 }
 

@@ -1,3 +1,4 @@
+
 import { AxiosInstance } from "../../axios/axios";
 import { API_ROUTES } from "../../constants/apiRoutes";
 
@@ -15,6 +16,16 @@ export interface ChangePasswordPayload {
 export interface UploadAvatarResponse {
   message: string;
   avatarKey: string;
+}
+
+export interface CreateWorkspacePayload {
+  name: string;
+  description?: string;
+}
+
+export interface CreateSubscriptionPayload {
+  planId: string;
+  workspaceId: string;
 }
 
 export const updateProfile = async (data: updateProfilePayload) => {
@@ -36,16 +47,37 @@ export const changePassword = async (data: ChangePasswordPayload) => {
 export const uploadAvatar = async (
   file: File,
 ): Promise<UploadAvatarResponse> => {
-    const formData = new FormData()
-    formData.append('file',file)
-    formData.append("source","profile")
-    const response = await AxiosInstance.patch(API_ROUTES.USER.UPLOAD_AVATAR,formData)
-    return response.data
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("source", "profile");
+  const response = await AxiosInstance.patch(
+    API_ROUTES.USER.UPLOAD_AVATAR,
+    formData,
+  );
+  return response.data;
 };
 
 export const getProfile = async () => {
-  const response = await AxiosInstance.get(
-    API_ROUTES.USER.GET_PROFILE
-  );
+  const response = await AxiosInstance.get(API_ROUTES.USER.GET_PROFILE);
   return response.data;
+};
+
+export const createWorkspace = async (data: CreateWorkspacePayload) => {
+  const response = await AxiosInstance.post(API_ROUTES.WORKSPACE.CREATE, data);
+  return response.data;
+};
+
+export const getUserWorkspaces = async () => {
+  const response = await AxiosInstance.get(API_ROUTES.WORKSPACE.GETWORKSPACE);
+  return response.data;
+};
+
+export const getActivePlans = async () => {
+  const response = await AxiosInstance.get(API_ROUTES.SUBSCRIPTION.GET_PLANS);
+  return response.data;
+};
+
+export const createSubscription = async (data: CreateSubscriptionPayload) => {
+  const response = await AxiosInstance.post(API_ROUTES.SUBSCRIPTION.CREATE,data);
+  return response.data
 };

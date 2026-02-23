@@ -21,4 +21,7 @@ export const FRONTEND_ROUTES = {
 
   //USER 
   PROFILE :"user/profile",
+
+  WORKSPACE:'/workspace',
+  PLAN :'/plan',
 };

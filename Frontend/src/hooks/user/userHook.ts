@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { changePassword, getProfile, updateProfile, uploadAvatar } from "../../Service/user/userService"
+import { changePassword, createSubscription, createWorkspace, getActivePlans, getProfile, getUserWorkspaces, updateProfile, uploadAvatar } from "../../Service/user/userService"
 
 
 export const useUpdateProfile =()=>{
@@ -26,3 +26,28 @@ export const useGetProfile = () => {
     queryFn: getProfile,
   });
 };
+
+export const useCreateWorkspace =()=>{
+    return useMutation({
+        mutationFn:createWorkspace
+    })
+}
+
+export const useUserWorkspaces =()=>{
+    return useMutation({
+        mutationFn:getUserWorkspaces
+    })
+}
+
+export const useGetActivePlan = ()=>{
+    return useQuery({
+    queryKey: ["active-plans"],
+    queryFn: getActivePlans,
+  });
+}
+
+export const useCreateSubscription = ()=>{
+    return useMutation({
+        mutationFn:createSubscription
+    })
+}
