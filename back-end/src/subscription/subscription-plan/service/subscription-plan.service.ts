@@ -50,4 +50,11 @@ export class SubscriptionPlanService implements ISubscriptionPlanService {
 
     return planMapper.toResponseList(plans);
   }
+  async getPlanById(planId: string): Promise<PlanResponseDto> {
+    const plan = await this.subscriptionPlanRepository.findById(planId);
+    if (!plan) {
+      throw new NotFoundException(SUBSCRIPTION_MESSAGE.NOT_FOUND);
+    }
+    return planMapper.toResponse(plan);
+  }
 }

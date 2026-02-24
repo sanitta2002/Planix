@@ -78,3 +78,8 @@ export const WORKSPACE_MESSAGE = {
   CREATED: 'workspace created',
   FETCHED: 'workspace fetched',
 };
+
+export const PAYMENT_MESSAGE = {
+  NOT_COMPLETED: 'Payment not completed',
+  MISSING_DATA: 'Subscription metadata missing',
+};

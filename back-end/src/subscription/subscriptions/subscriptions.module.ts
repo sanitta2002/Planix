@@ -24,5 +24,6 @@ import { SubscriptionPlanModule } from '../subscription-plan/subscription-plan.m
     },
   ],
   controllers: [SubscriptionController],
+  exports: ['ISubscriptionService'],
 })
 export class SubscriptionsModule {}

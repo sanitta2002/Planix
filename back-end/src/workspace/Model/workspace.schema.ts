@@ -25,7 +25,6 @@ export class Workspace {
 
   @Prop({ default: false })
   isDeleted: boolean;
-
   createdAt: Date;
   updatedAt: Date;
 }

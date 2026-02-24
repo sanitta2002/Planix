@@ -36,16 +36,6 @@ export class subscriptionRepository
       endDate: { $gt: new Date() },
     });
   }
-  async updateStatus(
-    id: string,
-    status: SubscriptionStatus,
-  ): Promise<SubscriptionDocument | null> {
-    return this.subscriptionModel.findByIdAndUpdate(
-      id,
-      { status },
-      { new: true },
-    );
-  }
   async findByStripeSubscriptionId(stripeSubscriptionId: string) {
     return this.subscriptionModel.findOne({ stripeSubscriptionId });
   }

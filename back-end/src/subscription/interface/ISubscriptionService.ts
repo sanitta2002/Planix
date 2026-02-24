@@ -7,4 +7,7 @@ export interface ISubscriptionService {
     dto: CreateSubscriptionDto,
   ): Promise<SubscriptionResponseDto>;
   getActiveSubscription(userId: string): Promise<SubscriptionResponseDto>;
+  makeactivateSubscription(
+    subscriptionId: string,
+  ): Promise<SubscriptionResponseDto>;
 }

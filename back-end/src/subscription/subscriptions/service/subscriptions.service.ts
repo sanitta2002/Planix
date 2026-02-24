@@ -57,4 +57,23 @@ export class SubscriptionsService implements ISubscriptionService {
     });
     return SubscriptionMapper.toResponseDto(subscription);
   }
+  async makeactivateSubscription(
+    subscriptionId: string,
+  ): Promise<SubscriptionResponseDto> {
+    const subscription = await this.subscriptionRepo.findById(subscriptionId);
+    if (!subscription) {
+      throw new NotFoundException(SUBSCRIPTION_MESSAGE.NOT_FOUND);
+    }
+    if (subscription.status === SubscriptionStatus.ACTIVE) {
+      throw new BadRequestException('Subscription already active');
+    }
+    const updated = await this.subscriptionRepo.updateById(subscriptionId, {
+      status: SubscriptionStatus.ACTIVE,
+      startDate: new Date(),
+    });
+    if (!updated) {
+      throw new NotFoundException('Subscription update failed');
+    }
+    return SubscriptionMapper.toResponseDto(updated);
+  }
 }
