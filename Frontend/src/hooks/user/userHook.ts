@@ -34,9 +34,10 @@ export const useCreateWorkspace =()=>{
 }
 
 export const useUserWorkspaces =()=>{
-    return useMutation({
-        mutationFn:getUserWorkspaces
-    })
+    return useQuery({
+    queryKey: ["workspaces"],
+    queryFn: getUserWorkspaces,
+  });
 }
 
 export const useGetActivePlan = ()=>{
