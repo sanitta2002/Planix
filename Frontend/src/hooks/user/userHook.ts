@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { changePassword, createSubscription, createWorkspace, getActivePlans, getProfile, getUserWorkspaces, updateProfile, uploadAvatar } from "../../Service/user/userService"
+import { changePassword, confirmPayment, createSubscription, createWorkspace, getActivePlans, getProfile, getUserWorkspaces, updateProfile, uploadAvatar } from "../../Service/user/userService"
 
 
 export const useUpdateProfile =()=>{
@@ -51,3 +51,9 @@ export const useCreateSubscription = ()=>{
         mutationFn:createSubscription
     })
 }
+
+export const useConfirmPayment = () => {
+  return useMutation({
+    mutationFn: confirmPayment,
+  });
+};

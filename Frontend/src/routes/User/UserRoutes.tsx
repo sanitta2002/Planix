@@ -13,6 +13,7 @@ import { ProtectedRoute } from '../ProtectedRoute'
 import UserProfile from '../../pages/user/Profile/UserProfile'
 import WorkspacePage from '../../pages/user/workspace/Workspacepage'
 import SubscriptionPage from '../../pages/user/subscription/Subscriptionpage'
+import PaymentSuccess from '../../pages/user/subscription/payment/PaymentSuccess'
 
 function UserRoutes() {
   return (
@@ -30,8 +31,9 @@ function UserRoutes() {
           <Route path={FRONTEND_ROUTES.DASHBOARD} element={<DashboardPage />} />
           <Route path={FRONTEND_ROUTES.PROFILE} element={<UserProfile />} />
           <Route path={FRONTEND_ROUTES.WORKSPACE} element={<WorkspacePage />} />
-          <Route path={FRONTEND_ROUTES.PLAN} element={<SubscriptionPage />} />
         </Route>
+        <Route path={FRONTEND_ROUTES.PLAN} element={<SubscriptionPage />} />
+        <Route path={FRONTEND_ROUTES.PAYMENT_SUCCESS} element={<PaymentSuccess/>} />
       </Route>
     </Routes>
   )

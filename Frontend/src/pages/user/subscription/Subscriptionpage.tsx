@@ -2,8 +2,9 @@
 import { Check } from 'lucide-react';
 import { useCreateSubscription, useGetActivePlan } from '../../../hooks/user/userHook';
 import { useState } from 'react';
-import {  useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
 import { toast } from 'sonner';
+import { createCheckoutSession } from '../../../Service/user/userService';
 
 
 interface Plan {
@@ -39,18 +40,34 @@ const SubscriptionPage = () => {
     const handleContinue = () => {
         if (!selectedPlan) {
             toast.error("Select plan")
+            return
         }
         if (!workspaceId) {
             toast.error('Workspace missing')
+            return
         }
 
         createSubscribtion({
             planId: selectedPlan,
             workspaceId: workspaceId!,
         }, {
-            onSuccess: (res) => {
+            onSuccess:async (res) => {
                 console.log('sub created', res)
-               
+                const subscriptionId = res.data.id
+                try {
+                    const session = await createCheckoutSession({
+                        planId: selectedPlan,
+                        subscriptionId
+                    })
+                    window.location.href = session.url
+                } catch (error) {
+                   toast.error("Payment initialization failed");
+                   console.log(error)
+                }
+
+            },
+            onError:()=>{
+                toast.error("Payment initialization failed");
             }
         })
     }

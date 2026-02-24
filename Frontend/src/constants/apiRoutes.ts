@@ -31,6 +31,11 @@ export const API_ROUTES ={
     SUBSCRIPTION : {
         GET_PLANS:'subscriptions/plans',
         CREATE: '/subscriptions',
+    },
+
+    PAYMENT :{
+        CHECKOUT: '/payment/checkout',
+        CONFIRM:'/payment/confirm'
     }
 }
 

@@ -1,4 +1,3 @@
-
 import { AxiosInstance } from "../../axios/axios";
 import { API_ROUTES } from "../../constants/apiRoutes";
 
@@ -26,6 +25,11 @@ export interface CreateWorkspacePayload {
 export interface CreateSubscriptionPayload {
   planId: string;
   workspaceId: string;
+}
+
+export interface CreateCheckoutPayload {
+  planId: string;
+  subscriptionId: string;
 }
 
 export const updateProfile = async (data: updateProfilePayload) => {
@@ -78,6 +82,19 @@ export const getActivePlans = async () => {
 };
 
 export const createSubscription = async (data: CreateSubscriptionPayload) => {
-  const response = await AxiosInstance.post(API_ROUTES.SUBSCRIPTION.CREATE,data);
+  const response = await AxiosInstance.post(
+    API_ROUTES.SUBSCRIPTION.CREATE,
+    data,
+  );
+  return response.data;
+};
+
+export const createCheckoutSession = async (data: CreateCheckoutPayload) => {
+  const response = await AxiosInstance.post(API_ROUTES.PAYMENT.CHECKOUT, data);
+  return response.data;
+};
+
+export const confirmPayment = async (sessionId: string) => {
+  const response = await AxiosInstance.post(API_ROUTES.PAYMENT.CONFIRM,{sessionId});
   return response.data
 };

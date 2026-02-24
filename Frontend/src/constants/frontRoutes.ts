@@ -24,4 +24,6 @@ export const FRONTEND_ROUTES = {
 
   WORKSPACE:'/workspace',
   PLAN :'/plan',
+
+  PAYMENT_SUCCESS:'/payment-success'
 };
