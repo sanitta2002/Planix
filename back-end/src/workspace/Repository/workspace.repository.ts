@@ -16,9 +16,9 @@ export class WorkspaceRepository
   ) {
     super(workSpaceModel);
   }
-  async findByOwner(ownerId: string): Promise<WorkspaceDocument[]> {
+  async findByOwner(userId: string): Promise<WorkspaceDocument[]> {
     return await this.workSpaceModel.find({
-      ownerId: new Types.ObjectId(ownerId),
+      ownerId: new Types.ObjectId(userId),
       isDeleted: false,
     });
   }

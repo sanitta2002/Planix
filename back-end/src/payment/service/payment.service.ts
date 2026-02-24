@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { IPaymentService } from '../interface/IPaymentService';
 import Stripe from 'stripe';
 import { ConfigService } from '@nestjs/config';
@@ -10,6 +10,7 @@ import { Request } from 'express';
 
 @Injectable()
 export class PaymentService implements IPaymentService {
+  private readonly logger = new Logger(PaymentService.name);
   private stripe: Stripe;
   constructor(
     private configService: ConfigService,
@@ -25,7 +26,8 @@ export class PaymentService implements IPaymentService {
     plan: IPlan,
     subscriptionId: string,
   ): Promise<Stripe.Checkout.Session> {
-    return this.stripe.checkout.sessions.create({
+    this.logger.log(`create stripe checkout session: ${subscriptionId}`);
+    const session = await this.stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',
       line_items: [
@@ -42,8 +44,11 @@ export class PaymentService implements IPaymentService {
       success_url: `${this.configService.get('FRONTEND_URL')}/payment-success`,
       cancel_url: `${this.configService.get('FRONTEND_URL')}/payment-cancel`,
     });
+    this.logger.log(`stripe session create: ${session.id}`);
+    return session;
   }
   async confirmPayment(sessionId: string): Promise<void> {
+    this.logger.log(`confirming stripe: ${sessionId}`);
     const sessions = await this.stripe.checkout.sessions.retrieve(sessionId);
     if (sessions.payment_status !== 'paid') {
       throw new Error(PAYMENT_MESSAGE.NOT_COMPLETED);
@@ -52,6 +57,7 @@ export class PaymentService implements IPaymentService {
     if (!subscriptionId) {
       throw new error(PAYMENT_MESSAGE.MISSING_DATA);
     }
+    this.logger.log(`payment confirmed: ${subscriptionId}`);
   }
 
   async handleWebhook(
@@ -68,12 +74,15 @@ export class PaymentService implements IPaymentService {
         signature,
         endpointSecret!,
       );
+      console.log(event);
+      this.logger.log(`stripe webhook receive: ${event.type}`);
     } catch (error) {
       console.log(error);
       return { received: false };
     }
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object;
+      this.logger.log(`checkout completed: ${session.id}`);
       const subscriptionId = session.metadata?.subscriptionId;
       if (subscriptionId) {
         await this.subscriptionService.makeactivateSubscription(subscriptionId);

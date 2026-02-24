@@ -19,11 +19,13 @@ export class SubscriptionPlanService implements ISubscriptionPlanService {
     const plan = await this.subscriptionPlanRepository.create(data);
     return planMapper.toResponse(plan);
   }
+
   async getAllPlans(): Promise<PlanResponseDto[]> {
     this.logger.log(`fetch all sub plans`);
     const plans = await this.subscriptionPlanRepository.findAll();
     return planMapper.toResponseList(plans);
   }
+
   async updatePlan(
     planId: string,
     data: UpdatePlanDto,
@@ -39,6 +41,7 @@ export class SubscriptionPlanService implements ISubscriptionPlanService {
     }
     return planMapper.toResponse(updatePlan);
   }
+
   async deletePlan(planId: string): Promise<void> {
     this.logger.log(`delete plan : ${planId}`);
     await this.subscriptionPlanRepository.deleteById(planId);
@@ -50,6 +53,7 @@ export class SubscriptionPlanService implements ISubscriptionPlanService {
 
     return planMapper.toResponseList(plans);
   }
+
   async getPlanById(planId: string): Promise<PlanResponseDto> {
     const plan = await this.subscriptionPlanRepository.findById(planId);
     if (!plan) {

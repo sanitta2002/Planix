@@ -1,14 +1,14 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { IWorkspaceService } from '../interface/IWorkspaceService';
 import type { IWorkspaceRepository } from '../interface/IWorkspaceRepository';
 import { CreateWorkspaceDto } from '../dto/req/CreateWorkspaceDto';
 import { WorkspaceResponseDto } from '../dto/res/WorkspaceResponseDto';
 import { Types } from 'mongoose';
 import { WorkspaceMapper } from './Mapper/workspace.mapper';
-import { WORKSPACE_MESSAGE } from 'src/common/constants/messages.constant';
 
 @Injectable()
 export class WorkspaceService implements IWorkspaceService {
+  private readonly logger = new Logger(WorkspaceService.name);
   constructor(
     @Inject('IWorkspaceRepository')
     private readonly workspaceRepository: IWorkspaceRepository,
@@ -20,6 +20,7 @@ export class WorkspaceService implements IWorkspaceService {
   ): Promise<WorkspaceResponseDto> {
     console.log('USERID:', userId);
     console.log('DTO:', dto);
+    this.logger.log(`creating workspace for user: ${userId}`);
     const workspace = await this.workspaceRepository.create({
       name: dto.name,
       description: dto.description,
@@ -30,20 +31,8 @@ export class WorkspaceService implements IWorkspaceService {
   }
 
   async getUserWorkspaces(userId: string): Promise<WorkspaceResponseDto[]> {
+    this.logger.log(`fetch workspaces for user: ${userId}`);
     const workspace = await this.workspaceRepository.findByOwner(userId);
     return workspace.map((ws) => WorkspaceMapper.toResponseDto(ws));
-  }
-
-  async attachSubscription(
-    workspaceId: string,
-    subscriptionId: string,
-  ): Promise<WorkspaceResponseDto> {
-    const workspace = await this.workspaceRepository.updateById(workspaceId, {
-      subscriptionId: new Types.ObjectId(subscriptionId),
-    });
-    if (!workspace) {
-      throw new NotFoundException(WORKSPACE_MESSAGE.NOT_FOUND);
-    }
-    return WorkspaceMapper.toResponseDto(workspace);
   }
 }

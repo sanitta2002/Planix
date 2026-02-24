@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import type { ISubscriptionPlanRepository } from 'src/subscription/interface/ISubscriptionPlanRepository';
@@ -16,6 +17,7 @@ import { SubscriptionStatus } from 'src/subscription/Model/subscription.schema';
 
 @Injectable()
 export class SubscriptionsService implements ISubscriptionService {
+  private readonly logger = new Logger(SubscriptionsService.name);
   constructor(
     @Inject('ISubscriptionRepository')
     private readonly subscriptionRepo: ISubscriptionRepository,
@@ -26,9 +28,12 @@ export class SubscriptionsService implements ISubscriptionService {
   async getActiveSubscription(
     userId: string,
   ): Promise<SubscriptionResponseDto> {
+    this.logger.log(`fetch active subs for user: ${userId}`);
     const subscription = await this.subscriptionRepo.findActiveByUser(userId);
+    console.log(subscription);
+
     if (!subscription) {
-      throw new NotFoundException('No active subscription found');
+      throw new NotFoundException('no active subscription found');
     }
     return SubscriptionMapper.toResponseDto(subscription);
   }
@@ -37,6 +42,9 @@ export class SubscriptionsService implements ISubscriptionService {
     userId: string,
     dto: CreateSubscriptionDto,
   ): Promise<SubscriptionResponseDto> {
+    console.log(dto.planId);
+    console.log(dto.workspaceId);
+
     const plan = await this.subscriptionPlanRepo.findById(dto.planId);
     if (!plan) {
       throw new NotFoundException(SUBSCRIPTION_MESSAGE.NOT_FOUND);
@@ -53,27 +61,31 @@ export class SubscriptionsService implements ISubscriptionService {
       workspaceId: new Types.ObjectId(dto.workspaceId),
       planId: new Types.ObjectId(dto.planId),
       status: SubscriptionStatus.PENDING,
-      // startDate: new Date(),
     });
     return SubscriptionMapper.toResponseDto(subscription);
   }
+
   async makeactivateSubscription(
     subscriptionId: string,
   ): Promise<SubscriptionResponseDto> {
+    this.logger.log(`activating subs: ${subscriptionId}`);
+
     const subscription = await this.subscriptionRepo.findById(subscriptionId);
     if (!subscription) {
       throw new NotFoundException(SUBSCRIPTION_MESSAGE.NOT_FOUND);
     }
     if (subscription.status === SubscriptionStatus.ACTIVE) {
-      throw new BadRequestException('Subscription already active');
+      throw new BadRequestException('subscription already active');
     }
     const updated = await this.subscriptionRepo.updateById(subscriptionId, {
       status: SubscriptionStatus.ACTIVE,
       startDate: new Date(),
     });
     if (!updated) {
-      throw new NotFoundException('Subscription update failed');
+      throw new NotFoundException('subscription update failed');
     }
+    this.logger.log(`sub activated successfully: ${subscriptionId}`);
+
     return SubscriptionMapper.toResponseDto(updated);
   }
 }

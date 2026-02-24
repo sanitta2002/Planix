@@ -7,8 +7,4 @@ export interface IWorkspaceService {
     dto: CreateWorkspaceDto,
   ): Promise<WorkspaceResponseDto>;
   getUserWorkspaces(userId: string): Promise<WorkspaceResponseDto[]>;
-  attachSubscription(
-    workspaceId: string,
-    subscriptionId: string,
-  ): Promise<WorkspaceResponseDto>;
 }
