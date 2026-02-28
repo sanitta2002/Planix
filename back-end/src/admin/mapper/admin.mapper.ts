@@ -2,6 +2,15 @@ import { PaginatedUsersResponseDto } from '../dto/paginated-users.response.dto';
 import { UserStatusResponseDto } from '../dto/UserStatusResponseDto';
 import { AdminResponseDto } from '../dto/Admin.login.res.dto';
 import { User, UserDocument } from 'src/users/Models/user.schema';
+import { PaginatedWorkspaceResponseDto } from '../dto/PaginatedWorkspaceResponseDto ';
+import { WorkspaceDocument } from 'src/workspace/Model/workspace.schema';
+
+type Owner = {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+};
 
 export class AdminMapper {
   static toAdminLoginResponse(
@@ -46,6 +55,41 @@ export class AdminMapper {
     return {
       id: user._id.toString(),
       isBlocked: user.isBlocked,
+    };
+  }
+  static toPaginatedWorkspacesResponse(
+    workspacesWithLogo: { workspace: WorkspaceDocument }[],
+    total: number,
+    page: number,
+    limit: number,
+  ): PaginatedWorkspaceResponseDto {
+    return {
+      data: workspacesWithLogo.map(({ workspace }) => {
+        const owner = workspace.ownerId as unknown as Owner;
+
+        return {
+          id: workspace._id.toString(),
+          name: workspace.name,
+          description: workspace.description,
+
+          ownerId: {
+            id: owner._id.toString(),
+            firstName: owner.firstName,
+            lastName: owner.lastName,
+            email: owner.email,
+          },
+
+          members: workspace.members?.map((m) => m.toString()) || [],
+          subscriptionId: workspace.subscriptionId?.toString(),
+          createdAt: workspace.createdAt,
+          updatedAt: workspace.updatedAt,
+          subscriptionStatus: workspace.subscriptionStatus,
+        };
+      }),
+
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
     };
   }
 }

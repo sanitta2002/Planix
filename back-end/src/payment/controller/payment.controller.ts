@@ -17,14 +17,15 @@ import type { Request } from 'express';
 @Controller('payment')
 export class PaymentController {
   constructor(
-    @Inject('IPaymentService') private readonly paymentService: IPaymentService,
+    @Inject('IPaymentService')
+    private readonly _paymentService: IPaymentService,
     @Inject('ISubscriptionPlanService')
-    private readonly subscriptionPlanService: ISubscriptionPlanService,
+    private readonly _subscriptionPlanService: ISubscriptionPlanService,
   ) {}
   @Post('checkout')
   async checkout(@Body() dto: CreateCheckoutDto) {
-    const plan = await this.subscriptionPlanService.getPlanById(dto.planId);
-    const sessions = await this.paymentService.createCheckoutSession(
+    const plan = await this._subscriptionPlanService.getPlanById(dto.planId);
+    const sessions = await this._paymentService.createCheckoutSession(
       plan,
       dto.subscriptionId,
     );
@@ -32,7 +33,7 @@ export class PaymentController {
   }
   @Post('confirm')
   async confirm(@Body() body: { sessionId: string }) {
-    const data = await this.paymentService.confirmPayment(body.sessionId);
+    const data = await this._paymentService.confirmPayment(body.sessionId);
     return ApiResponse.success(
       HttpStatus.OK,
       SUBSCRIPTION_MESSAGE.SUBSCRIPTION_SUCCESS,
@@ -44,6 +45,6 @@ export class PaymentController {
     @Req() req: Request,
     @Headers('stripe-signature') signature: string,
   ) {
-    return this.paymentService.handleWebhook(req, signature);
+    return this._paymentService.handleWebhook(req, signature);
   }
 }

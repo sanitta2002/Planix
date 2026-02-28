@@ -24,19 +24,21 @@ import { UserMapper } from 'src/users/mapper/user.mapper';
 @Injectable()
 export class UsersService implements IUserServicePRO {
   constructor(
-    @Inject('IUserRepository') private readonly userRepository: IUserRepository,
-    @Inject('IHashingService') private readonly hashingService: IHashingService,
-    @Inject('IS3Service') private readonly S3Service: IS3Service,
+    @Inject('IUserRepository')
+    private readonly _userRepository: IUserRepository,
+    @Inject('IHashingService')
+    private readonly _hashingService: IHashingService,
+    @Inject('IS3Service') private readonly _S3Service: IS3Service,
   ) {}
   async updateProfile(
     userId: string,
     dto: UpdateProfileReqDto,
   ): Promise<UpdateProfileResponseDTO> {
-    const user = await this.userRepository.findById(userId);
-    if (!user) {
+    const existingUser = await this._userRepository.findById(userId);
+    if (!existingUser) {
       throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
     }
-    await this.userRepository.updateById(userId, {
+    await this._userRepository.updateById(userId, {
       firstName: dto.firstName,
       lastName: dto.lastName,
       phone: dto.phone,
@@ -51,27 +53,27 @@ export class UsersService implements IUserServicePRO {
 
   async changePassword(userId: string, dto: ChangePasswordDto): Promise<void> {
     const { currentPassword, newPassword } = dto;
-    const user = await this.userRepository.findById(userId);
-    if (!user) {
+    const existingUser = await this._userRepository.findById(userId);
+    if (!existingUser) {
       throw new UnauthorizedException(USER_MESSAGES.NOT_FOUND);
     }
 
-    if (!user?.password) {
+    if (!existingUser?.password) {
       throw new BadRequestException(USER_MESSAGES.PASSWORD_NOT_AVAILABLE);
     }
-    const isMatch = await this.hashingService.comparePassword(
+    const isMatch = await this._hashingService.comparePassword(
       currentPassword,
-      user.password,
+      existingUser.password,
     );
 
     if (!isMatch) {
       throw new BadRequestException(USER_MESSAGES.CURRENT_PASSWORD_INCORRECT);
     }
-    const hashedPassword = await this.hashingService.hashPassword(newPassword);
-    const update = await this.userRepository.updateById(userId, {
+    const hashedPassword = await this._hashingService.hashPassword(newPassword);
+    const updateResult = await this._userRepository.updateById(userId, {
       password: hashedPassword,
     });
-    if (!update) {
+    if (!updateResult) {
       throw new ConflictException(USER_MESSAGES.CURRENT_PASSWORD_INCORRECT);
     }
   }
@@ -81,42 +83,41 @@ export class UsersService implements IUserServicePRO {
     dto: UploadAvatarReqDto,
     file: Express.Multer.File,
   ): Promise<UploadAvatarResDto> {
-    // console.log('FILE:', file?.originalname);
     if (!file) {
       throw new BadRequestException(GENERAL_MESSAGES.FILE_REQUIRED);
     }
 
-    const user = await this.userRepository.findById(userId);
-    if (!user) {
+    const existingUser = await this._userRepository.findById(userId);
+    if (!existingUser) {
       throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
     }
 
-    if (user.avatarKey) {
-      await this.S3Service.deleteFile(user.avatarKey);
+    if (existingUser.avatarKey) {
+      await this._S3Service.deleteFile(existingUser.avatarKey);
     }
 
-    const { key } = await this.S3Service.uploadFile(file, userId, 'avatars');
+    const { key } = await this._S3Service.uploadFile(file, userId, 'avatars');
 
-    await this.userRepository.updateById(userId, {
+    await this._userRepository.updateById(userId, {
       avatarKey: key,
     });
-    const avatarUrl = await this.S3Service.createSignedUrl(key);
+    const avatarUrl = await this._S3Service.createSignedUrl(key);
     console.log('avatar updated');
     return UserMapper.toUploadAvatarResponse(key, avatarUrl);
   }
 
   async getProfilePhoto(userId: string) {
-    const user = await this.userRepository.findById(userId);
-    if (!user) {
+    const existingUser = await this._userRepository.findById(userId);
+    if (!existingUser) {
       throw new NotFoundException(USER_MESSAGES.NOT_FOUND);
     }
     console.log('fetching user');
-    const avatarUrl = user.avatarKey
-      ? await this.S3Service.createSignedUrl(user.avatarKey)
+    const avatarUrl = existingUser.avatarKey
+      ? await this._S3Service.createSignedUrl(existingUser.avatarKey)
       : null;
     return {
-      ...UserMapper.toProfileResponse(user, avatarUrl),
-      hasPassword: !!user.password,
+      ...UserMapper.toProfileResponse(existingUser, avatarUrl),
+      hasPassword: !!existingUser.password,
     };
   }
 }

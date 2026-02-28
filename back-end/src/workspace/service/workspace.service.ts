@@ -8,10 +8,10 @@ import { WorkspaceMapper } from './Mapper/workspace.mapper';
 
 @Injectable()
 export class WorkspaceService implements IWorkspaceService {
-  private readonly logger = new Logger(WorkspaceService.name);
+  private readonly _logger = new Logger(WorkspaceService.name);
   constructor(
     @Inject('IWorkspaceRepository')
-    private readonly workspaceRepository: IWorkspaceRepository,
+    private readonly _workspaceRepository: IWorkspaceRepository,
   ) {}
 
   async createWorkspace(
@@ -20,19 +20,20 @@ export class WorkspaceService implements IWorkspaceService {
   ): Promise<WorkspaceResponseDto> {
     console.log('USERID:', userId);
     console.log('DTO:', dto);
-    this.logger.log(`creating workspace for user: ${userId}`);
-    const workspace = await this.workspaceRepository.create({
+    this._logger.log(`creating workspace for user: ${userId}`);
+    const createdWorkspace = await this._workspaceRepository.create({
       name: dto.name,
       description: dto.description,
       ownerId: new Types.ObjectId(userId),
       members: [new Types.ObjectId(userId)],
+      subscriptionStatus: 'pending',
     });
-    return WorkspaceMapper.toResponseDto(workspace);
+    return WorkspaceMapper.toResponseDto(createdWorkspace);
   }
 
   async getUserWorkspaces(userId: string): Promise<WorkspaceResponseDto[]> {
-    this.logger.log(`fetch workspaces for user: ${userId}`);
-    const workspace = await this.workspaceRepository.findByOwner(userId);
-    return workspace.map((ws) => WorkspaceMapper.toResponseDto(ws));
+    this._logger.log(`fetch workspaces for user: ${userId}`);
+    const userWorkspaces = await this._workspaceRepository.findByOwner(userId);
+    return userWorkspaces.map((ws) => WorkspaceMapper.toResponseDto(ws));
   }
 }

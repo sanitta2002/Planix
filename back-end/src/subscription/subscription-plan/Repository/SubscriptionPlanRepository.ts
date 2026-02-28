@@ -15,28 +15,28 @@ export class SubscriptionPlanRepository
 {
   constructor(
     @InjectModel(SubscriptionPlan.name)
-    private readonly subscriptionPlanModel: Model<SubscriptionPlanDocument>,
+    private readonly _subscriptionPlanModel: Model<SubscriptionPlanDocument>,
   ) {
-    super(subscriptionPlanModel);
+    super(_subscriptionPlanModel);
   }
 
   async findAll(): Promise<SubscriptionPlanDocument[]> {
-    return await this.subscriptionPlanModel.find();
+    return await this._subscriptionPlanModel.find();
   }
 
   async findActivePlans(): Promise<SubscriptionPlanDocument[]> {
-    return await this.subscriptionPlanModel.find({ isActive: true });
+    return await this._subscriptionPlanModel.find({ isActive: true });
   }
 
   async findByStripePriceId(
     stripePriceId: string,
   ): Promise<SubscriptionPlanDocument | null> {
-    return await this.subscriptionPlanModel.findOne({ stripePriceId });
+    return await this._subscriptionPlanModel.findOne({ stripePriceId });
   }
 
   async findByStripeProductId(
     stripeProductId: string,
   ): Promise<SubscriptionPlanDocument | null> {
-    return await this.subscriptionPlanModel.findOne({ stripeProductId });
+    return await this._subscriptionPlanModel.findOne({ stripeProductId });
   }
 }

@@ -14,20 +14,20 @@ export class UserRepository
     super(userModel);
   }
   async findByEmail(email: string): Promise<User | null> {
-    return await this.model.findOne({ email });
+    return await this._model.findOne({ email });
   }
   async updateByEmail(
     email: string,
     data: Partial<User>,
   ): Promise<void | null> {
-    return await this.model.findOneAndUpdate(
+    return await this._model.findOneAndUpdate(
       { email },
       { $set: data },
       { new: true },
     );
   }
   async getAllUsers(): Promise<User[]> {
-    return await this.model.find().sort({ createdAt: -1 });
+    return await this._model.find().sort({ createdAt: -1 });
   }
   async findUsersWithPagination(
     page: number,
@@ -56,25 +56,25 @@ export class UserRepository
     }
 
     const [users, total] = await Promise.all([
-      this.model
+      this._model
         .find(filter)
         .skip((page - 1) * limit)
         .limit(limit)
         .sort({ createdAt: -1 }),
-      this.model.countDocuments(filter),
+      this._model.countDocuments(filter),
     ]);
 
     return { users, total };
   }
   async blockUser(id: string): Promise<User | null> {
-    return await this.model.findByIdAndUpdate(
+    return await this._model.findByIdAndUpdate(
       id,
       { isBlocked: true },
       { new: true },
     );
   }
   async unblockUser(id: string): Promise<User | null> {
-    return this.model.findByIdAndUpdate(
+    return this._model.findByIdAndUpdate(
       id,
       { isBlocked: false },
       { new: true },

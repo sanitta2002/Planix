@@ -23,32 +23,32 @@ interface AuthRequest extends Request {
 export class WorkspaceController {
   constructor(
     @Inject('IWorkspaceService')
-    private readonly workspaceService: IWorkspaceService,
+    private readonly _workspaceService: IWorkspaceService,
   ) {}
   @Post('workspace')
   async createWorkspace(
     @Req() req: AuthRequest,
     @Body() dto: CreateWorkspaceDto,
   ) {
-    const workspace = await this.workspaceService.createWorkspace(
+    const createdWorkspace = await this._workspaceService.createWorkspace(
       req.user.userId,
       dto,
     );
     return ApiResponse.success(
       HttpStatus.CREATED,
       WORKSPACE_MESSAGE.CREATED,
-      workspace,
+      createdWorkspace,
     );
   }
   @Get('workspace')
   async getUserWorkspaces(@Req() req: AuthRequest) {
-    const workspace = await this.workspaceService.getUserWorkspaces(
+    const userWorkspaces = await this._workspaceService.getUserWorkspaces(
       req.user.userId,
     );
     return ApiResponse.success(
       HttpStatus.OK,
       WORKSPACE_MESSAGE.FETCHED,
-      workspace,
+      userWorkspaces,
     );
   }
 }

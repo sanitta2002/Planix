@@ -25,6 +25,12 @@ export class Subscription {
   @Prop()
   stripeCustomerId?: string;
 
+  @Prop()
+  stripePriceId?: string;
+
+  @Prop()
+  latestInvoiceId?: string;
+
   @Prop({ enum: SubscriptionStatus, default: SubscriptionStatus.PENDING })
   status: SubscriptionStatus;
 

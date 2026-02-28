@@ -20,6 +20,9 @@ import {
 } from 'src/common/constants/messages.constant';
 import { AdminMapper } from './mapper/admin.mapper';
 import type { IS3Service } from 'src/common/s3/interfaces/s3.service.interface';
+import type { IWorkspaceRepository } from 'src/workspace/interface/IWorkspaceRepository';
+import { PaginatedWorkspaceResponseDto } from './dto/PaginatedWorkspaceResponseDto ';
+import { GetWorkspacesRequestDto } from './dto/GetWorkspacesRequestDto ';
 
 @Injectable()
 export class AdminService implements IAdminService {
@@ -28,6 +31,8 @@ export class AdminService implements IAdminService {
     @Inject('IJwtService') private readonly jwtService: IJwtService,
     @Inject('IUserRepository') private readonly userRepository: UserRepository,
     @Inject('IS3Service') private readonly s3Service: IS3Service,
+    @Inject('IWorkspaceRepository')
+    private readonly _workspaceRepository: IWorkspaceRepository,
   ) {}
   login(dto: AdminLoginDto): AdminResponseDto {
     this.logger.log(`admin login attempt: ${dto.email}`);
@@ -105,5 +110,33 @@ export class AdminService implements IAdminService {
     }
     this.logger.log(`user unblocked successfully: ${userId}`);
     return { id: user._id.toString(), isBlocked: user.isBlocked };
+  }
+  async getAllWorkspaces(
+    query: GetWorkspacesRequestDto,
+  ): Promise<PaginatedWorkspaceResponseDto> {
+    this.logger.log('admin fetch all warkspace');
+    const page = query.page ? Number(query.page) : 1;
+    const limit = query.limit ? Number(query.limit) : 10;
+    const { workspaces, total } =
+      await this._workspaceRepository.findAllWorkspace(page, limit);
+    const workspacesWithLogo = await Promise.all(
+      workspaces.map(async (workspace) => {
+        const logoUrl = workspace.logo
+          ? await this.s3Service.createSignedUrl(workspace.logo)
+          : null;
+
+        return {
+          workspace,
+          logoUrl,
+        };
+      }),
+    );
+
+    return AdminMapper.toPaginatedWorkspacesResponse(
+      workspacesWithLogo,
+      total,
+      page,
+      limit,
+    );
   }
 }

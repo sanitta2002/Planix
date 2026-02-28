@@ -16,27 +16,27 @@ export class subscriptionRepository
 {
   constructor(
     @InjectModel(Subscription.name)
-    private readonly subscriptionModel: Model<SubscriptionDocument>,
+    private readonly _subscriptionModel: Model<SubscriptionDocument>,
   ) {
-    super(subscriptionModel);
+    super(_subscriptionModel);
   }
   async findActiveByWorkspace(
     workspaceId: string,
   ): Promise<SubscriptionDocument | null> {
-    return await this.subscriptionModel.findOne({
+    return await this._subscriptionModel.findOne({
       workspaceId: new Types.ObjectId(workspaceId),
       status: SubscriptionStatus.ACTIVE,
       endDate: { $gt: new Date() },
     });
   }
   async findActiveByUser(userId: string): Promise<SubscriptionDocument | null> {
-    return await this.subscriptionModel.findOne({
+    return await this._subscriptionModel.findOne({
       userId: new Types.ObjectId(userId),
       status: SubscriptionStatus.ACTIVE,
       endDate: { $gt: new Date() },
     });
   }
   async findByStripeSubscriptionId(stripeSubscriptionId: string) {
-    return this.subscriptionModel.findOne({ stripeSubscriptionId });
+    return this._subscriptionModel.findOne({ stripeSubscriptionId });
   }
 }

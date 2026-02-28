@@ -19,6 +19,7 @@ import { SubscriptionPlanModule } from './subscription/subscription-plan/subscri
 import { SubscriptionsModule } from './subscription/subscriptions/subscriptions.module';
 import { WorkspaceModule } from './workspace/workspace.module';
 import { PaymentModule } from './payment/payment.module';
+import { StripeModule } from './common/stripe/stripe.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { PaymentModule } from './payment/payment.module';
     SubscriptionsModule,
     WorkspaceModule,
     PaymentModule,
+    StripeModule,
   ],
 
   controllers: [AppController],

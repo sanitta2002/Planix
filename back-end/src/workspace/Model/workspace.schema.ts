@@ -23,6 +23,12 @@ export class Workspace {
   @Prop()
   logo?: string;
 
+  @Prop({
+    enum: ['pending', 'active', 'expired'],
+    default: 'pending',
+  })
+  subscriptionStatus: string;
+
   @Prop({ default: false })
   isDeleted: boolean;
   createdAt: Date;

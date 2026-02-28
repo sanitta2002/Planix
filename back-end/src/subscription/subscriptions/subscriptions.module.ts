@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { SubcriptionSchema, Subscription } from '../Model/subscription.schema';
 import { subscriptionRepository } from './repository/subscription.repository';
 import { SubscriptionPlanModule } from '../subscription-plan/subscription-plan.module';
+import { WorkspaceModule } from 'src/workspace/workspace.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { SubscriptionPlanModule } from '../subscription-plan/subscription-plan.m
       { name: Subscription.name, schema: SubcriptionSchema },
     ]),
     SubscriptionPlanModule,
+    WorkspaceModule,
   ],
   providers: [
     {

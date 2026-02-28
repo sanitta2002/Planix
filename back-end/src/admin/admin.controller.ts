@@ -27,11 +27,15 @@ import {
 } from 'src/common/constants/messages.constant';
 import { ApiResponse } from 'src/common/utils/api-response.util';
 import { ApiResponseDto } from 'src/common/dto/api-response.dto';
+import { GetWorkspacesRequestDto } from './dto/GetWorkspacesRequestDto ';
+import { PaginatedWorkspaceResponseDto } from './dto/PaginatedWorkspaceResponseDto ';
+import type { ISubscriptionService } from 'src/subscription/interface/ISubscriptionService';
 
 @Controller('admin')
 export class AdminController {
   constructor(
     @Inject('IAdminService') private readonly adminService: IAdminService,
+    @Inject('ISubscriptionService') private readonly _subscriptionService: ISubscriptionService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -94,4 +98,16 @@ export class AdminController {
     const result = await this.adminService.unblockUser({ userId: id });
     return ApiResponse.success(HttpStatus.OK, USER_MESSAGES.UNBLOCKED, result);
   }
+  @Get('workspaces')
+  @UseGuards(RolesGuard)
+  @Role('admin')
+  async getWorkspaces(
+    @Query() query: GetWorkspacesRequestDto,
+  ): Promise<PaginatedWorkspaceResponseDto> {
+    return await this.adminService.getAllWorkspaces(query);
+  }
+  // @Get(':id/payment')
+  // async getPaymentDetails(@Param('id') id: string) {
+  //   return await this._subscriptionService.getSubscriptionPayment(id);
+  // }
 }

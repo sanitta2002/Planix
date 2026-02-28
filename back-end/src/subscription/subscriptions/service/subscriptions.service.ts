@@ -14,22 +14,25 @@ import { SUBSCRIPTION_MESSAGE } from 'src/common/constants/messages.constant';
 import { SubscriptionMapper } from './mapper/SubscriptionMapper';
 import { Types } from 'mongoose';
 import { SubscriptionStatus } from 'src/subscription/Model/subscription.schema';
+import type { IWorkspaceRepository } from 'src/workspace/interface/IWorkspaceRepository';
 
 @Injectable()
 export class SubscriptionsService implements ISubscriptionService {
-  private readonly logger = new Logger(SubscriptionsService.name);
+  private readonly _logger = new Logger(SubscriptionsService.name);
   constructor(
     @Inject('ISubscriptionRepository')
-    private readonly subscriptionRepo: ISubscriptionRepository,
+    private readonly _subscriptionRepo: ISubscriptionRepository,
     @Inject('ISubscriptionPlanRepository')
-    private readonly subscriptionPlanRepo: ISubscriptionPlanRepository,
+    private readonly _subscriptionPlanRepo: ISubscriptionPlanRepository,
+    @Inject('IWorkspaceRepository')
+    private readonly _workspaceRepository: IWorkspaceRepository,
   ) {}
 
   async getActiveSubscription(
     userId: string,
   ): Promise<SubscriptionResponseDto> {
-    this.logger.log(`fetch active subs for user: ${userId}`);
-    const subscription = await this.subscriptionRepo.findActiveByUser(userId);
+    this._logger.log(`fetch active subs for user: ${userId}`);
+    const subscription = await this._subscriptionRepo.findActiveByUser(userId);
     console.log(subscription);
 
     if (!subscription) {
@@ -45,18 +48,18 @@ export class SubscriptionsService implements ISubscriptionService {
     console.log(dto.planId);
     console.log(dto.workspaceId);
 
-    const plan = await this.subscriptionPlanRepo.findById(dto.planId);
+    const plan = await this._subscriptionPlanRepo.findById(dto.planId);
     if (!plan) {
       throw new NotFoundException(SUBSCRIPTION_MESSAGE.NOT_FOUND);
     }
-    const active = await this.subscriptionRepo.findActiveByWorkspace(
+    const active = await this._subscriptionRepo.findActiveByWorkspace(
       dto.workspaceId,
     );
     if (active) {
       throw new BadRequestException('workspace already  active subscription');
     }
 
-    const subscription = await this.subscriptionRepo.create({
+    const subscription = await this._subscriptionRepo.create({
       userId: new Types.ObjectId(userId),
       workspaceId: new Types.ObjectId(dto.workspaceId),
       planId: new Types.ObjectId(dto.planId),
@@ -68,23 +71,27 @@ export class SubscriptionsService implements ISubscriptionService {
   async makeactivateSubscription(
     subscriptionId: string,
   ): Promise<SubscriptionResponseDto> {
-    this.logger.log(`activating subs: ${subscriptionId}`);
+    this._logger.log(`activating subs: ${subscriptionId}`);
 
-    const subscription = await this.subscriptionRepo.findById(subscriptionId);
+    const subscription = await this._subscriptionRepo.findById(subscriptionId);
     if (!subscription) {
       throw new NotFoundException(SUBSCRIPTION_MESSAGE.NOT_FOUND);
     }
     if (subscription.status === SubscriptionStatus.ACTIVE) {
       throw new BadRequestException('subscription already active');
     }
-    const updated = await this.subscriptionRepo.updateById(subscriptionId, {
+    const updated = await this._subscriptionRepo.updateById(subscriptionId, {
       status: SubscriptionStatus.ACTIVE,
       startDate: new Date(),
     });
     if (!updated) {
       throw new NotFoundException('subscription update failed');
     }
-    this.logger.log(`sub activated successfully: ${subscriptionId}`);
+    await this._workspaceRepository.updateById(
+      subscription.workspaceId.toString(),
+      { subscriptionStatus: 'active' },
+    );
+    this._logger.log(`sub activated successfully: ${subscriptionId}`);
 
     return SubscriptionMapper.toResponseDto(updated);
   }

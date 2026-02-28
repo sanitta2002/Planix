@@ -1,18 +1,31 @@
 import { WorkspaceResponseDto } from 'src/workspace/dto/res/WorkspaceResponseDto';
 import { WorkspaceDocument } from 'src/workspace/Model/workspace.schema';
+type Owner = {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+};
 
 export class WorkspaceMapper {
   static toResponseDto(workspace: WorkspaceDocument): WorkspaceResponseDto {
+    const owner: Owner = workspace.ownerId as unknown as Owner;
     return {
       id: workspace._id.toString(),
       name: workspace.name,
       description: workspace.description,
-      ownerId: workspace.ownerId?.toString(),
+      ownerId: {
+        id: owner._id.toString(),
+        firstName: owner.firstName,
+        lastName: owner.lastName,
+        email: owner.email,
+      },
       members: workspace.members?.map((m) => m.toString()),
       subscriptionId: workspace.subscriptionId?.toString(),
       logo: workspace.logo,
       createdAt: workspace.createdAt,
       updatedAt: workspace.updatedAt,
+      subscriptionStatus: workspace.subscriptionStatus,
     };
   }
 }

@@ -10,9 +10,11 @@ import { AppJwtModule } from 'src/common/jwt/jwt.module';
 import { UsersModule } from 'src/users/users.module';
 import { JwtMiddleware } from 'src/common/middleware/jwt.middleware';
 import { S3Service } from 'src/common/s3/s3.service';
+import { WorkspaceModule } from 'src/workspace/workspace.module';
+import { SubscriptionsModule } from 'src/subscription/subscriptions/subscriptions.module';
 
 @Module({
-  imports: [AppJwtModule, UsersModule],
+  imports: [AppJwtModule, UsersModule, WorkspaceModule, SubscriptionsModule],
   providers: [
     {
       provide: 'IAdminService',
@@ -45,6 +47,7 @@ export class AdminModule implements NestModule {
       },
       { path: 'admin/subscriptionPlan', method: RequestMethod.POST },
       { path: 'admin/subscriptionPlan', method: RequestMethod.GET },
+      { path: 'admin/workspaces', method: RequestMethod.GET },
     );
   }
 }

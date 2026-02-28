@@ -27,14 +27,14 @@ interface AuthRequest extends Request {
 export class SubscriptionController {
   constructor(
     @Inject('ISubscriptionService')
-    private readonly subscriptionService: ISubscriptionService,
+    private readonly _subscriptionService: ISubscriptionService,
     @Inject('ISubscriptionPlanService')
-    private readonly subplanservice: ISubscriptionPlanService,
+    private readonly _subplanservice: ISubscriptionPlanService,
   ) {}
 
   @Get('plans')
   async getAllActivePlan() {
-    const plan = await this.subplanservice.getActivePlans();
+    const plan = await this._subplanservice.getActivePlans();
     return ApiResponse.success(
       HttpStatus.OK,
       SUBSCRIPTION_MESSAGE.ALLACTIVEPLAN,
@@ -52,7 +52,7 @@ export class SubscriptionController {
 
     const userId: string = req.user.userId;
 
-    const subscription = await this.subscriptionService.createSubscription(
+    const subscription = await this._subscriptionService.createSubscription(
       userId,
       dto,
     );
