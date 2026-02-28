@@ -6,9 +6,11 @@ import {
   deletePlan,
   getPlans,
   getUsers,
+  getWorkspaces,
   unblockUser,
   updatePlan,
   type GetUsersPayload,
+  type GetWorkspacePayload,
   type UpdatePlanPayload,
 } from "../../Service/admin/adminService";
 import { toast } from "sonner";
@@ -56,19 +58,17 @@ export const useUnblockUser = () => {
   });
 };
 
+export const useDebounce = (value: string, delay = 500) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
 
-export const useDebounce = (value:string, delay = 500)=>{
-  const [debouncedValue , setDebouncedValue] = useState(value)
-
-  useEffect(()=>{
-    const timer=setTimeout(()=>{
-      setDebouncedValue(value)
-    },delay)
-    return ()=>clearTimeout(timer)
-  },[value,delay])
-  return debouncedValue
-}
-
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+  return debouncedValue;
+};
 
 export const useGetPlans = () => {
   return useQuery({
@@ -96,8 +96,13 @@ export const useUpdatePlan = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ planId, data }: { planId: string; data: UpdatePlanPayload  }) =>
-      updatePlan(planId, data),
+    mutationFn: ({
+      planId,
+      data,
+    }: {
+      planId: string;
+      data: UpdatePlanPayload;
+    }) => updatePlan(planId, data),
 
     onSuccess: () => {
       toast.success("Plan updated successfully");
@@ -124,3 +129,10 @@ export const useDeletePlan = () => {
   });
 };
 
+export const useGetWorkspaces = (params: GetWorkspacePayload) => {
+  return useQuery({
+    queryKey: ["admin-workspaces", params],
+    queryFn: () => getWorkspaces(params),
+   select: (res) => res.data,
+  });
+};

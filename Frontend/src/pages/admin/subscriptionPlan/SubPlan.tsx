@@ -3,6 +3,7 @@ import { Check, Pencil, Plus, Trash2 } from "lucide-react";
 import { useDeletePlan, useGetPlans } from "../../../hooks/Admin/adminHook";
 import AddPlanModal, { type PlanData } from "./modal/AddPlanModal";
 import ConfirmationModal from "../../../components/modal/ConfirmationModal";
+import { Button } from "../../../components/ui/Button";
 
 
 
@@ -30,13 +31,24 @@ function SubPlan() {
     isOpen: false,
     plan: null,
   });
+
+
+
   const [page, setPage] = useState(1);
   const limit = 3;
-  const start = (page - 1) * limit;
-  const end = start + limit;
-  const paginatedPlans = plans.slice(start, end);
-  const totalPages = Math.ceil(plans.length / limit);
 
+  const total = plans.length;
+
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+
+  const paginatedPlans = plans.slice(startIndex, endIndex);
+
+  const start = total === 0 ? 0 : startIndex + 1;
+  const end = Math.min(endIndex, total);
+
+  const canGoPrev = page > 1;
+  const canGoNext = endIndex < total;
   if (isLoading) {
     return <p className="text-white text-center mt-10">Loading...</p>;
   }
@@ -168,27 +180,40 @@ function SubPlan() {
         type="danger"
         isLoading={isDeleting}
       />
-      <div className="flex justify-center gap-3 mt-10">
-  <button
-    disabled={page === 1}
-    onClick={() => setPage((p) => p - 1)}
-    className="px-4 py-2 rounded-lg border border-gray-700 text-gray-300 hover:bg-gray-800 disabled:opacity-50"
-  >
-    Previous
-  </button>
 
-  <span className="px-4 py-2 text-sm text-gray-400">
-    Page {page} of {totalPages}
-  </span>
 
-  <button
-    disabled={page === totalPages}
-    onClick={() => setPage((p) => p + 1)}
-    className="px-4 py-2 rounded-lg border border-gray-700 text-gray-300 hover:bg-gray-800 disabled:opacity-50"
-  >
-    Next
-  </button>
-</div>
+
+
+
+      <div className="border-t border-gray-800/50 p-4 flex items-center justify-between text-xs text-gray-500">
+        <span>
+          {total === 0
+            ? "Showing 0 users"
+            : `Showing ${start}-${end} of ${total} users`}
+        </span>
+
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            className="h-8 px-3 text-xs bg-transparent border-gray-800 text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+            disabled={!canGoPrev}
+            onClick={() => setPage((p) => p - 1)}
+          >
+            Previous
+          </Button>
+
+          <Button
+            variant="outline"
+            className="h-8 px-3 text-xs bg-transparent border-gray-800 text-gray-400 hover:bg-gray-800 hover:text-gray-200"
+            disabled={!canGoNext}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+
+
     </div >
   );
 }

@@ -7,6 +7,7 @@ import { PublicRoute } from "../PublicRoute"
 import { ProtectedRoute } from "../ProtectedRoute"
 import UserPage from "../../pages/admin/userMangement/UserPage"
 import SubPlan from "../../pages/admin/subscriptionPlan/SubPlan"
+import WorkspacesPage from "../../pages/admin/workspaces/WorkspacesPage"
 
 
 
@@ -23,7 +24,7 @@ const AdminRoutes = () => {
                 <Route path={FRONTEND_ROUTES.ADMIN_USERS} element={<UserPage/>}/>
                 <Route path={FRONTEND_ROUTES.ADMIN_SALES_REPORT} element={<h1>sales</h1>} />
                 <Route path={FRONTEND_ROUTES.ADMIN_SUBSCRIPTIONS} element={<SubPlan/>}/>
-                <Route path={FRONTEND_ROUTES.ADMIN_WORKSPACES} element={<h1>WORKSPACES</h1>}/>
+                <Route path={FRONTEND_ROUTES.ADMIN_WORKSPACES} element={<WorkspacesPage/>}/>
                 <Route path={FRONTEND_ROUTES.ADMIN_PAYMENTS_DETAILS} element={<h1>payments</h1>} />
                 
             </Route>

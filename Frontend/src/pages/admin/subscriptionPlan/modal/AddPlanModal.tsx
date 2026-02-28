@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useCreatePlan, useUpdatePlan } from "../../../../hooks/Admin/adminHook";
+import { planSchema } from "../../../../lib/validations/planValidation";
 
 export interface PlanData {
     id?: string;
@@ -38,6 +39,7 @@ const AddPlanModal: React.FC<AddPlanModalProps> = ({
 
     const createPlanMutation = useCreatePlan();
     const updatePlanMutation = useUpdatePlan();
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     const getFormData = (plan?: PlanData | null) => ({
         name: plan?.name ?? "",
@@ -49,6 +51,7 @@ const AddPlanModal: React.FC<AddPlanModalProps> = ({
         isActive: plan?.isActive ?? false,
     });
 
+
     useEffect(() => {
         if (!isOpen) return;
         setFormData(getFormData(editPlan));
@@ -59,6 +62,7 @@ const AddPlanModal: React.FC<AddPlanModalProps> = ({
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         const { name, value, type } = e.target;
+        setErrors((prev) => ({ ...prev, [name]: "" }));
         setFormData((prev) => ({
             ...prev,
             [name]:
@@ -91,7 +95,26 @@ const AddPlanModal: React.FC<AddPlanModalProps> = ({
                 .filter(Boolean),
 
             isActive: formData.isActive,
+
+
         };
+        const result = planSchema.safeParse(payload);
+
+        if (!result.success) {
+            const fieldErrors: Record<string, string> = {};
+
+            result.error.issues.forEach((err) => {
+                const field = String(err.path[0]);
+                if (!fieldErrors[field]) {
+                    fieldErrors[field] = err.message;
+                }
+            });
+
+            setErrors(fieldErrors);
+            return;
+        }
+
+        setErrors({});
         console.log("EDIT PLAN:", editPlan);
         console.log("PLAN ID SENT:", editPlan?.id, editPlan?.id);
         if (isEditMode && editPlan.id) {
@@ -149,6 +172,7 @@ const AddPlanModal: React.FC<AddPlanModalProps> = ({
                                 placeholder="e.g., Pro"
                                 className="w-full px-4 py-2.5 rounded-lg bg-[#0c1221] border border-gray-700/60 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-[#626FF6] focus:ring-1 focus:ring-[#626FF6]/30 transition-colors"
                             />
+                            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                         </div>
                         <div>
                             <label className="block text-xs font-medium text-slate-300 mb-1.5">
@@ -162,6 +186,7 @@ const AddPlanModal: React.FC<AddPlanModalProps> = ({
                                 placeholder="99"
                                 className="w-full px-4 py-2.5 rounded-lg bg-[#0c1221] border border-gray-700/60 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-[#626FF6] focus:ring-1 focus:ring-[#626FF6]/30 transition-colors"
                             />
+                            {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price}</p>}
                         </div>
                     </div>
 
@@ -179,6 +204,9 @@ const AddPlanModal: React.FC<AddPlanModalProps> = ({
                                 placeholder="25"
                                 className="w-full px-4 py-2.5 rounded-lg bg-[#0c1221] border border-gray-700/60 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-[#626FF6] focus:ring-1 focus:ring-[#626FF6]/30 transition-colors"
                             />
+                            {errors.maxMembers && (
+  <p className="text-red-500 text-xs mt-1">{errors.maxMembers}</p>
+)}
                         </div>
                         <div>
                             <label className="block text-xs font-medium text-slate-300 mb-1.5">
@@ -192,6 +220,9 @@ const AddPlanModal: React.FC<AddPlanModalProps> = ({
                                 placeholder="50"
                                 className="w-full px-4 py-2.5 rounded-lg bg-[#0c1221] border border-gray-700/60 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-[#626FF6] focus:ring-1 focus:ring-[#626FF6]/30 transition-colors"
                             />
+                            {errors.maxProjects && (
+  <p className="text-red-500 text-xs mt-1">{errors.maxProjects}</p>
+)}
                         </div>
                         <div>
                             <label className="block text-xs font-medium text-slate-300 mb-1.5">
@@ -205,6 +236,9 @@ const AddPlanModal: React.FC<AddPlanModalProps> = ({
                                 placeholder="100"
                                 className="w-full px-4 py-2.5 rounded-lg bg-[#0c1221] border border-gray-700/60 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-[#626FF6] focus:ring-1 focus:ring-[#626FF6]/30 transition-colors"
                             />
+                            {errors.storage && (
+  <p className="text-red-500 text-xs mt-1">{errors.storage}</p>
+)}
                         </div>
                     </div>
 
@@ -221,6 +255,9 @@ const AddPlanModal: React.FC<AddPlanModalProps> = ({
                             rows={4}
                             className="w-full px-4 py-3 rounded-lg bg-[#0c1221] border border-gray-700/60 text-white text-sm placeholder-slate-500 focus:outline-none focus:border-[#626FF6] focus:ring-1 focus:ring-[#626FF6]/30 transition-colors resize-none"
                         />
+                        {errors.features && (
+  <p className="text-red-500 text-xs mt-1">{errors.features}</p>
+)}
                     </div>
 
                     {/* Checkbox */}

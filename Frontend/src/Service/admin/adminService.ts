@@ -1,3 +1,4 @@
+
 import { AxiosInstance } from "../../axios/axios";
 import { API_ROUTES } from "../../constants/apiRoutes";
 
@@ -27,12 +28,18 @@ export interface CreatePlanPayload {
   isActive?: boolean;
 }
 export interface UpdatePlanPayload {
- name?: string;
+  name?: string;
   price?: number;
   maxMembers?: number;
   maxProjects?: number;
   storage?: number;
   features?: string[];
+  isActive?: boolean;
+}
+export interface GetWorkspacePayload {
+  page?: number;
+  limit?: number;
+  search?: string;
   isActive?: boolean;
 }
 
@@ -90,4 +97,11 @@ export const deletePlan = async (planId: string) => {
     `${API_ROUTES.Admin.SUBSCRIPTION_PLAN}/${planId}`,
   );
   return response.data;
+};
+
+export const getWorkspaces = async (params: GetWorkspacePayload) => {
+  const response = await AxiosInstance.get(API_ROUTES.Admin.WORKSPACES, {
+    params,
+  });
+  return response;
 };

@@ -14,7 +14,8 @@ export const API_ROUTES ={
         LOGIN:"/admin/login",
         GETUSERS:'/admin/users',
         BASE: "/admin",
-        SUBSCRIPTION_PLAN: '/admin/subscriptionPlan'
+        SUBSCRIPTION_PLAN: '/admin/subscriptionPlan',
+         WORKSPACES: "/admin/workspaces"
 
     },
     USER :{
