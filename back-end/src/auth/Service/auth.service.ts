@@ -113,9 +113,9 @@ export class AuthService implements IuserService {
     if (!user) {
       throw new UnauthorizedException(AUTH_MESSAGES.INVALID_EMAIL);
     }
-    if (!user.isEmailVerified) {
-      throw new UnauthorizedException(AUTH_MESSAGES.EMAIL_NOT_VERIFIED);
-    }
+    // if (!user.isEmailVerified) {
+    //   throw new UnauthorizedException(AUTH_MESSAGES.EMAIL_NOT_VERIFIED);
+    // }
     if (user.isBlocked) {
       throw new BadRequestException(AUTH_MESSAGES.ACCOUNT_BLOCKED);
     }

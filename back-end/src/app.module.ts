@@ -20,6 +20,7 @@ import { SubscriptionsModule } from './subscription/subscriptions/subscriptions.
 import { WorkspaceModule } from './workspace/workspace.module';
 import { PaymentModule } from './payment/payment.module';
 import { StripeModule } from './common/stripe/stripe.module';
+import { InvitationModule } from './invitation/invitation.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { StripeModule } from './common/stripe/stripe.module';
     WorkspaceModule,
     PaymentModule,
     StripeModule,
+    InvitationModule,
   ],
 
   controllers: [AppController],

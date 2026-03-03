@@ -25,7 +25,13 @@ export class WorkspaceService implements IWorkspaceService {
       name: dto.name,
       description: dto.description,
       ownerId: new Types.ObjectId(userId),
-      members: [new Types.ObjectId(userId)],
+      members: [
+        {
+          user: new Types.ObjectId(userId),
+          role: 'owner',
+          joinedAt: new Date(),
+        },
+      ],
       subscriptionStatus: 'pending',
     });
     return WorkspaceMapper.toResponseDto(createdWorkspace);

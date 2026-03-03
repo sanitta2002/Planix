@@ -14,8 +14,25 @@ export class Workspace {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   ownerId: Types.ObjectId;
 
-  @Prop({ type: [Types.ObjectId], ref: 'User', default: [] })
-  members: Types.ObjectId[];
+  @Prop({
+    type: [
+      {
+        user: { type: Types.ObjectId, ref: 'User', required: true },
+        role: {
+          type: String,
+          enum: ['owner', 'member'],
+          default: 'member',
+        },
+        joinedAt: { type: Date, default: Date.now },
+      },
+    ],
+    default: [],
+  })
+  members: {
+    user: Types.ObjectId;
+    role: 'owner' | 'member';
+    joinedAt: Date;
+  }[];
 
   @Prop({ type: Types.ObjectId, ref: 'Subscription' })
   subscriptionId?: Types.ObjectId;

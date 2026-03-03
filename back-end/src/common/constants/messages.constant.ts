@@ -83,3 +83,12 @@ export const PAYMENT_MESSAGE = {
   NOT_COMPLETED: 'Payment not completed',
   MISSING_DATA: 'Subscription metadata missing',
 };
+
+export const INVITE_MESSAGE = {
+  FORBIDDEN: 'Only owner can invite members',
+  BADREQUEST: 'Invitation already sent',
+  SUCCESS: 'Invitation successfully send',
+  NOT_FOUND: 'Invitation not found',
+  CONFLICT: 'Invitation already used',
+  INVALID: 'Invalid invitation',
+};
