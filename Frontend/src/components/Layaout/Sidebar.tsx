@@ -115,7 +115,7 @@ export const Sidebar = ({ className }: { className?: string }) => {
                 </SidebarSection>
 
                 <SidebarSection title="Organization">
-                    <SidebarItem icon={Users} label="Teams & Members" to="/users" />
+                    <SidebarItem icon={Users} label="Teams & Members" to={FRONTEND_ROUTES.INVITE} />
                     <SidebarItem icon={FolderKanban} label="Projects" to="/projects" />
                 </SidebarSection>
 

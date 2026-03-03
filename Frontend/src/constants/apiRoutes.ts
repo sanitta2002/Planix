@@ -37,7 +37,12 @@ export const API_ROUTES ={
     PAYMENT :{
         CHECKOUT: '/payment/checkout',
         CONFIRM:'/payment/confirm'
-    }
+    },
+    INVITATION: {
+    INVITE_MEMBER: "/invitation/:workspaceId",              
+    ACCEPT_INVITATION: "/invitation/accept/:token",  
+    COMPLETEPROFILE:"/invitation/complete/:token"
+}
 }
 
 

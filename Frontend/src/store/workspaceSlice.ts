@@ -4,6 +4,7 @@ interface Workspace {
   id: string;
   name: string;
   ownerId?: string;
+  role: "owner" | "member"; 
 }
 
 interface WorkspaceState {

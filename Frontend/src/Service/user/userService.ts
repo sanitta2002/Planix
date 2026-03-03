@@ -1,3 +1,4 @@
+
 import { AxiosInstance } from "../../axios/axios";
 import { API_ROUTES } from "../../constants/apiRoutes";
 
@@ -30,6 +31,18 @@ export interface CreateSubscriptionPayload {
 export interface CreateCheckoutPayload {
   planId: string;
   subscriptionId: string;
+}
+
+export interface InviteMemberPayload {
+  workspaceId: string;
+  email: string;
+  name: string;
+}
+
+export interface completeProfilePayload {
+  firstName: string;
+  lastName: string;
+  password: string;
 }
 
 export const updateProfile = async (data: updateProfilePayload) => {
@@ -95,6 +108,35 @@ export const createCheckoutSession = async (data: CreateCheckoutPayload) => {
 };
 
 export const confirmPayment = async (sessionId: string) => {
-  const response = await AxiosInstance.post(API_ROUTES.PAYMENT.CONFIRM,{sessionId});
+  const response = await AxiosInstance.post(API_ROUTES.PAYMENT.CONFIRM, {
+    sessionId,
+  });
+  return response.data;
+};
+
+export const inviteMembers = async (data: InviteMemberPayload) => {
+  const response = await AxiosInstance.post(
+    API_ROUTES.INVITATION.INVITE_MEMBER.replace(
+      ":workspaceId",
+      data.workspaceId,
+    ),
+    { email: data.email, name: data.name },
+  );
+
+  return response.data;
+};
+
+export const acceptInvite = async (token: string) => {
+  const response = await AxiosInstance.post(
+    API_ROUTES.INVITATION.ACCEPT_INVITATION.replace(":token", token),
+  );
+
+  return response.data;
+};
+
+export const completeProfile = async ( token: string,data: completeProfilePayload) => {
+  const response = await AxiosInstance.post(
+    API_ROUTES.INVITATION.COMPLETEPROFILE.replace(":token",token),data
+  );
   return response.data
 };
