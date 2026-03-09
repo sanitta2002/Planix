@@ -1,20 +1,29 @@
 
-import { Calendar, MoreVertical, Trash2, } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../store/Store";
-import { useInviteMember } from "../../../hooks/user/userHook";
+import { useInviteMember, useWorkspaceMembers } from "../../../hooks/user/userHook";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 
+
+export interface WorkspaceMember {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: "owner" | "member";
+    joinedAt: string;
+}
 
 
 export default function InviteMemberPage() {
     const [email, setEmail] = useState<string>('')
     const [name, setName] = useState<string>('')
     const currentWorkspace = useSelector((state: RootState) => state.workspace.currentWorkspace)
-    const { user } = useSelector((state: RootState) => state.auth);
-    const isOwner = currentWorkspace?.ownerId === user?.id;
     const { mutate: inviteMember } = useInviteMember()
+    const { data, isLoading } = useWorkspaceMembers(currentWorkspace?.id || "")
 
     const handleInvite = () => {
         if (!email) {
@@ -33,8 +42,10 @@ export default function InviteMemberPage() {
                 setEmail("");
                 setName('')
             },
-            onError: () => {
-                toast.error("Failed to invite member");
+            onError: (error) => {
+                if (error instanceof AxiosError) {
+                    toast.error(error.response?.data.message)
+                }
             }
         })
     };
@@ -54,7 +65,7 @@ export default function InviteMemberPage() {
                     Invite Members
                 </h2>
                 <p className="text-sm text-gray-400 mb-5">
-                    {/* Add up to 6 members to your team. */}
+                    Add up to 6 members to your team.
                 </p>
 
                 {/* Invite Rows */}
@@ -97,22 +108,12 @@ export default function InviteMemberPage() {
                 <div className="flex items-center gap-3 mt-5">
 
                     <button
+                        disabled={!currentWorkspace}
                         onClick={handleInvite}
-                        disabled={!isOwner}
-                        className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200
-    ${isOwner
-                                ? "bg-gradient-to-r from-[#606cf6] to-[#606cf6] text-white"
-                                : "bg-gray-600 text-gray-400 cursor-not-allowed"
-                            }
-  `}
+                        className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#606cf6] to-[#606cf6] text-white text-sm font-semibold hover:from-[#606cf6] hover:to-[#606cf6] shadow-lg shadow-[#272f80] hover:shadow-[#272f80] transition-all duration-200"
                     >
                         Send Invitation
                     </button>
-                    {!isOwner && (
-                        <p className="text-xs text-gray-500 mt-2">
-                            Only workspace owner can invite members.
-                        </p>
-                    )}
                 </div>
             </div>
 
@@ -124,76 +125,56 @@ export default function InviteMemberPage() {
 
                 <div className="space-y-3">
 
-                    <div
+                    {isLoading && (
+                        <p className="text-gray-400 text-sm">Loading members...</p>
+                    )}
 
-                        className="flex items-center gap-4 p-4 rounded-xl bg-[#1a2340]/60 border border-gray-800/30 hover:border-gray-700/50 hover:bg-[#1a2340] transition-all duration-200 group"
-                    >
-                        {/* Avatar */}
-                        {/* <AvatarCircle /> */}
-
-                        {/* Member Info */}
-                        <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-white truncate">
-                                { }
-                            </p>
-                            <p className="text-xs text-gray-400 truncate">
-                                { }
-                            </p>
-                        </div>
-
-                        {/* Role Badge */}
-                        <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium 
-                                    }`}
-                        >
-                            { }
-                        </span>
-
-                        {/* Joined Date */}
-                        <div className="flex items-center gap-1.5 text-xs text-gray-400 min-w-[120px]">
-                            <Calendar className="w-3.5 h-3.5 text-gray-500" />
-                            <span>{ }</span>
-                        </div>
-
-                        {/* More Actions */}
-                        <div className="relative">
-                            <button
-
-
-                                className="p-2 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-gray-700/30 transition-all duration-200"
+                    {data?.data?.members?.length > 0 ? (
+                        data.data.members.map((member: WorkspaceMember) => (
+                            <div
+                                key={member.id}
+                                className="flex items-center gap-4 p-4 rounded-xl bg-[#1a2340]/60 border border-gray-800/30 hover:border-gray-700/50 hover:bg-[#1a2340] transition-all duration-200 group"
                             >
-                                <MoreVertical className="w-4 h-4" />
-                            </button>
 
-                            {/* Dropdown Menu */}
+                                {/* Member Info */}
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-semibold text-white truncate">
+                                        {member.firstName} {member.lastName}
+                                    </p>
 
-                            <>
-                                <div
-                                    className="fixed inset-0 z-10"
-
-                                />
-                                <div className="absolute right-0 top-full mt-1 w-40 bg-[#1a2340] border border-gray-700/50 rounded-xl shadow-2xl z-20 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150">
-                                    <button className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-gray-300 hover:bg-gray-700/30 hover:text-white transition-colors">
-                                        Change Role
-                                    </button>
-                                    <button className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors">
-                                        <Trash2 className="w-3.5 h-3.5" />
-                                        Remove
-                                    </button>
+                                    <p className="text-xs text-gray-400 truncate">
+                                        {member.email}
+                                    </p>
                                 </div>
-                            </>
 
+                                {/* Role Badge */}
+                                <span
+                                    className={`px-3 py-1 rounded-full text-xs font-medium ${member.role === "member"
+                                            ? "bg-green-500/20 text-green-400"
+                                            : "bg-[#8e1414]/20 text-[#c71414]"
+                                        }`}
+                                >
+                                    {member.role}
+                                </span>
+
+                                {/* Joined Date */}
+                                <div className="flex items-center gap-1.5 text-xs text-gray-400 min-w-[120px]">
+                                    <Calendar className="w-3.5 h-3.5 text-gray-500" />
+                                    <span>
+                                        {new Date(member.joinedAt).toLocaleDateString()}
+                                    </span>
+                                </div>
+
+                            </div>
+                        ))
+                    ) : (
+                        <div className="text-center py-12 text-gray-500">
+                            <p className="text-sm">No team members yet.</p>
+                            <p className="text-xs mt-1">
+                                Invite members using the form above.
+                            </p>
                         </div>
-                    </div>
-
-
-
-                    <div className="text-center py-12 text-gray-500">
-                        <p className="text-sm">No team members yet.</p>
-                        <p className="text-xs mt-1">
-                            Invite members using the form above.
-                        </p>
-                    </div>
+                    )}
 
                 </div>
             </div>

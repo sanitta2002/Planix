@@ -4,13 +4,18 @@ import {
   changePassword,
   completeProfile,
   confirmPayment,
+  createRole,
   createSubscription,
   createWorkspace,
+  deleteRole,
   getActivePlans,
+  getAllRoles,
   getProfile,
   getUserWorkspaces,
+  getWorkspaceMembers,
   inviteMembers,
   updateProfile,
+  updateRole,
   uploadAvatar,
 } from "../../Service/user/userService";
 
@@ -100,3 +105,36 @@ export const useCompleteProfile = () => {
     }) => completeProfile(token, data),
   });
 };
+
+
+export const useWorkspaceMembers = (workspaceId:string)=>{
+  return useQuery({
+    queryKey: ["workspacemembers", workspaceId],
+    queryFn: () => getWorkspaceMembers(workspaceId),
+    enabled: !!workspaceId,
+  });
+}
+
+export const useCreateRole =()=>{
+  return useMutation({
+    mutationFn:createRole
+  })
+}
+export const useGetRoles=()=>{
+  return useQuery({
+    queryKey:['roles'],
+    queryFn:getAllRoles
+  })
+}
+
+export const useUpdateRole = () => {
+    return useMutation({
+        mutationFn: updateRole
+    })
+}
+
+export const useDeleteRole = () => {
+    return useMutation({
+        mutationFn: deleteRole
+    })
+}

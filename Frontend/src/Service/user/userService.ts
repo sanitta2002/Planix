@@ -1,4 +1,3 @@
-
 import { AxiosInstance } from "../../axios/axios";
 import { API_ROUTES } from "../../constants/apiRoutes";
 
@@ -44,6 +43,18 @@ export interface completeProfilePayload {
   lastName: string;
   password: string;
 }
+
+interface createRolePayload {
+  name: string;
+  permissions: string[];
+}
+
+interface updateRolePayload {
+  roleId: string;
+  name: string;
+  permissions: string[];
+}
+
 
 export const updateProfile = async (data: updateProfilePayload) => {
   const response = await AxiosInstance.patch(
@@ -134,9 +145,40 @@ export const acceptInvite = async (token: string) => {
   return response.data;
 };
 
-export const completeProfile = async ( token: string,data: completeProfilePayload) => {
+export const completeProfile = async (
+  token: string,
+  data: completeProfilePayload,
+) => {
   const response = await AxiosInstance.post(
-    API_ROUTES.INVITATION.COMPLETEPROFILE.replace(":token",token),data
+    API_ROUTES.INVITATION.COMPLETEPROFILE.replace(":token", token),
+    data,
   );
-  return response.data
+  return response.data;
 };
+
+export const getWorkspaceMembers = async (workspaceId: string) => {
+  const response = await AxiosInstance.get(
+    API_ROUTES.WORKSPACE.GET_MEMBERS.replace(":workspaceId", workspaceId),
+  );
+  return response.data;
+};
+
+export const createRole = async (data: createRolePayload) => {
+  const response = await AxiosInstance.post(API_ROUTES.ROLE.CREATE_ROLE, data);
+  return response.data;
+};
+
+export const getAllRoles = async () => {
+  const response = await AxiosInstance.get(API_ROUTES.ROLE.GET_ROLES);
+  return response.data;
+};
+
+export const updateRole = async(data:updateRolePayload)=>{
+  const response = await AxiosInstance.patch(API_ROUTES.ROLE.UPDATE_ROLE.replace(':roleId',data.roleId),data)
+  return response.data
+}
+
+export const deleteRole = async(roleId:string)=>{
+  const response = await AxiosInstance.delete(API_ROUTES.ROLE.DELETE_ROLE.replace(':roleId',roleId))
+  return response.data
+}

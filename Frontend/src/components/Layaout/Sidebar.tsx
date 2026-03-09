@@ -66,13 +66,14 @@ const SidebarSection = ({ title, children }: SidebarSectionProps) => (
 
 export const Sidebar = ({ className }: { className?: string }) => {
     const user = useSelector((state: RootState) => state.auth.user);
-
+    const workspace = useSelector((state: RootState) => state.workspace.currentWorkspace);
+    console.log("fbsadhbvashkdbvklshdb",workspace)
 
     const fullName = user
         ? `${user.firstName} ${user.lastName}`.trim()
         : "User";
 
-    const roleLabel = "Team Member";
+    const roleLabel =  workspace?.ownerId?.id === user?.id ? "Owner" : "Team Member";
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { data: profileData } = useGetProfile();

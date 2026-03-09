@@ -3,7 +3,9 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 interface Workspace {
   id: string;
   name: string;
-  ownerId?: string;
+  ownerId?: {
+    id: string;
+  };
   role: "owner" | "member"; 
 }
 
