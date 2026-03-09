@@ -4,6 +4,7 @@ import {
   Get,
   HttpStatus,
   Inject,
+  Param,
   Post,
   Req,
   UseGuards,
@@ -14,6 +15,8 @@ import { CreateWorkspaceDto } from '../dto/req/CreateWorkspaceDto';
 import { ApiResponse } from 'src/common/utils/api-response.util';
 import { WORKSPACE_MESSAGE } from 'src/common/constants/messages.constant';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { WorkspaceMembersResponseDto } from '../dto/res/WorkspaceMembersResponseDto';
+import { ApiResponseDto } from 'src/common/dto/api-response.dto';
 interface AuthRequest extends Request {
   user: { userId: string };
 }
@@ -49,6 +52,18 @@ export class WorkspaceController {
       HttpStatus.OK,
       WORKSPACE_MESSAGE.FETCHED,
       userWorkspaces,
+    );
+  }
+  @Get(':workspaceId/members')
+  async getWorkspaceMembers(
+    @Param('workspaceId') workspaceId: string,
+  ): Promise<ApiResponseDto<WorkspaceMembersResponseDto>> {
+    const members =
+      await this._workspaceService.getWorkspaceMembers(workspaceId);
+    return ApiResponse.success(
+      HttpStatus.OK,
+      WORKSPACE_MESSAGE.MEMBERS,
+      members,
     );
   }
 }

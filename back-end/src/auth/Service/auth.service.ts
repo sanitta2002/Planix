@@ -142,7 +142,7 @@ export class AuthService implements IuserService {
     const { email } = dto;
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
-      throw new UnauthorizedException(AUTH_MESSAGES.INVALID_EMAIL);
+      throw new UnauthorizedException(AUTH_MESSAGES.EMAIL_NOT_EXIsTING);
     }
     if (!user.isEmailVerified) {
       this.logger.warn(`unverified email: ${email}`);

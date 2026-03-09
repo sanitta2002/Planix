@@ -21,6 +21,7 @@ import { WorkspaceModule } from './workspace/workspace.module';
 import { PaymentModule } from './payment/payment.module';
 import { StripeModule } from './common/stripe/stripe.module';
 import { InvitationModule } from './invitation/invitation.module';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { InvitationModule } from './invitation/invitation.module';
     PaymentModule,
     StripeModule,
     InvitationModule,
+    RoleModule,
   ],
 
   controllers: [AppController],

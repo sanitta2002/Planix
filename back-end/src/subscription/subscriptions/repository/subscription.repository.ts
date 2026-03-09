@@ -23,11 +23,13 @@ export class subscriptionRepository
   async findActiveByWorkspace(
     workspaceId: string,
   ): Promise<SubscriptionDocument | null> {
-    return await this._subscriptionModel.findOne({
-      workspaceId: new Types.ObjectId(workspaceId),
-      status: SubscriptionStatus.ACTIVE,
-      endDate: { $gt: new Date() },
-    });
+    return await this._subscriptionModel
+      .findOne({
+        workspaceId: new Types.ObjectId(workspaceId),
+        status: SubscriptionStatus.ACTIVE,
+        endDate: { $gt: new Date() },
+      })
+      .populate('planId');
   }
   async findActiveByUser(userId: string): Promise<SubscriptionDocument | null> {
     return await this._subscriptionModel.findOne({

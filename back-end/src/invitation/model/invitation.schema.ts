@@ -31,8 +31,5 @@ export class Invitation {
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   invitedBy: Types.ObjectId;
-
-  @Prop({ required: true })
-  expiresAt: Date;
 }
 export const InvitationSchema = SchemaFactory.createForClass(Invitation);

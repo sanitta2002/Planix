@@ -12,6 +12,7 @@ export const AUTH_MESSAGES = {
   INVALID_EMAIL: 'Invalid email',
   INVALID_PASSWORD: 'Invalid password',
   EMAIL_ALREADY_REGISTERED: 'Email already registered',
+  EMAIL_NOT_EXIsTING: 'Email not existing',
   EMAIL_NOT_VERIFIED: 'Please verify your email',
   ACCOUNT_BLOCKED: 'Your account has been blocked by admin',
   INVALID_REFRESH_TOKEN: 'Invalid refresh token',
@@ -77,6 +78,9 @@ export const WORKSPACE_MESSAGE = {
   NOT_FOUND: 'workspace not found',
   CREATED: 'workspace created',
   FETCHED: 'workspace fetched',
+  CONFLICT: 'Workspace name already exists',
+  MEMBERS: 'All members for fetched ',
+  NOT_ACTIVE: 'Workspace has no active subscription',
 };
 
 export const PAYMENT_MESSAGE = {
@@ -91,4 +95,17 @@ export const INVITE_MESSAGE = {
   NOT_FOUND: 'Invitation not found',
   CONFLICT: 'Invitation already used',
   INVALID: 'Invalid invitation',
+};
+
+export const ROLE_MESSAGE = {
+  CONFLICT: 'Role already used',
+  ROLE_FETCHING_FAILED: 'Failed to fetch roles !',
+  ROLE_NOT_FOUND: 'Role not found !',
+  PERMISSION_CANNOT_EMPTY: 'Permission cannot be empty !',
+  ROLE_NAME_ALREADY_EXISTS: 'Role name already exists !',
+
+  ROLE_CREATED: 'Role created successfully',
+  ROLE_FETCHED: 'Roles fetched successfully',
+  ROLE_UPDATED: 'Role updated successfully',
+  ROLE_DELETED: 'Role deleted successfully',
 };

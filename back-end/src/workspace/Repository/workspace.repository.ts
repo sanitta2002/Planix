@@ -16,11 +16,16 @@ export class WorkspaceRepository
   ) {
     super(_workSpaceModel);
   }
-  async findByOwner(userId: string): Promise<WorkspaceDocument[]> {
-    return await this._workSpaceModel.find({
-      ownerId: new Types.ObjectId(userId),
-      isDeleted: false,
-    });
+  async findByUser(userId: string): Promise<WorkspaceDocument[]> {
+    return await this._workSpaceModel
+      .find({
+        isDeleted: false,
+        $or: [
+          { ownerId: new Types.ObjectId(userId) },
+          { 'members.user': new Types.ObjectId(userId) },
+        ],
+      })
+      .sort({ createdAt: -1 });
   }
 
   async findAllWorkspace(
@@ -45,5 +50,22 @@ export class WorkspaceRepository
       this._workSpaceModel.countDocuments(filter),
     ]);
     return { workspaces, total };
+  }
+  async findByNameAndOwner(
+    name: string,
+    ownerId: string,
+  ): Promise<WorkspaceDocument | null> {
+    return this._workSpaceModel.findOne({
+      name: name,
+      ownerId: new Types.ObjectId(ownerId),
+    });
+  }
+  async findMembersByWorkspaceId(
+    workspaceId: string,
+  ): Promise<WorkspaceDocument | null> {
+    return await this._workSpaceModel.findById(workspaceId).populate({
+      path: 'members.user',
+      select: 'firstName lastName email',
+    });
   }
 }
