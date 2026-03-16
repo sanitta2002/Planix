@@ -16,6 +16,9 @@ export class SubscriptionPlan {
   @Prop({ required: true })
   maxProjects: number;
 
+  @Prop({ required: true })
+  durationDays: number;
+
   @Prop({ default: null })
   stripeProductId?: string;
 

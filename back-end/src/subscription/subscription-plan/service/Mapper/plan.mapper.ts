@@ -10,6 +10,7 @@ export class planMapper {
       maxMembers: plan.maxMembers,
       maxProjects: plan.maxProjects,
       features: plan.features,
+      durationDays: plan.durationDays,
       stripeProductId: plan.stripeProductId,
       stripePriceId: plan.stripePriceId,
       isActive: plan.isActive,

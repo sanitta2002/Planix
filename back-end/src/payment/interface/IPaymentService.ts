@@ -12,4 +12,5 @@ export interface IPaymentService {
     req: Request,
     signature: string,
   ): Promise<{ received: boolean }>;
+  retryPayment(subscriptionId: string): Promise<{ url: string | null }>;
 }

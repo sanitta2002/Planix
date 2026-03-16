@@ -4,6 +4,7 @@ export class PlanResponseDto {
   price: number;
   maxMembers: number;
   maxProjects: number;
+  durationDays: number;
   features: string[];
   stripeProductId?: string;
   stripePriceId?: string;

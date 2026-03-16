@@ -65,7 +65,7 @@ export class WorkspaceRepository
   ): Promise<WorkspaceDocument | null> {
     return await this._workSpaceModel.findById(workspaceId).populate({
       path: 'members.user',
-      select: 'firstName lastName email',
+      select: 'firstName lastName email avatarKey',
     });
   }
 }

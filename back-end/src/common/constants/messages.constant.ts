@@ -72,6 +72,7 @@ export const SUBSCRIPTION_MESSAGE = {
   SUBSCRIPTION_UPDATE: 'Subcription plan update successfully',
   SUBSCRIPTION_DELETE: 'Subcription plan delete successfully',
   ALLACTIVEPLAN: 'Active plans fetched',
+  PAYMENT_RETRY_SUCCESS: 'Payment retry successfully',
 };
 
 export const WORKSPACE_MESSAGE = {
@@ -81,6 +82,9 @@ export const WORKSPACE_MESSAGE = {
   CONFLICT: 'Workspace name already exists',
   MEMBERS: 'All members for fetched ',
   NOT_ACTIVE: 'Workspace has no active subscription',
+  MEMBER_DELETED: 'Member removed successfully',
+  UPDATED: 'workspace updated successfully',
+  LOGO_UPDATED: 'logo updated successfully',
 };
 
 export const PAYMENT_MESSAGE = {

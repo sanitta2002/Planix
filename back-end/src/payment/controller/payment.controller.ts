@@ -47,4 +47,16 @@ export class PaymentController {
   ) {
     return this._paymentService.handleWebhook(req, signature);
   }
+  @Post('retry')
+  async retry(@Body() body: { subscriptionId: string }) {
+    console.log('BODY RECEIVED:', body);
+    const session = await this._paymentService.retryPayment(
+      body.subscriptionId,
+    );
+    return ApiResponse.success(
+      HttpStatus.OK,
+      SUBSCRIPTION_MESSAGE.PAYMENT_RETRY_SUCCESS,
+      session,
+    );
+  }
 }

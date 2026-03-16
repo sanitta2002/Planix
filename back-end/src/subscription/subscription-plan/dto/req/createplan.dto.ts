@@ -22,6 +22,9 @@ export class CreatePlanDto {
   @IsNumber()
   maxMembers?: number;
 
+  @IsNumber()
+  durationDays: number;
+
   @IsOptional()
   @Type(() => Number)
   @IsNumber()

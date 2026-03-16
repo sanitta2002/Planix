@@ -26,8 +26,9 @@ export class subscriptionRepository
     return await this._subscriptionModel
       .findOne({
         workspaceId: new Types.ObjectId(workspaceId),
-        status: SubscriptionStatus.ACTIVE,
-        endDate: { $gt: new Date() },
+        status: {
+          $in: [SubscriptionStatus.ACTIVE, SubscriptionStatus.PENDING],
+        },
       })
       .populate('planId');
   }

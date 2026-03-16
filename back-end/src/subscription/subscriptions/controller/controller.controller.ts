@@ -62,4 +62,23 @@ export class SubscriptionController {
       subscription,
     );
   }
+  @UseGuards(JwtAuthGuard)
+  @Post('upgrade')
+  async upgradeSubscription(
+    @Req() req: AuthRequest,
+    @Body() dto: CreateSubscriptionDto,
+  ) {
+    const userId = req.user.userId;
+
+    const subscription = await this._subscriptionService.upgradeSubscription(
+      userId,
+      dto,
+    );
+
+    return ApiResponse.success(
+      HttpStatus.OK,
+      'Subscription upgraded successfully',
+      subscription,
+    );
+  }
 }

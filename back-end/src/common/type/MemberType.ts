@@ -6,6 +6,7 @@ export type PopulatedWorkspaceMember = {
     firstName: string;
     lastName: string;
     email: string;
+    avatarKey?: string;
   };
   role: 'owner' | 'member';
   joinedAt: Date;

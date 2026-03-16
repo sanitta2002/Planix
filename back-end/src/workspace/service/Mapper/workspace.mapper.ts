@@ -8,7 +8,10 @@ type Owner = {
 };
 
 export class WorkspaceMapper {
-  static toResponseDto(workspace: WorkspaceDocument): WorkspaceResponseDto {
+  static toResponseDto(
+    workspace: WorkspaceDocument,
+    logoUrl?: string | null,
+  ): WorkspaceResponseDto {
     const owner: Owner = workspace.ownerId as unknown as Owner;
     return {
       id: workspace._id.toString(),
@@ -23,6 +26,7 @@ export class WorkspaceMapper {
       members: workspace.members?.map((m) => m.toString()),
       subscriptionId: workspace.subscriptionId?.toString(),
       logo: workspace.logo,
+      logoUrl: logoUrl ?? null,
       createdAt: workspace.createdAt,
       updatedAt: workspace.updatedAt,
       subscriptionStatus: workspace.subscriptionStatus,

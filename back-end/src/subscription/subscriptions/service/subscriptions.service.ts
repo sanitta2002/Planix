@@ -38,6 +38,13 @@ export class SubscriptionsService implements ISubscriptionService {
     if (!subscription) {
       throw new NotFoundException('no active subscription found');
     }
+    if (subscription.endDate && subscription.endDate < new Date()) {
+      await this._subscriptionRepo.updateById(subscription._id.toString(), {
+        status: SubscriptionStatus.EXPIRED,
+      });
+
+      throw new BadRequestException('Subscription expired');
+    }
     return SubscriptionMapper.toResponseDto(subscription);
   }
 
@@ -52,12 +59,12 @@ export class SubscriptionsService implements ISubscriptionService {
     if (!plan) {
       throw new NotFoundException(SUBSCRIPTION_MESSAGE.NOT_FOUND);
     }
-    const active = await this._subscriptionRepo.findActiveByWorkspace(
-      dto.workspaceId,
-    );
-    if (active) {
-      throw new BadRequestException('workspace already  active subscription');
-    }
+    // const active = await this._subscriptionRepo.findActiveByWorkspace(
+    //   dto.workspaceId,
+    // );
+    // if (active) {
+    //   throw new BadRequestException('workspace already  active subscription');
+    // }
 
     const subscription = await this._subscriptionRepo.create({
       userId: new Types.ObjectId(userId),
@@ -70,6 +77,7 @@ export class SubscriptionsService implements ISubscriptionService {
 
   async makeactivateSubscription(
     subscriptionId: string,
+    stripeSubscriptionId: string,
   ): Promise<SubscriptionResponseDto> {
     this._logger.log(`activating subs: ${subscriptionId}`);
 
@@ -80,9 +88,23 @@ export class SubscriptionsService implements ISubscriptionService {
     if (subscription.status === SubscriptionStatus.ACTIVE) {
       throw new BadRequestException('subscription already active');
     }
+    const plan = await this._subscriptionPlanRepo.findById(
+      subscription.planId.toString(),
+    );
+    if (!plan) {
+      throw new NotFoundException(SUBSCRIPTION_MESSAGE.NOT_FOUND);
+    }
+
+    const startDate = new Date();
+
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + plan.durationDays);
+
     const updated = await this._subscriptionRepo.updateById(subscriptionId, {
       status: SubscriptionStatus.ACTIVE,
-      startDate: new Date(),
+      startDate: startDate,
+      endDate: endDate,
+      stripeSubscriptionId: stripeSubscriptionId,
     });
     if (!updated) {
       throw new NotFoundException('subscription update failed');
@@ -94,5 +116,36 @@ export class SubscriptionsService implements ISubscriptionService {
     this._logger.log(`sub activated successfully: ${subscriptionId}`);
 
     return SubscriptionMapper.toResponseDto(updated);
+  }
+
+  async upgradeSubscription(
+    userId: string,
+    dto: CreateSubscriptionDto,
+  ): Promise<SubscriptionResponseDto> {
+    const plan = await this._subscriptionPlanRepo.findById(dto.planId);
+    if (!plan) {
+      throw new NotFoundException(SUBSCRIPTION_MESSAGE.NOT_FOUND);
+    }
+    const existing = await this._subscriptionRepo.findActiveByWorkspace(
+      dto.workspaceId,
+    );
+
+    if (!existing) {
+      throw new BadRequestException('No subscription found for this workspace');
+    }
+
+    if (existing.status === SubscriptionStatus.ACTIVE) {
+      await this._subscriptionRepo.updateById(existing._id.toString(), {
+        status: SubscriptionStatus.EXPIRED,
+        endDate: new Date(),
+      });
+    }
+    const newSubscription = await this._subscriptionRepo.create({
+      userId: new Types.ObjectId(userId),
+      workspaceId: new Types.ObjectId(dto.workspaceId),
+      planId: new Types.ObjectId(dto.planId),
+      status: SubscriptionStatus.PENDING,
+    });
+    return SubscriptionMapper.toResponseDto(newSubscription);
   }
 }

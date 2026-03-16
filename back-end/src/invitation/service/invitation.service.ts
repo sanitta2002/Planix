@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Inject,
   Injectable,
@@ -52,6 +53,9 @@ export class InvitationService implements IInvitationService {
     if (!workspace) {
       throw new NotFoundException(WORKSPACE_MESSAGE.NOT_FOUND);
     }
+    if (workspace.members.length >= 6) {
+      throw new ConflictException('Workspace member limit reached');
+    }
     const inviter = workspace.members.find(
       (m) => m.user.toString() === currentUserId,
     );
@@ -78,6 +82,7 @@ export class InvitationService implements IInvitationService {
     await this._invitationRepo.create(invitationData);
     const frontendUrl = this._configService.get<string>('FRONTEND_URL');
     const inviteLink = `${frontendUrl}/invite/${token}`;
+    console.log('inviteLink', inviteLink);
     await this.__mailService.sendInvitationMail(dto.email, inviteLink);
     this._logger.log(`invitation email sent to ${dto.email}`);
     return { message: INVITE_MESSAGE.SUCCESS };

@@ -27,6 +27,9 @@ export class UpdatePlanDto {
   @IsNumber()
   maxProjects?: number;
 
+  @IsNumber()
+  durationDays: number;
+
   @IsOptional()
   @Type(() => Number)
   @IsNumber()

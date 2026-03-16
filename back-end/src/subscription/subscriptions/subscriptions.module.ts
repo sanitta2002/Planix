@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { SubscriptionsService } from './service/subscriptions.service';
 import { SubscriptionController } from './controller/controller.controller';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -13,7 +13,7 @@ import { WorkspaceModule } from 'src/workspace/workspace.module';
       { name: Subscription.name, schema: SubcriptionSchema },
     ]),
     SubscriptionPlanModule,
-    WorkspaceModule,
+    forwardRef(() => WorkspaceModule),
   ],
   providers: [
     {
@@ -26,6 +26,6 @@ import { WorkspaceModule } from 'src/workspace/workspace.module';
     },
   ],
   controllers: [SubscriptionController],
-  exports: ['ISubscriptionService'],
+  exports: ['ISubscriptionService', 'ISubscriptionRepository'],
 })
 export class SubscriptionsModule {}

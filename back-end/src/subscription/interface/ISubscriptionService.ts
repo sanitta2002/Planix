@@ -9,5 +9,10 @@ export interface ISubscriptionService {
   getActiveSubscription(userId: string): Promise<SubscriptionResponseDto>;
   makeactivateSubscription(
     subscriptionId: string,
+    stripeSubscriptionId: string,
+  ): Promise<SubscriptionResponseDto>;
+  upgradeSubscription(
+    userId: string,
+    dto: CreateSubscriptionDto,
   ): Promise<SubscriptionResponseDto>;
 }

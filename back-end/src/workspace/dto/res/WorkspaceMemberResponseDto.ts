@@ -4,5 +4,6 @@ export class WorkspaceMemberResponseDto {
   lastName: string;
   email: string;
   role: 'owner' | 'member';
+  avatarUrl: string | null;
   joinedAt: Date;
 }
