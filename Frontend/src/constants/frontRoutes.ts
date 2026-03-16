@@ -26,5 +26,7 @@ export const FRONTEND_ROUTES = {
   PAYMENT_SUCCESS: "/payment-success",
   INVITE: "/invite",
   INVITE_ACCEPT: "/invite/:token",
-  COMPLETEPROFILE:"/complete/:token"
+  COMPLETEPROFILE:"/complete/:token",
+  SETTING:"/settings",
+  PAYMENT:"/payment"
 };

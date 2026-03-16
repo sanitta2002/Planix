@@ -1,10 +1,11 @@
 
 import { Check } from 'lucide-react';
-import { useCreateSubscription, useGetActivePlan } from '../../../hooks/user/userHook';
+import { useCreateSubscription, useGetActivePlan, useUpgradeSubscription, useWorkspacePaymentDetails } from '../../../hooks/user/userHook';
 import { useState } from 'react';
-import { useSearchParams } from 'react-router';
 import { toast } from 'sonner';
 import { createCheckoutSession } from '../../../Service/user/userService';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../../store/Store';
 
 
 interface Plan {
@@ -26,10 +27,18 @@ const SubscriptionPage = () => {
     const plans: Plan[] =
         data?.data?.filter((p: Plan) => p.isActive).slice(0, 3) || [];
 
-    const [params] = useSearchParams()
-    const workspaceId = params.get('workspaceId')
-    console.log('workspace id', workspaceId)
+    const currentWorkspace = useSelector(
+        (state: RootState) => state.workspace.currentWorkspace
+    );
+
+    const workspaceId = currentWorkspace?.id;
     const { mutate: createSubscribtion } = useCreateSubscription()
+    const { mutate: upgradeSubscription } = useUpgradeSubscription();
+
+    const { data: paymentData } = useWorkspacePaymentDetails(workspaceId ?? '');
+    const subscription = paymentData?.data;
+
+
     // const navigate = useNavigate()
 
 
@@ -47,11 +56,13 @@ const SubscriptionPage = () => {
             return
         }
 
-        createSubscribtion({
+        const mutation = subscription?.plan ? upgradeSubscription : createSubscribtion;
+
+        mutation({
             planId: selectedPlan,
             workspaceId: workspaceId!,
         }, {
-            onSuccess:async (res) => {
+            onSuccess: async (res) => {
                 console.log('sub created', res)
                 const subscriptionId = res.data.id
                 try {
@@ -61,12 +72,12 @@ const SubscriptionPage = () => {
                     })
                     window.location.href = session.url
                 } catch (error) {
-                   toast.error("Payment initialization failed");
-                   console.log(error)
+                    toast.error("Payment initialization failed");
+                    console.log(error)
                 }
 
             },
-            onError:()=>{
+            onError: () => {
                 toast.error("Payment initialization failed");
             }
         })

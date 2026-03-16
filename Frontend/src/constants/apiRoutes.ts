@@ -27,16 +27,23 @@ export const API_ROUTES = {
     CREATE: "workspaces/workspace",
     GETWORKSPACE: "workspaces/workspace",
     GET_MEMBERS: "workspaces/:workspaceId/members",
+    DELETE_MEMBERS:"workspaces/:workspaceId/members/:memberId",
+    GET_PROFILE:"workspaces/:workspaceId",
+    UPDATE:"workspaces/:workspaceId",
+    UPLOAD_LOGO:"workspaces/:workspaceId/logo",
+    GET_PAYMENT_DETAILS: "/workspaces/:workspaceId/payment",   
   },
 
   SUBSCRIPTION: {
     GET_PLANS: "subscriptions/plans",
     CREATE: "/subscriptions",
+    UPGRADE:"/subscriptions/upgrade"
   },
 
   PAYMENT: {
     CHECKOUT: "/payment/checkout",
     CONFIRM: "/payment/confirm",
+    RETRY: "/payment/retry"
   },
   INVITATION: {
     INVITE_MEMBER: "/invitation/:workspaceId",

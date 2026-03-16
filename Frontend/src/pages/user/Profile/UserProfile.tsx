@@ -45,6 +45,7 @@ const UserProfile = () => {
     const { mutate: uploadAvatar } = useUploadAvatar();
     const { data: profileData } = useGetProfile();
     const workspace = useSelector((state:RootState)=>state.workspace.currentWorkspace)
+    const isOwner = workspace?.id===user?.id
 
 
 
@@ -272,7 +273,7 @@ const UserProfile = () => {
                                         }
                                         setIsChangePasswordModalOpen(true);
                                     }else if(item.label==='Role Preferences'){
-                                        if(workspace?.role!=='owner'){
+                                        if(isOwner){
                                             toast.error("Only owner can manage roles")
                                             return
                                         }

@@ -1,11 +1,12 @@
 
-import { Calendar } from "lucide-react";
+import { Calendar, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../store/Store";
-import { useInviteMember, useWorkspaceMembers } from "../../../hooks/user/userHook";
+import { useInviteMember, useRemoveWorkspaceMember, useWorkspaceMembers } from "../../../hooks/user/userHook";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import ConfirmationModal from "../../../components/modal/ConfirmationModal";
 
 
 export interface WorkspaceMember {
@@ -15,6 +16,7 @@ export interface WorkspaceMember {
     email: string;
     role: "owner" | "member";
     joinedAt: string;
+    avatarUrl?: string;
 }
 
 
@@ -22,8 +24,13 @@ export default function InviteMemberPage() {
     const [email, setEmail] = useState<string>('')
     const [name, setName] = useState<string>('')
     const currentWorkspace = useSelector((state: RootState) => state.workspace.currentWorkspace)
+    const user = useSelector((state: RootState) => state.auth.user);
+    const isOwner = currentWorkspace?.ownerId?.id === user?.id;
     const { mutate: inviteMember } = useInviteMember()
     const { data, isLoading } = useWorkspaceMembers(currentWorkspace?.id || "")
+    const { mutate: removeMember } = useRemoveWorkspaceMember()
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [memberToDelete, setMemberToDelete] = useState<string | null>(null);
 
     const handleInvite = () => {
         if (!email) {
@@ -50,6 +57,35 @@ export default function InviteMemberPage() {
         })
     };
 
+
+    const handleRemoveMember = (memberId: string) => {
+        if (!currentWorkspace?.id) return;
+
+        removeMember(
+            {
+                workspaceId: currentWorkspace.id,
+                memberId,
+            },
+            {
+                onSuccess: () => {
+                    toast.success("Member removed successfully");
+                    setIsDeleteOpen(false);
+                    setMemberToDelete(null);
+                },
+                onError: (error) => {
+                    if (error instanceof AxiosError) {
+                        toast.error(error.response?.data.message);
+                    }
+                },
+            }
+        );
+    };
+
+    const confirmDeleteMember = () => {
+        if (!memberToDelete || !currentWorkspace?.id) return;
+
+        handleRemoveMember(memberToDelete);
+    };
 
 
     return (
@@ -136,6 +172,21 @@ export default function InviteMemberPage() {
                                 className="flex items-center gap-4 p-4 rounded-xl bg-[#1a2340]/60 border border-gray-800/30 hover:border-gray-700/50 hover:bg-[#1a2340] transition-all duration-200 group"
                             >
 
+                                {/* Avatar */}
+                                <div className="w-10 h-10 rounded-full bg-[#2b3564] flex items-center justify-center overflow-hidden text-xs font-semibold text-white">
+                                    {member.avatarUrl ? (
+                                        <img
+                                            src={member.avatarUrl}
+                                            alt="avatar"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <span>
+                                            {`${member.firstName?.[0] ?? ""}${member.lastName?.[0] ?? ""}`}
+                                        </span>
+                                    )}
+                                </div>
+
                                 {/* Member Info */}
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-semibold text-white truncate">
@@ -150,8 +201,8 @@ export default function InviteMemberPage() {
                                 {/* Role Badge */}
                                 <span
                                     className={`px-3 py-1 rounded-full text-xs font-medium ${member.role === "member"
-                                            ? "bg-green-500/20 text-green-400"
-                                            : "bg-[#8e1414]/20 text-[#c71414]"
+                                        ? "bg-green-500/20 text-green-400"
+                                        : "bg-[#8e1414]/20 text-[#c71414]"
                                         }`}
                                 >
                                     {member.role}
@@ -164,6 +215,18 @@ export default function InviteMemberPage() {
                                         {new Date(member.joinedAt).toLocaleDateString()}
                                     </span>
                                 </div>
+
+                                {isOwner && member.role !== "owner" && (
+                                    <button
+                                        onClick={() => {
+                                            setMemberToDelete(member.id);
+                                            setIsDeleteOpen(true);
+                                        }}
+                                        className="p-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-all"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                )}
 
                             </div>
                         ))
@@ -178,6 +241,19 @@ export default function InviteMemberPage() {
 
                 </div>
             </div>
+
+
+            <ConfirmationModal
+                isOpen={isDeleteOpen}
+                onClose={() => setIsDeleteOpen(false)}
+                onConfirm={confirmDeleteMember}
+                title="Remove Member"
+                message="Are you sure you want to remove this member from the workspace?"
+                confirmText="Remove"
+                cancelText="Cancel"
+                type="danger"
+                isLoading={false}
+            />
         </div>
     );
 }

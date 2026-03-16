@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   acceptInvite,
   changePassword,
@@ -13,10 +13,17 @@ import {
   getProfile,
   getUserWorkspaces,
   getWorkspaceMembers,
+  getWorkspacePaymentDetails,
+  getWorkspaceProfile,
   inviteMembers,
+  removeWorkspaceMember,
+  retryPayment,
   updateProfile,
   updateRole,
+  updateWorkspace,
+  upgradeSubscription,
   uploadAvatar,
+  uploadWorkspaceLogo,
 } from "../../Service/user/userService";
 
 export const useUpdateProfile = () => {
@@ -54,6 +61,42 @@ export const useUserWorkspaces = () => {
   return useQuery({
     queryKey: ["workspaces"],
     queryFn: getUserWorkspaces,
+  });
+};
+
+export const useWorkspaceProfile = (workspaceId: string) => {
+  return useQuery({
+    queryKey: ["workspace-profile", workspaceId],
+    queryFn: () => getWorkspaceProfile(workspaceId),
+    enabled: !!workspaceId,
+  });
+};
+
+export const useUpdateWorkspace = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateWorkspace,
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["workspace-profile", variables.workspaceId],
+      });
+    },
+  });
+};
+
+export const useUploadWorkspaceLogo = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ workspaceId, file }: { workspaceId: string; file: File }) =>
+      uploadWorkspaceLogo(workspaceId, file),
+
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["workspace-profile", variables.workspaceId],
+      });
+    },
   });
 };
 
@@ -106,35 +149,66 @@ export const useCompleteProfile = () => {
   });
 };
 
-
-export const useWorkspaceMembers = (workspaceId:string)=>{
+export const useWorkspaceMembers = (workspaceId: string) => {
   return useQuery({
     queryKey: ["workspacemembers", workspaceId],
     queryFn: () => getWorkspaceMembers(workspaceId),
     enabled: !!workspaceId,
   });
-}
+};
 
-export const useCreateRole =()=>{
+export const useRemoveWorkspaceMember = () => {
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn:createRole
-  })
-}
-export const useGetRoles=()=>{
+    mutationFn: removeWorkspaceMember,
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["workspace-members", variables.workspaceId],
+      });
+    },
+  });
+};
+
+export const useCreateRole = () => {
+  return useMutation({
+    mutationFn: createRole,
+  });
+};
+export const useGetRoles = () => {
   return useQuery({
-    queryKey:['roles'],
-    queryFn:getAllRoles
-  })
-}
+    queryKey: ["roles"],
+    queryFn: getAllRoles,
+  });
+};
 
 export const useUpdateRole = () => {
-    return useMutation({
-        mutationFn: updateRole
-    })
-}
+  return useMutation({
+    mutationFn: updateRole,
+  });
+};
 
 export const useDeleteRole = () => {
-    return useMutation({
-        mutationFn: deleteRole
-    })
-}
+  return useMutation({
+    mutationFn: deleteRole,
+  });
+};
+
+export const useWorkspacePaymentDetails = (workspaceId: string) => {
+  return useQuery({
+    queryKey: ["workspace-payment", workspaceId],
+    queryFn: () => getWorkspacePaymentDetails(workspaceId),
+    enabled: !!workspaceId,
+  });
+};
+
+export const useUpgradeSubscription = () => {
+  return useMutation({
+    mutationFn: upgradeSubscription,
+  });
+};
+
+export const useRetryPayment = () => {
+  return useMutation({
+    mutationFn: retryPayment,
+  });
+};
