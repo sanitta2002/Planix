@@ -7,7 +7,7 @@ import { JwtPayload } from 'src/common/jwt/payload/JwtPayload';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(private readonly configService: ConfigService) {
-    const jwtSecret = configService.get<string>('JWT_SECRET');
+    const jwtSecret = configService.get<string>('ACCESS_TOKEN_SECRET');
 
     if (!jwtSecret) {
       throw new Error('JWT_SECRET is not defined in environment variables');

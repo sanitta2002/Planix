@@ -12,9 +12,16 @@ import { JwtMiddleware } from 'src/common/middleware/jwt.middleware';
 import { S3Service } from 'src/common/s3/s3.service';
 import { WorkspaceModule } from 'src/workspace/workspace.module';
 import { SubscriptionsModule } from 'src/subscription/subscriptions/subscriptions.module';
+import { PaymentModule } from 'src/payment/payment.module';
 
 @Module({
-  imports: [AppJwtModule, UsersModule, WorkspaceModule, SubscriptionsModule],
+  imports: [
+    AppJwtModule,
+    UsersModule,
+    WorkspaceModule,
+    SubscriptionsModule,
+    PaymentModule,
+  ],
   providers: [
     {
       provide: 'IAdminService',

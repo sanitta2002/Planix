@@ -1,4 +1,4 @@
-import { IsMongoId } from 'class-validator';
+import { IsMongoId, IsNotEmpty } from 'class-validator';
 
 export class CreateCheckoutDto {
   @IsMongoId()
@@ -6,4 +6,8 @@ export class CreateCheckoutDto {
 
   @IsMongoId()
   subscriptionId: string;
+
+  @IsNotEmpty()
+  @IsMongoId()
+  workspaceId: string;
 }

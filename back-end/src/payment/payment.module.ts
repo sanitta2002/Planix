@@ -13,5 +13,6 @@ import { SubscriptionPlanModule } from 'src/subscription/subscription-plan/subsc
     },
   ],
   controllers: [PaymentController],
+  exports: ['IPaymentService'],
 })
 export class PaymentModule {}

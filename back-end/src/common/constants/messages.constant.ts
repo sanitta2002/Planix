@@ -90,6 +90,7 @@ export const WORKSPACE_MESSAGE = {
 export const PAYMENT_MESSAGE = {
   NOT_COMPLETED: 'Payment not completed',
   MISSING_DATA: 'Subscription metadata missing',
+  PAYMENT_FETCH: 'payment fetch successfully',
 };
 
 export const INVITE_MESSAGE = {

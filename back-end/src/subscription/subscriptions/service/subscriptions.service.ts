@@ -54,17 +54,18 @@ export class SubscriptionsService implements ISubscriptionService {
   ): Promise<SubscriptionResponseDto> {
     console.log(dto.planId);
     console.log(dto.workspaceId);
+    this._logger.log(`plan id : ${dto.planId}`);
 
     const plan = await this._subscriptionPlanRepo.findById(dto.planId);
     if (!plan) {
       throw new NotFoundException(SUBSCRIPTION_MESSAGE.NOT_FOUND);
     }
-    // const active = await this._subscriptionRepo.findActiveByWorkspace(
-    //   dto.workspaceId,
-    // );
-    // if (active) {
-    //   throw new BadRequestException('workspace already  active subscription');
-    // }
+    const active = await this._subscriptionRepo.findActiveByWorkspace(
+      dto.workspaceId,
+    );
+    if (active) {
+      throw new BadRequestException('workspace already  active subscription');
+    }
 
     const subscription = await this._subscriptionRepo.create({
       userId: new Types.ObjectId(userId),
@@ -72,6 +73,7 @@ export class SubscriptionsService implements ISubscriptionService {
       planId: new Types.ObjectId(dto.planId),
       status: SubscriptionStatus.PENDING,
     });
+    console.log(subscription);
     return SubscriptionMapper.toResponseDto(subscription);
   }
 
@@ -106,12 +108,16 @@ export class SubscriptionsService implements ISubscriptionService {
       endDate: endDate,
       stripeSubscriptionId: stripeSubscriptionId,
     });
+
+    console.log('subsription', subscription.workspaceId.toString());
     if (!updated) {
       throw new NotFoundException('subscription update failed');
     }
     await this._workspaceRepository.updateById(
       subscription.workspaceId.toString(),
-      { subscriptionStatus: 'active' },
+      {
+        subscriptionStatus: 'active',
+      },
     );
     this._logger.log(`sub activated successfully: ${subscriptionId}`);
 

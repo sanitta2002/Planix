@@ -42,4 +42,11 @@ export class subscriptionRepository
   async findByStripeSubscriptionId(stripeSubscriptionId: string) {
     return this._subscriptionModel.findOne({ stripeSubscriptionId });
   }
+  async findAllPayments(): Promise<SubscriptionDocument[]> {
+    return await this._subscriptionModel
+      .find()
+      .populate('userId', 'name email')
+      .populate('planId', 'name price')
+      .sort({ createdAt: -1 });
+  }
 }

@@ -16,6 +16,7 @@ import { Request } from 'express';
 import type { ISubscriptionRepository } from 'src/subscription/interface/ISubscriptionRepository';
 import { SubscriptionStatus } from 'src/subscription/Model/subscription.schema';
 import type { ISubscriptionPlanRepository } from 'src/subscription/interface/ISubscriptionPlanRepository';
+import { PaymentDto } from '../dto/PaymentDto';
 
 @Injectable()
 export class PaymentService implements IPaymentService {
@@ -38,6 +39,7 @@ export class PaymentService implements IPaymentService {
   async createCheckoutSession(
     plan: IPlan,
     subscriptionId: string,
+    workspaceId: string,
   ): Promise<Stripe.Checkout.Session> {
     this._logger.log(`create stripe checkout session: ${subscriptionId}`);
     const session = await this.stripe.checkout.sessions.create({
@@ -56,7 +58,7 @@ export class PaymentService implements IPaymentService {
           quantity: 1,
         },
       ],
-      metadata: { subscriptionId },
+      metadata: { subscriptionId, workspaceId },
       success_url: `${this.configService.get('FRONTEND_URL')}/payment-success`,
       cancel_url: `${this.configService.get('FRONTEND_URL')}/payment-cancel`,
     });
@@ -90,18 +92,24 @@ export class PaymentService implements IPaymentService {
         signature,
         endpointSecret!,
       );
-      console.log(event);
       this._logger.log(`stripe webhook receive: ${event.type}`);
     } catch (error) {
       console.log(error);
       return { received: false };
     }
     if (event.type === 'checkout.session.completed') {
+      console.log('event', event);
+
       const session = event.data.object;
+
       this._logger.log(`checkout completed: ${session.id}`);
+
       const subscriptionId = session.metadata?.subscriptionId;
+      console.log(subscriptionId + 'subscription id');
       const stripeSubscriptionId = session.subscription as string;
+
       if (subscriptionId) {
+        console.log('updating subscription');
         await this.subscriptionService.makeactivateSubscription(
           subscriptionId,
           stripeSubscriptionId,
@@ -158,5 +166,22 @@ export class PaymentService implements IPaymentService {
     });
 
     return { url: session.url };
+  }
+  async getAllPayments(): Promise<PaymentDto[]> {
+    const payments = await this.subscriptionRepo.findAllPayments();
+
+    return payments.map((sub) => {
+      const user = sub.userId as unknown as { email: string };
+      const plan = sub.planId as unknown as { name: string; price: number };
+
+      return {
+        id: sub._id.toString(),
+        user: user?.email,
+        plan: plan?.name,
+        amount: plan?.price,
+        status: sub.status,
+        startDate: sub.startDate,
+      };
+    });
   }
 }

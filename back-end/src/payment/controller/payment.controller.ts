@@ -28,6 +28,7 @@ export class PaymentController {
     const sessions = await this._paymentService.createCheckoutSession(
       plan,
       dto.subscriptionId,
+      dto.workspaceId,
     );
     return { url: sessions.url as string };
   }

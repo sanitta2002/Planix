@@ -37,7 +37,7 @@ export class WorkspaceRepository
     if (search) {
       filter = {
         ...filter,
-        name: { $regex: search, $option: 'i' },
+        $or: [{ name: { $regex: search, $options: 'i' } }],
       };
     }
     const [workspaces, total] = await Promise.all([
@@ -46,7 +46,7 @@ export class WorkspaceRepository
         .populate('ownerId', 'firstName lastName email')
         .skip((page - 1) * limit)
         .limit(limit)
-        .sort({ createAt: -1 }),
+        .sort({ createdAt: -1 }),
       this._workSpaceModel.countDocuments(filter),
     ]);
     return { workspaces, total };
