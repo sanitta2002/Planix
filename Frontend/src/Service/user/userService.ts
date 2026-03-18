@@ -30,6 +30,7 @@ export interface CreateSubscriptionPayload {
 export interface CreateCheckoutPayload {
   planId: string;
   subscriptionId: string;
+  workspaceId: string;
 }
 
 export interface InviteMemberPayload {

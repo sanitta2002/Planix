@@ -1,4 +1,3 @@
-
 import { AxiosInstance } from "../../axios/axios";
 import { API_ROUTES } from "../../constants/apiRoutes";
 
@@ -104,4 +103,15 @@ export const getWorkspaces = async (params: GetWorkspacePayload) => {
     params,
   });
   return response;
+};
+
+export const getAllPayments = async () => {
+  const response = await AxiosInstance.get(API_ROUTES.Admin.paymets);
+  return response.data;
+};
+export const downloadReport = async () => {
+  const response = await AxiosInstance.get(API_ROUTES.Admin.REPORT, {
+    responseType: "blob",
+  });
+  return response.data
 };

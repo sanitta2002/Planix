@@ -17,6 +17,7 @@ export const FRONTEND_ROUTES = {
   ADMIN_PAYMENTS_DETAILS: "/admin/payments",
   ADMIN_WORKSPACES: "/admin/workspaces",
 
+
   //USER
   PROFILE: "user/profile",
 

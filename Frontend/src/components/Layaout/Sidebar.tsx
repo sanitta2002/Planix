@@ -67,6 +67,7 @@ const SidebarSection = ({ title, children }: SidebarSectionProps) => (
 export const Sidebar = ({ className }: { className?: string }) => {
     const user = useSelector((state: RootState) => state.auth.user);
     const workspace = useSelector((state: RootState) => state.workspace.currentWorkspace);
+    const isOwner = workspace?.ownerId?.id===user?.id
     console.log("fbsadhbvashkdbvklshdb",workspace)
 
     const fullName = user
@@ -122,7 +123,10 @@ export const Sidebar = ({ className }: { className?: string }) => {
 
                 <SidebarSection title="System">
                     <SidebarItem icon={Settings} label="Settings" to="/settings" />
-                    <SidebarItem icon={DollarSign} label="Payment Details" to="/payment" />
+                    {isOwner && (
+                         <SidebarItem icon={DollarSign} label="Payment Details" to="/payment" />
+                    )}
+                    
                 </SidebarSection>
             </div>
 

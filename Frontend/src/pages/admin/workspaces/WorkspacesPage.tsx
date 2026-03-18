@@ -26,8 +26,9 @@ function WorkspacesPage() {
   const { data, isLoading } = useGetWorkspaces({
     page,
     limit,
-    search: debouncedSearch
+    search: debouncedSearch  || undefined,
   })
+ console.log("Search sent:", debouncedSearch);
 
   const total = data?.total ?? 0
   const totalPages = data?.totalPages ?? 1;
@@ -94,7 +95,7 @@ function WorkspacesPage() {
         <input
           placeholder="Search workspace..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) =>{setPage(1) ;setSearch(e.target.value)}}
           className="bg-[#0f1729] border border-gray-700 rounded px-4 py-2 text-sm text-white focus:outline-none"
         />
       </div>

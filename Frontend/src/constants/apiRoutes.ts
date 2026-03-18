@@ -16,6 +16,8 @@ export const API_ROUTES = {
     BASE: "/admin",
     SUBSCRIPTION_PLAN: "/admin/subscriptionPlan",
     WORKSPACES: "/admin/workspaces",
+    paymets:"/admin/paymets",
+    REPORT:"/admin/report"
   },
   USER: {
     UPDATE_PROFILE: "/users/profile",
@@ -43,7 +45,9 @@ export const API_ROUTES = {
   PAYMENT: {
     CHECKOUT: "/payment/checkout",
     CONFIRM: "/payment/confirm",
-    RETRY: "/payment/retry"
+    RETRY: "/payment/retry",
+    INVOICE: "/payment/invoice/:invoiceId"
+
   },
   INVITATION: {
     INVITE_MEMBER: "/invitation/:workspaceId",

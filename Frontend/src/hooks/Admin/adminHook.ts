@@ -4,6 +4,7 @@ import {
   blockUser,
   createPlan,
   deletePlan,
+  getAllPayments,
   getPlans,
   getUsers,
   getWorkspaces,
@@ -131,8 +132,18 @@ export const useDeletePlan = () => {
 
 export const useGetWorkspaces = (params: GetWorkspacePayload) => {
   return useQuery({
-    queryKey: ["admin-workspaces", params],
+    queryKey: ["admin-workspaces", params.page,
+      params.limit,
+      params.search,],
     queryFn: () => getWorkspaces(params),
    select: (res) => res.data,
   });
 };
+
+
+export const useGetAllpayments = ()=>{
+  return useQuery({
+    queryKey:["admin-payments"],
+    queryFn:getAllPayments
+  })
+}

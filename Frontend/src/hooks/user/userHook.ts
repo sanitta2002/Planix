@@ -151,7 +151,7 @@ export const useCompleteProfile = () => {
 
 export const useWorkspaceMembers = (workspaceId: string) => {
   return useQuery({
-    queryKey: ["workspacemembers", workspaceId],
+    queryKey: ["workspace-members", workspaceId],
     queryFn: () => getWorkspaceMembers(workspaceId),
     enabled: !!workspaceId,
   });
@@ -170,8 +170,12 @@ export const useRemoveWorkspaceMember = () => {
 };
 
 export const useCreateRole = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createRole,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["roles"] });
+    },
   });
 };
 export const useGetRoles = () => {
@@ -212,3 +216,4 @@ export const useRetryPayment = () => {
     mutationFn: retryPayment,
   });
 };
+

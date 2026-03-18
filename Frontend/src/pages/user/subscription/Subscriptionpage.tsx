@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { createCheckoutSession } from '../../../Service/user/userService';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/Store';
+import { useSearchParams } from 'react-router';
 
 
 interface Plan {
@@ -31,7 +32,10 @@ const SubscriptionPage = () => {
         (state: RootState) => state.workspace.currentWorkspace
     );
 
-    const workspaceId = currentWorkspace?.id;
+    const [searchParams] = useSearchParams();
+    const searchParamWorkSpaceId = searchParams.get("workspaceId")
+
+    const workspaceId = searchParamWorkSpaceId ?? currentWorkspace?.id;
     const { mutate: createSubscribtion } = useCreateSubscription()
     const { mutate: upgradeSubscription } = useUpgradeSubscription();
 
@@ -68,7 +72,8 @@ const SubscriptionPage = () => {
                 try {
                     const session = await createCheckoutSession({
                         planId: selectedPlan,
-                        subscriptionId
+                        subscriptionId,
+                        workspaceId
                     })
                     window.location.href = session.url
                 } catch (error) {

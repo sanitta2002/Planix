@@ -1,9 +1,11 @@
 import { useSelector } from "react-redux";
-import { CreditCard, FileText } from "lucide-react";
+import { CreditCard } from "lucide-react";
 import { useRetryPayment, useWorkspacePaymentDetails } from "../../../hooks/user/userHook";
 import type { RootState } from "../../../store/Store";
 import { useNavigate } from "react-router";
 import { FRONTEND_ROUTES } from "../../../constants/frontRoutes";
+
+
 
 
 interface Payment {
@@ -40,6 +42,10 @@ const PaymentDetails = () => {
     currentWorkspace?.id ?? ""
   );
 
+  if(data && !data?.data?.subscriptionId){
+    navigate("/plan")
+  }
+
   const subscription = data?.data;
 
   const payments: Payment[] = subscription
@@ -58,13 +64,10 @@ const PaymentDetails = () => {
   const { mutate: retryPayment } = useRetryPayment();
 
 
-  const downloadInvoice = () => {
-    console.log("Download invoice");
-  };
 
   const handleRetryPayment = () => {
     console.log(data)
-    retryPayment({subscriptionId: data.data.subscriptionId}, {
+    retryPayment({ subscriptionId: data.data.subscriptionId }, {
       onSuccess: (res) => {
         const url = res.data.url;
 
@@ -77,6 +80,8 @@ const PaymentDetails = () => {
       },
     });
   };
+
+
   return (
     <div className="text-slate-200 p-6 md:p-10 font-['Inter','Segoe_UI',sans-serif]">
 
@@ -179,9 +184,6 @@ const PaymentDetails = () => {
                   Status
                 </th>
                 <th className="py-4 px-4 text-xs font-semibold text-slate-500 uppercase">
-                  Invoice
-                </th>
-                <th className="py-4 px-4 text-xs font-semibold text-slate-500 uppercase">
                   Action
                 </th>
               </tr>
@@ -227,15 +229,14 @@ const PaymentDetails = () => {
                       </span>
                     </td>
 
-                    
 
-                    <td className="py-4 px-4 text-sm text-slate-500">
+
+                    {/* <td className="py-4 px-4 text-sm text-slate-500">
                       {payment.invoiceId ?? "-"}
-                    </td>
+                    </td> */}
 
                     {/* Action Column */}
                     <td className="py-4 px-4">
-
                       {payment.status === "pending" ? (
                         <button
                           onClick={handleRetryPayment}
@@ -245,15 +246,10 @@ const PaymentDetails = () => {
                           Retry Payment
                         </button>
                       ) : (
-                        <button
-                          onClick={downloadInvoice}
-                          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1A1F3D] border border-slate-700/50 text-slate-300 text-xs hover:bg-[#1E2445]"
-                        >
-                          <FileText className="w-3.5 h-3.5" />
-                          View Invoice
-                        </button>
+                        <span className="text-xs text-slate-500">
+                          No Action
+                        </span>
                       )}
-
                     </td>
 
                   </tr>
