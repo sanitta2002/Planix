@@ -12,6 +12,7 @@ export const AUTH_MESSAGES = {
   INVALID_EMAIL: 'Invalid email',
   INVALID_PASSWORD: 'Invalid password',
   EMAIL_ALREADY_REGISTERED: 'Email already registered',
+  EMAIL_NOT_EXIsTING: 'Email not existing',
   EMAIL_NOT_VERIFIED: 'Please verify your email',
   ACCOUNT_BLOCKED: 'Your account has been blocked by admin',
   INVALID_REFRESH_TOKEN: 'Invalid refresh token',
@@ -62,4 +63,65 @@ export const GENERAL_MESSAGES = {
   NOT_FOUND: 'Resource not found',
   INTERNAL_SERVER_ERROR: 'Internal server error',
   FILE_REQUIRED: 'File is required',
+};
+
+export const SUBSCRIPTION_MESSAGE = {
+  NOT_FOUND: 'Subscription plan not found',
+  SUBSCRIPTION_SUCCESS: 'Subscription  created successfully',
+  SUBSCRIPTION_FETCH: 'Subcription  frtched successfully ',
+  SUBSCRIPTION_UPDATE: 'Subcription update successfully',
+  SUBSCRIPTION_DELETE: 'Subcription plan delete successfully',
+  ALLACTIVEPLAN: 'Active plans fetched',
+  PAYMENT_RETRY_SUCCESS: 'Payment retry successfully',
+  NO_SUBCRIPTION: 'No subscription found for this workspace',
+  SUBSCRIPTION_FAILD: 'subscription update failed',
+  SUBSCRIPTION: 'subscription already active',
+  SUBSCRIPTION_EXPIED: 'Subscription expired',
+  ACTIVE_SUBSCRIPTION: 'workspace already  active subscription',
+};
+
+export const WORKSPACE_MESSAGE = {
+  NOT_FOUND: 'workspace not found',
+  CREATED: 'workspace created',
+  FETCHED: 'workspace fetched',
+  CONFLICT: 'Workspace name already exists',
+  MEMBERS: 'All members for fetched ',
+  NOT_ACTIVE: 'Workspace has no active subscription',
+  MEMBER_DELETED: 'Member removed successfully',
+  UPDATED: 'workspace updated successfully',
+  LOGO_UPDATED: 'logo updated successfully',
+  USER_ALREADY_EXISTS: 'User already exists in workspace',
+  MEMBER_LIMIT: 'Workspace member limit reached',
+};
+
+export const PAYMENT_MESSAGE = {
+  NOT_COMPLETED: 'Payment not completed',
+  MISSING_DATA: 'Subscription metadata missing',
+  PAYMENT_FETCH: 'payment fetch successfully',
+};
+
+export const INVITE_MESSAGE = {
+  FORBIDDEN: 'Only owner can invite members',
+  BADREQUEST: 'Invitation already sent',
+  SUCCESS: 'Invitation successfully send',
+  NOT_FOUND: 'Invitation not found',
+  CONFLICT: 'Invitation already used',
+  INVALID: 'Invalid invitation',
+};
+
+export const ROLE_MESSAGE = {
+  CONFLICT: 'Role already used',
+  ROLE_FETCHING_FAILED: 'Failed to fetch roles !',
+  ROLE_NOT_FOUND: 'Role not found !',
+  PERMISSION_CANNOT_EMPTY: 'Permission cannot be empty !',
+  ROLE_NAME_ALREADY_EXISTS: 'Role name already exists !',
+
+  ROLE_CREATED: 'Role created successfully',
+  ROLE_FETCHED: 'Roles fetched successfully',
+  ROLE_UPDATED: 'Role updated successfully',
+  ROLE_DELETED: 'Role deleted successfully',
+};
+
+export const OWNER_MESSAGE = {
+  OWNER_ONLY: 'Only owner can update workspace',
 };

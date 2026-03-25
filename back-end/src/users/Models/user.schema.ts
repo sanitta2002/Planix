@@ -24,6 +24,12 @@ export class User extends Document {
   isEmailVerified: boolean;
   @Prop()
   lastSeenAt?: Date;
+  @Prop({
+    type: String,
+    enum: ['USER', 'ADMIN'],
+    default: 'USER',
+  })
+  role: 'USER' | 'ADMIN';
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

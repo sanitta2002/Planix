@@ -23,15 +23,26 @@ import { Role } from 'src/common/decorators/roles.decorator';
 import { ConfigService } from '@nestjs/config';
 import {
   ADMIN_MESSAGES,
+  PAYMENT_MESSAGE,
   USER_MESSAGES,
 } from 'src/common/constants/messages.constant';
 import { ApiResponse } from 'src/common/utils/api-response.util';
 import { ApiResponseDto } from 'src/common/dto/api-response.dto';
+import { GetWorkspacesRequestDto } from './dto/GetWorkspacesRequestDto ';
+import { PaginatedWorkspaceResponseDto } from './dto/PaginatedWorkspaceResponseDto ';
+import type { ISubscriptionService } from 'src/subscription/interface/ISubscriptionService';
+import type { IPaymentService } from 'src/payment/interface/IPaymentService';
+import { generateInvoiceHTML } from 'src/common/utils/pdf.util';
+import puppeteer from 'puppeteer';
 
 @Controller('admin')
 export class AdminController {
   constructor(
     @Inject('IAdminService') private readonly adminService: IAdminService,
+    @Inject('ISubscriptionService')
+    private readonly _subscriptionService: ISubscriptionService,
+    @Inject('IPaymentService')
+    private readonly _paymentService: IPaymentService,
     private readonly configService: ConfigService,
   ) {}
 
@@ -93,5 +104,45 @@ export class AdminController {
   ): Promise<ApiResponseDto<UserStatusResponseDto>> {
     const result = await this.adminService.unblockUser({ userId: id });
     return ApiResponse.success(HttpStatus.OK, USER_MESSAGES.UNBLOCKED, result);
+  }
+  @Get('workspaces')
+  @UseGuards(RolesGuard)
+  @Role('admin')
+  async getWorkspaces(
+    @Query() query: GetWorkspacesRequestDto,
+  ): Promise<PaginatedWorkspaceResponseDto> {
+    return await this.adminService.getAllWorkspaces(query);
+  }
+  @Get('paymets')
+  async getAllPayments() {
+    const data = await this._paymentService.getAllPayments();
+    return ApiResponse.success(
+      HttpStatus.OK,
+      PAYMENT_MESSAGE.PAYMENT_FETCH,
+      data,
+    );
+  }
+  @Get('report')
+  async downloadReport(@Res() res: Response) {
+    const payments = await this._paymentService.getAllPayments();
+
+    const html = generateInvoiceHTML(payments);
+
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    await page.setContent(html, { waitUntil: 'load' });
+
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
+      printBackground: true,
+    });
+
+    await browser.close();
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=invoice.pdf');
+
+    res.send(pdfBuffer);
   }
 }

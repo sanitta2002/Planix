@@ -66,13 +66,15 @@ const SidebarSection = ({ title, children }: SidebarSectionProps) => (
 
 export const Sidebar = ({ className }: { className?: string }) => {
     const user = useSelector((state: RootState) => state.auth.user);
-
+    const workspace = useSelector((state: RootState) => state.workspace.currentWorkspace);
+    const isOwner = workspace?.ownerId?.id===user?.id
+    console.log("fbsadhbvashkdbvklshdb",workspace)
 
     const fullName = user
         ? `${user.firstName} ${user.lastName}`.trim()
         : "User";
 
-    const roleLabel = "Team Member";
+    const roleLabel =  workspace?.ownerId?.id === user?.id ? "Owner" : "Team Member";
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const { data: profileData } = useGetProfile();
@@ -115,13 +117,16 @@ export const Sidebar = ({ className }: { className?: string }) => {
                 </SidebarSection>
 
                 <SidebarSection title="Organization">
-                    <SidebarItem icon={Users} label="Teams & Members" to="/users" />
+                    <SidebarItem icon={Users} label="Teams & Members" to={FRONTEND_ROUTES.INVITE} />
                     <SidebarItem icon={FolderKanban} label="Projects" to="/projects" />
                 </SidebarSection>
 
                 <SidebarSection title="System">
                     <SidebarItem icon={Settings} label="Settings" to="/settings" />
-                    <SidebarItem icon={DollarSign} label="Payment Details" to="/payment" />
+                    {isOwner && (
+                         <SidebarItem icon={DollarSign} label="Payment Details" to="/payment" />
+                    )}
+                    
                 </SidebarSection>
             </div>
 

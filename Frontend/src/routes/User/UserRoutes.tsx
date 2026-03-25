@@ -11,6 +11,13 @@ import DashboardPage from '../../pages/user/Dashboard/DashboardPage';
 import { PublicRoute } from '../PublicRoute'
 import { ProtectedRoute } from '../ProtectedRoute'
 import UserProfile from '../../pages/user/Profile/UserProfile'
+import WorkspacePage from '../../pages/user/workspace/Workspacepage'
+import SubscriptionPage from '../../pages/user/subscription/Subscriptionpage'
+import PaymentSuccess from '../../pages/user/subscription/payment/PaymentSuccess'
+import InviteMemberPage from '../../pages/user/team/InviteMemberPage'
+import { AcceptInvitePage } from '../../pages/user/team/AcceptInvitePage'
+import SettingPage from '../../pages/user/setting/SettingPage'
+import PaymentDetails from '../../pages/user/payment/PaymentDetails'
 
 function UserRoutes() {
   return (
@@ -26,9 +33,16 @@ function UserRoutes() {
       <Route element={<ProtectedRoute allowedRoles={'USER'} redirectTo={FRONTEND_ROUTES.LANDING} />}>
         <Route element={<DashboardLayout />}>
           <Route path={FRONTEND_ROUTES.DASHBOARD} element={<DashboardPage />} />
-          <Route path={FRONTEND_ROUTES.PROFILE} element={<UserProfile/>} />
+          <Route path={FRONTEND_ROUTES.PROFILE} element={<UserProfile />} />
+          <Route path={FRONTEND_ROUTES.WORKSPACE} element={<WorkspacePage />} />
+          <Route path={FRONTEND_ROUTES.INVITE} element={<InviteMemberPage />} />
+          <Route path={FRONTEND_ROUTES.SETTING} element={<SettingPage />}/>
+          <Route path={FRONTEND_ROUTES.PAYMENT} element={<PaymentDetails/>}/>
         </Route>
+        <Route path={FRONTEND_ROUTES.PLAN} element={<SubscriptionPage />} />
+        <Route path={FRONTEND_ROUTES.PAYMENT_SUCCESS} element={<PaymentSuccess />} />
       </Route>
+      <Route path={FRONTEND_ROUTES.INVITE_ACCEPT} element={<AcceptInvitePage />} />
     </Routes>
   )
 }

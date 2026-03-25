@@ -32,23 +32,26 @@ export interface AuthRequest extends Request {
 @UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(
-    @Inject('IUserServicePRO') private readonly usersService: IUserServicePRO,
+    @Inject('IUserServicePRO') private readonly _usersService: IUserServicePRO,
   ) {}
   @Patch('profile')
   @HttpCode(HttpStatus.OK)
   updateProfile(@Req() req: AuthRequest, @Body() dto: UpdateProfileReqDto) {
-    const result = this.usersService.updateProfile(req.user.userId, dto);
+    const updatedProfile = this._usersService.updateProfile(
+      req.user.userId,
+      dto,
+    );
     return ApiResponse.success(
       HttpStatus.OK,
       USER_MESSAGES.PROFILE_UPDATED,
-      result,
+      updatedProfile,
     );
   }
 
   @Patch('change-password')
   @HttpCode(HttpStatus.OK)
   changePassword(@Req() req: AuthRequest, @Body() dto: ChangePasswordDto) {
-    const result = this.usersService.changePassword(req.user.userId, dto);
+    const result = this._usersService.changePassword(req.user.userId, dto);
     return ApiResponse.success(
       HttpStatus.OK,
       USER_MESSAGES.PASSWORD_CHANGED,
@@ -64,7 +67,7 @@ export class UsersController {
     @Body() dto: UploadAvatarReqDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    const result = await this.usersService.uploadAvatar(
+    const avatarResponse = await this._usersService.uploadAvatar(
       req.user.userId,
       dto,
       file,
@@ -72,18 +75,20 @@ export class UsersController {
     return ApiResponse.success(
       HttpStatus.OK,
       USER_MESSAGES.AVATAR_UPLOADED,
-      result,
+      avatarResponse,
     );
   }
 
   @Get('profile')
   @HttpCode(HttpStatus.OK)
   async getProfile(@Req() req: AuthRequest) {
-    const profile = await this.usersService.getProfilePhoto(req.user.userId);
+    const profileResponse = await this._usersService.getProfilePhoto(
+      req.user.userId,
+    );
     return ApiResponse.success(
       HttpStatus.OK,
       'Profile fetched successfully',
-      profile,
+      profileResponse,
     );
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { IMailService } from './interfaces/mail.interface';
 import nodemailer, { Transporter } from 'nodemailer';
 import { OtpTemplate } from './emailOtpTemplate';
+import { InviteTemplate } from './InviteTemplate';
 @Injectable()
 export class MailService implements IMailService {
   private transporter: Transporter;
@@ -20,6 +21,15 @@ export class MailService implements IMailService {
       from: process.env.EMAIL_FROM,
       to: email,
       subject: 'Verify Your Planix Account',
+      html: html,
+    });
+  }
+  async sendInvitationMail(email: string, inviteLink: string): Promise<void> {
+    const html = InviteTemplate.generate(inviteLink);
+    await this.transporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to: email,
+      subject: 'Workspace Invitation',
       html: html,
     });
   }

@@ -21,6 +21,7 @@ import { useChangePassword, useGetProfile, useUpdateProfile, useUploadAvatar } f
 import { setAuthUser } from '../../../store/authSlice';
 import { toast } from 'sonner';
 import { queryClient } from '../../../main';
+import RoleManagementModal from '../../../components/modal/RoleManagementModal';
 
 type UserData = {
     firstName: string;
@@ -37,11 +38,14 @@ const UserProfile = () => {
     const user = useSelector((state: RootState) => state.auth.user);
     const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
     const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
+    const [IsRoleandPreferences, setIsRoleandPreferences]=useState(false)
     const { mutate: updateProfile } = useUpdateProfile();
     const { mutate: changePassword } = useChangePassword();
     const dispatch = useDispatch()
     const { mutate: uploadAvatar } = useUploadAvatar();
     const { data: profileData } = useGetProfile();
+    const workspace = useSelector((state:RootState)=>state.workspace.currentWorkspace)
+    const isOwner = workspace?.id===user?.id
 
 
 
@@ -268,6 +272,13 @@ const UserProfile = () => {
                                             return;
                                         }
                                         setIsChangePasswordModalOpen(true);
+                                    }else if(item.label==='Role Preferences'){
+                                        if(isOwner){
+                                            toast.error("Only owner can manage roles")
+                                            return
+                                        }
+                                        
+                                       setIsRoleandPreferences(true)
                                     }
                                 }}
                                 className="p-4 flex items-center justify-between hover:bg-slate-800/30 cursor-pointer transition-colors group"
@@ -300,6 +311,8 @@ const UserProfile = () => {
                     onClose={() => setIsChangePasswordModalOpen(false)}
                     onSave={handleChangePassword}
                 />
+                <RoleManagementModal isOpen={IsRoleandPreferences} onClose={()=>setIsRoleandPreferences(false)}/>
+                 
             </div>
         </div>
     );

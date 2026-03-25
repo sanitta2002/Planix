@@ -31,7 +31,10 @@
     "@nestjs/mongoose": "^11.0.4",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/schedule": "^6.1.1",
+    "@nestjs/swagger": "^11.2.6",
     "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.2",
     "cache-manager": "^7.2.8",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",
@@ -45,9 +48,13 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",
+    "pdfkit": "^0.18.0",
+    "puppeteer": "^24.39.1",
     "redis": "^5.10.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "stripe": "^20.3.1",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -63,6 +70,7 @@
     "@types/node": "^22.10.7",
     "@types/nodemailer": "^7.0.9",
     "@types/passport-jwt": "^4.0.1",
+    "@types/pdfkit": "^0.17.5",
     "@types/supertest": "^6.0.2",
     "@types/uuid": "^10.0.0",
     "eslint": "^9.18.0",

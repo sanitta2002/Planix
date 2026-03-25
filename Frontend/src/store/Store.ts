@@ -4,6 +4,8 @@ import authReducer from "./authSlice";
 import storage from "redux-persist/lib/storage";
 import persistReducer from "redux-persist/es/persistReducer";
 import persistStore from "redux-persist/es/persistStore";
+import workspaceReducer from "./workspaceSlice";
+
 
 const persistConfig = {
   key: "root",
@@ -13,6 +15,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   auth: authReducer,
   token: tokenReducer,
+  workspace: workspaceReducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 

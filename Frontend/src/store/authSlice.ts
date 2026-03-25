@@ -10,6 +10,7 @@ export interface AuthUser {
   avatarUrl?: string;
   role: "USER" | "ADMIN";
  hasPassword?: boolean
+ hasWorkspace?: boolean;
 }
 interface AuthState {
   user: AuthUser | null;

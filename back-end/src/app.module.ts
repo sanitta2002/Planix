@@ -17,7 +17,11 @@ import { AdminModule } from './admin/admin.module';
 import { S3Module } from './common/s3/s3.module';
 import { SubscriptionPlanModule } from './subscription/subscription-plan/subscription-plan.module';
 import { SubscriptionsModule } from './subscription/subscriptions/subscriptions.module';
-import { SubscriptionPlanModule } from './subscription/subscription-plan/subscription-plan.module';
+import { WorkspaceModule } from './workspace/workspace.module';
+import { PaymentModule } from './payment/payment.module';
+import { StripeModule } from './common/stripe/stripe.module';
+import { InvitationModule } from './invitation/invitation.module';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -34,6 +38,11 @@ import { SubscriptionPlanModule } from './subscription/subscription-plan/subscri
     S3Module,
     SubscriptionPlanModule,
     SubscriptionsModule,
+    WorkspaceModule,
+    PaymentModule,
+    StripeModule,
+    InvitationModule,
+    RoleModule,
   ],
 
   controllers: [AppController],

@@ -58,18 +58,24 @@ export const LoginUser = async (data: loginPayload) => {
     const response = await AxiosInstance.post(API_ROUTES.Auth.LOGIN, data);
     return response.data;
   } catch (error) {
-    if(error instanceof AxiosError){
-        throw new Error(error.response?.data.message)
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data.message);
     }
   }
 };
 
 export const forgotPassword = async (data: ForgotPasswordPayload) => {
-  const response = await AxiosInstance.post(
-    API_ROUTES.Auth.FORGOT_PASSWORD,
-    data,
-  );
-  return response.data;
+  try {
+    const response = await AxiosInstance.post(
+      API_ROUTES.Auth.FORGOT_PASSWORD,
+      data,
+    );
+    return response.data;
+  } catch (error) {
+    if(error instanceof AxiosError){
+      throw new Error(error.response?.data.message)
+    }
+  }
 };
 
 export const resetPassword = async (data: resetPasswordPayload) => {
