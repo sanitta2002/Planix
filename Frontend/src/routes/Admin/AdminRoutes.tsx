@@ -1,0 +1,37 @@
+import { Route, Routes } from "react-router"
+import { FRONTEND_ROUTES } from "../../constants/frontRoutes"
+import AdminLoginPage from "../../pages/admin/AdminLoginPage"
+import AdminLayout from "../../components/Layaout/admin/AdminLayout"
+import AdminDashboardPage from "../../pages/admin/AdminDashboardPage"
+import { PublicRoute } from "../PublicRoute"
+import { ProtectedRoute } from "../ProtectedRoute"
+import UserPage from "../../pages/admin/userMangement/UserPage"
+import SubPlan from "../../pages/admin/subscriptionPlan/SubPlan"
+import WorkspacesPage from "../../pages/admin/workspaces/WorkspacesPage"
+import AdminPayments from "../../pages/admin/payments/PaymentPage"
+
+
+
+const AdminRoutes = () => {
+    return (
+        <Routes>
+            <Route element={<PublicRoute/>}>
+            <Route path={FRONTEND_ROUTES.ADMIN_LOGIN} element={<AdminLoginPage />} />
+            </Route>
+            
+            <Route element={<ProtectedRoute allowedRoles={"ADMIN"} redirectTo={FRONTEND_ROUTES.ADMIN_LOGIN}/>}>
+            <Route element={<AdminLayout />}>
+                <Route path={FRONTEND_ROUTES.ADMIN} element={<AdminDashboardPage />} />
+                <Route path={FRONTEND_ROUTES.ADMIN_USERS} element={<UserPage/>}/>
+                <Route path={FRONTEND_ROUTES.ADMIN_SALES_REPORT} element={<h1>sales</h1>} />
+                <Route path={FRONTEND_ROUTES.ADMIN_SUBSCRIPTIONS} element={<SubPlan/>}/>
+                <Route path={FRONTEND_ROUTES.ADMIN_WORKSPACES} element={<WorkspacesPage/>}/>
+                <Route path={FRONTEND_ROUTES.ADMIN_PAYMENTS_DETAILS} element={<AdminPayments/>} />
+                
+            </Route>
+            </Route>
+        </Routes>
+    )
+}
+
+export default AdminRoutes
