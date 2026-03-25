@@ -36,14 +36,14 @@ export class SubscriptionsService implements ISubscriptionService {
     console.log(subscription);
 
     if (!subscription) {
-      throw new NotFoundException('no active subscription found');
+      throw new NotFoundException(SUBSCRIPTION_MESSAGE.NO_SUBCRIPTION);
     }
     if (subscription.endDate && subscription.endDate < new Date()) {
       await this._subscriptionRepo.updateById(subscription._id.toString(), {
         status: SubscriptionStatus.EXPIRED,
       });
 
-      throw new BadRequestException('Subscription expired');
+      throw new BadRequestException(SUBSCRIPTION_MESSAGE.SUBSCRIPTION_EXPIED);
     }
     return SubscriptionMapper.toResponseDto(subscription);
   }
@@ -64,7 +64,7 @@ export class SubscriptionsService implements ISubscriptionService {
       dto.workspaceId,
     );
     if (active) {
-      throw new BadRequestException('workspace already  active subscription');
+      throw new BadRequestException(SUBSCRIPTION_MESSAGE.ACTIVE_SUBSCRIPTION);
     }
 
     const subscription = await this._subscriptionRepo.create({
@@ -88,7 +88,7 @@ export class SubscriptionsService implements ISubscriptionService {
       throw new NotFoundException(SUBSCRIPTION_MESSAGE.NOT_FOUND);
     }
     if (subscription.status === SubscriptionStatus.ACTIVE) {
-      throw new BadRequestException('subscription already active');
+      throw new BadRequestException(SUBSCRIPTION_MESSAGE.SUBSCRIPTION);
     }
     const plan = await this._subscriptionPlanRepo.findById(
       subscription.planId.toString(),
@@ -111,7 +111,7 @@ export class SubscriptionsService implements ISubscriptionService {
 
     console.log('subsription', subscription.workspaceId.toString());
     if (!updated) {
-      throw new NotFoundException('subscription update failed');
+      throw new NotFoundException(SUBSCRIPTION_MESSAGE.SUBSCRIPTION_FAILD);
     }
     await this._workspaceRepository.updateById(
       subscription.workspaceId.toString(),
@@ -137,7 +137,7 @@ export class SubscriptionsService implements ISubscriptionService {
     );
 
     if (!existing) {
-      throw new BadRequestException('No subscription found for this workspace');
+      throw new BadRequestException(SUBSCRIPTION_MESSAGE.NO_SUBCRIPTION);
     }
 
     if (existing.status === SubscriptionStatus.ACTIVE) {

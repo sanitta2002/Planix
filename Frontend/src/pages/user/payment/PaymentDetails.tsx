@@ -15,11 +15,21 @@ interface Payment {
   amount: number;
   status: string;
   startDate: string;
+  endDate?: string; 
   method?: string;
   invoiceId?: string;
   cardLast4?: string;
   cardBrand?: string;
 }
+type SubscriptionItem = {
+  subscriptionId: string;
+  workspaceId: string;
+  plan: string;
+  amount: number;
+  status: string;
+  startDate: string;
+  endDate?: string;
+};
 
 const statusStyles: Record<string, string> = {
   Paid: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30",
@@ -41,25 +51,18 @@ const PaymentDetails = () => {
   const { data, isLoading } = useWorkspacePaymentDetails(
     currentWorkspace?.id ?? ""
   );
+  const subscriptions = data?.data || [];
+  const subscription = subscriptions[0] || null;
 
-  if(data && !data?.data?.subscriptionId){
-    navigate("/plan")
-  }
-
-  const subscription = data?.data;
-
-  const payments: Payment[] = subscription
-    ? [
-      {
-        id: subscription.subscriptionId,
-        workspaceId: subscription.workspaceId,
-        plan: subscription.plan,
-        amount: subscription.amount,
-        status: subscription.status,
-        startDate: subscription.startDate,
-      },
-    ]
-    : [];
+  const payments: Payment[] = subscriptions.map((item:SubscriptionItem) => ({
+    id: item.subscriptionId,
+    workspaceId: item.workspaceId,
+    plan: item.plan,
+    amount: item.amount,
+    status: item.status,
+    startDate: item.startDate,
+    endDate: item.endDate, 
+  }));
 
   const { mutate: retryPayment } = useRetryPayment();
 
@@ -228,6 +231,7 @@ const PaymentDetails = () => {
                           payment.status.slice(1)}
                       </span>
                     </td>
+
 
 
 

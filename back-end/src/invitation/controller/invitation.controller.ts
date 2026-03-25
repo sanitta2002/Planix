@@ -16,11 +16,13 @@ import { ApiResponse } from 'src/common/utils/api-response.util';
 import { INVITE_MESSAGE } from 'src/common/constants/messages.constant';
 import type { Request } from 'express';
 import { CompleteProfileDto } from '../dto/req/CompleteProfileDto';
+import { SubscriptionGuardGuard } from 'src/guard/subscription-guard/subscription-guard.guard';
 interface AuthRequest extends Request {
   user: {
     userId: string;
   };
 }
+@UseGuards(SubscriptionGuardGuard)
 @Controller('invitation')
 export class InvitationController {
   constructor(

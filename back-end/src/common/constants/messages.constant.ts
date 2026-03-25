@@ -67,12 +67,17 @@ export const GENERAL_MESSAGES = {
 
 export const SUBSCRIPTION_MESSAGE = {
   NOT_FOUND: 'Subscription plan not found',
-  SUBSCRIPTION_SUCCESS: 'Subscription plan created successfully',
-  SUBSCRIPTION_FETCH: 'Subcription plan frtched successfully ',
-  SUBSCRIPTION_UPDATE: 'Subcription plan update successfully',
+  SUBSCRIPTION_SUCCESS: 'Subscription  created successfully',
+  SUBSCRIPTION_FETCH: 'Subcription  frtched successfully ',
+  SUBSCRIPTION_UPDATE: 'Subcription update successfully',
   SUBSCRIPTION_DELETE: 'Subcription plan delete successfully',
   ALLACTIVEPLAN: 'Active plans fetched',
   PAYMENT_RETRY_SUCCESS: 'Payment retry successfully',
+  NO_SUBCRIPTION: 'No subscription found for this workspace',
+  SUBSCRIPTION_FAILD: 'subscription update failed',
+  SUBSCRIPTION: 'subscription already active',
+  SUBSCRIPTION_EXPIED: 'Subscription expired',
+  ACTIVE_SUBSCRIPTION: 'workspace already  active subscription',
 };
 
 export const WORKSPACE_MESSAGE = {
@@ -85,6 +90,8 @@ export const WORKSPACE_MESSAGE = {
   MEMBER_DELETED: 'Member removed successfully',
   UPDATED: 'workspace updated successfully',
   LOGO_UPDATED: 'logo updated successfully',
+  USER_ALREADY_EXISTS: 'User already exists in workspace',
+  MEMBER_LIMIT: 'Workspace member limit reached',
 };
 
 export const PAYMENT_MESSAGE = {
@@ -113,4 +120,8 @@ export const ROLE_MESSAGE = {
   ROLE_FETCHED: 'Roles fetched successfully',
   ROLE_UPDATED: 'Role updated successfully',
   ROLE_DELETED: 'Role deleted successfully',
+};
+
+export const OWNER_MESSAGE = {
+  OWNER_ONLY: 'Only owner can update workspace',
 };

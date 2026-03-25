@@ -16,6 +16,7 @@ import { Types } from 'mongoose';
 import { WorkspaceMapper } from './Mapper/workspace.mapper';
 import {
   GENERAL_MESSAGES,
+  OWNER_MESSAGE,
   WORKSPACE_MESSAGE,
 } from 'src/common/constants/messages.constant';
 import { WorkspaceMembersResponseDto } from '../dto/res/WorkspaceMembersResponseDto';
@@ -26,7 +27,7 @@ import type { IS3Service } from 'src/common/s3/interfaces/s3.service.interface';
 import { WorkspacePaymentResponseDto } from '../dto/res/WorkspacePaymentResponseDto';
 import type { ISubscriptionRepository } from 'src/subscription/interface/ISubscriptionRepository';
 import type { ISubscriptionPlanRepository } from 'src/subscription/interface/ISubscriptionPlanRepository';
-import { SubscriptionPlanDocument } from 'src/subscription/Model/SubscriptionPlan.shema';
+import { PopulatedPlan } from 'src/common/type/Populated';
 
 @Injectable()
 export class WorkspaceService implements IWorkspaceService {
@@ -139,7 +140,7 @@ export class WorkspaceService implements IWorkspaceService {
       throw new NotFoundException(WORKSPACE_MESSAGE.NOT_FOUND);
     }
     if (existingWorkspace.ownerId.toString() !== userId) {
-      throw new ForbiddenException('Only owner can update workspace');
+      throw new ForbiddenException(OWNER_MESSAGE.OWNER_ONLY);
     }
     const updatedWorkspace = await this._workspaceRepository.updateById(
       workspaceId,
@@ -165,7 +166,7 @@ export class WorkspaceService implements IWorkspaceService {
       throw new NotFoundException(WORKSPACE_MESSAGE.NOT_FOUND);
     }
     if (workspace.ownerId.toString() !== userId) {
-      throw new UnauthorizedException('Only owner can update logo');
+      throw new UnauthorizedException(OWNER_MESSAGE.OWNER_ONLY);
     }
     if (workspace.logo) {
       await this._S3Service.deleteFile(workspace.logo);
@@ -201,45 +202,31 @@ export class WorkspaceService implements IWorkspaceService {
   async getWorkspacePaymentDetails(
     workspaceId: string,
     userId: string,
-  ): Promise<WorkspacePaymentResponseDto> {
+  ): Promise<WorkspacePaymentResponseDto[]> {
     const workspace = await this._workspaceRepository.findById(workspaceId);
+
     if (!workspace) {
       throw new NotFoundException(WORKSPACE_MESSAGE.NOT_FOUND);
     }
+
     if (workspace.ownerId.toString() !== userId) {
-      throw new ForbiddenException('Only owner can view payment details');
+      throw new ForbiddenException(OWNER_MESSAGE.OWNER_ONLY);
     }
-    const subscription =
-      await this._subscriptionRepo.findActiveByWorkspace(workspaceId);
-    if (!subscription) {
+    const subscriptions =
+      await this._subscriptionRepo.findAllByWorkspace(workspaceId);
+
+    return subscriptions.map((sub) => {
+      const plan = sub.planId as unknown as PopulatedPlan;
       return {
-        subscriptionId: null,
-        workspaceId: workspace._id.toString(),
-        plan: null,
-        amount: 0,
-        status: workspace.subscriptionStatus,
-        startDate: null,
-        endDate: null,
-        features: [],
-        stripeSubscriptionId: null,
-        invoiceId: null,
+        subscriptionId: sub._id.toString(),
+        workspaceId,
+        plan: plan?.name ?? null,
+        amount: plan?.price,
+        status: sub.status,
+        startDate: sub.startDate ?? null,
+        endDate: sub.endDate,
+        duration: plan?.durationDays ?? null,
       };
-    }
-    const plan = subscription.planId as unknown as SubscriptionPlanDocument;
-    if (!plan) {
-      throw new NotFoundException('Subscription plan not found');
-    }
-    return {
-      subscriptionId: subscription._id.toString(),
-      workspaceId: workspace._id.toString(),
-      plan: plan.name,
-      amount: plan.price,
-      status: subscription.status,
-      startDate: subscription.startDate,
-      endDate: subscription.endDate,
-      features: plan.features,
-      stripeSubscriptionId: subscription.stripeSubscriptionId,
-      invoiceId: subscription.latestInvoiceId,
-    };
+    });
   }
 }

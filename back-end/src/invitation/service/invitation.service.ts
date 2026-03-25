@@ -53,8 +53,18 @@ export class InvitationService implements IInvitationService {
     if (!workspace) {
       throw new NotFoundException(WORKSPACE_MESSAGE.NOT_FOUND);
     }
+    const user = await this._userRepo.findByEmail(dto.email);
+    if (user) {
+      const isAlreadyMember = workspace.members.some(
+        (member) => member.user.toString() === user._id.toString(),
+      );
+      if (isAlreadyMember) {
+        throw new ConflictException(WORKSPACE_MESSAGE.USER_ALREADY_EXISTS);
+      }
+    }
+
     if (workspace.members.length >= 6) {
-      throw new ConflictException('Workspace member limit reached');
+      throw new ConflictException(WORKSPACE_MESSAGE.MEMBER_LIMIT);
     }
     const inviter = workspace.members.find(
       (m) => m.user.toString() === currentUserId,

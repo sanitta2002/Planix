@@ -10,4 +10,5 @@ export interface ISubscriptionRepository extends IBaseRepository<SubscriptionDoc
     stripeSubscriptionId: string,
   ): Promise<SubscriptionDocument | null>;
   findAllPayments(): Promise<SubscriptionDocument[]>;
+  findAllByWorkspace(workspaceId: string): Promise<SubscriptionDocument[]>;
 }

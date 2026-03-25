@@ -29,5 +29,5 @@ export interface IWorkspaceService {
   getWorkspacePaymentDetails(
     workspaceId: string,
     userId: string,
-  ): Promise<WorkspacePaymentResponseDto>;
+  ): Promise<WorkspacePaymentResponseDto[]>;
 }

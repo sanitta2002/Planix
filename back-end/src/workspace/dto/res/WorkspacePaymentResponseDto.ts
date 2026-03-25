@@ -11,10 +11,4 @@ export class WorkspacePaymentResponseDto {
   startDate: Date | null;
 
   endDate?: Date | null;
-
-  features: string[];
-
-  stripeSubscriptionId?: string | null;
-
-  invoiceId?: string | null;
 }

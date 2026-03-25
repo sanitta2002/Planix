@@ -49,4 +49,12 @@ export class subscriptionRepository
       .populate('planId', 'name price')
       .sort({ createdAt: -1 });
   }
+  async findAllByWorkspace(
+    workspaceId: string,
+  ): Promise<SubscriptionDocument[]> {
+    return await this._subscriptionModel
+      .find({ workspaceId: new Types.ObjectId(workspaceId) })
+      .populate('planId', 'name price durationDays')
+      .sort({ createdAt: -1 });
+  }
 }

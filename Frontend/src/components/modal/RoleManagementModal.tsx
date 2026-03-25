@@ -67,8 +67,7 @@ const RoleManagementModal: React.FC<RoleManagementModalProps> = ({
                 setnewRolePermissions([]);
             },
             onError: () => {
-
-                toast.error("Failed to create role");
+               
             }
         })
     }
@@ -110,7 +109,7 @@ const RoleManagementModal: React.FC<RoleManagementModalProps> = ({
     }
     const handleConfirmDelete = () => {
         if (!roleToDelete) return;
-         console.log("bvsjadbvkasb",roleToDelete._id)
+        console.log("bvsjadbvkasb", roleToDelete._id)
         deleteRoleMutation.mutate(roleToDelete._id, {
             onSuccess: () => {
                 toast.success("Role deleted successfully");

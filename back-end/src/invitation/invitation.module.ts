@@ -9,6 +9,7 @@ import { MailModule } from 'src/common/mail/mail.module';
 import { HashingModule } from 'src/common/hashing/hashing.module';
 import { UsersModule } from 'src/users/users.module';
 import { AppJwtModule } from 'src/common/jwt/jwt.module';
+import { SubscriptionsModule } from 'src/subscription/subscriptions/subscriptions.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AppJwtModule } from 'src/common/jwt/jwt.module';
     HashingModule,
     UsersModule,
     AppJwtModule,
+    SubscriptionsModule,
   ],
   providers: [
     {
