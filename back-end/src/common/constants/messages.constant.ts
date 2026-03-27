@@ -125,3 +125,67 @@ export const ROLE_MESSAGE = {
 export const OWNER_MESSAGE = {
   OWNER_ONLY: 'Only owner can update workspace',
 };
+
+export const PROJECT = {
+  PROJECT_CREATED_SUCCESSFULLY: 'Project created successfully',
+  PROJECT_FETCH_SUCCESS: 'Project fetched successfully',
+  PROJECT_REMOVED_SUCCESSFULLY: 'Project removed successfully',
+  PROJECT_UPDATED_SUCCESSFULLY: 'Project updated successfully',
+  STATUS_UPDATED_SUCCESSFULLY: 'Project status updated successfully',
+  GET_ALL_PROJECTS: 'Fetched projects successfully',
+  PROJECT_DELETED_SUCCESSFULLY: 'Project deleted successfully',
+  PROJECT_MEMBER_ADDED_SUCCESSFULLY: 'Project member added successfully',
+  PROJECT_MEMBER_REMOVED_SUCCESSFULLY: 'Project member removed successfully',
+  PROJECT_MEMBER_UPDATED_SUCCESSFULLY: 'Project member updated successfully',
+};
+
+export const PROJECT_ERRORS = {
+  PROJECT_NOT_FOUND: 'Project not found !',
+  PROJECT_CREATION_FAILED: 'Project creation failed',
+  PROJECT_INVALIDATION: 'Error while validating project !',
+  NO_PROJECTS_FOUND: 'No projects found',
+  PROJECT_ALREADY_EXISTS: 'Project Already Exists',
+  PROJECT_FETCHING_FAILED: 'Failed to fetch projects !',
+  PROJECT_ROLE_NOT_FOUND: 'Project role not found !',
+  PROJECT_MEMBER_ALREADY_EXISTS: 'Project member already exists !',
+  PROJECT_ROLE_REQUIRED: 'Project role is required !',
+  PROJECT_UPDATE_FAILED: 'Project update failed !',
+  PROJECT_MEMBER_NOT_FOUND: 'Project member not found !',
+  INVALID_DATA: 'ProjectId, UserId and RoleId are required.',
+  ROLE_NOT_FOUND: 'Role not found !',
+  CANNOT_REMOVE_CREATOR: 'Creator cannot be removed from project !',
+  ISSUE_NOT_FOUND: 'Issue not found !',
+  ISSUE_CREATION_FAILED: 'Issue creation failed',
+  ISSUE_INVALIDATION: 'Error while validating issue !',
+  NO_ISSUES_FOUND: 'No issues found',
+  ISSUE_ALREADY_EXISTS: 'Issue Already Exists',
+  ISSUE_FETCHING_FAILED: 'Failed to fetch issues !',
+  ISSUE_MEMBER_ALREADY_EXISTS: 'Issue member already exists !',
+  ISSUE_ROLE_REQUIRED: 'Issue role is required !',
+  ISSUE_UPDATE_FAILED: 'Issue update failed !',
+  ISSUE_MEMBER_NOT_FOUND: 'Issue member not found !',
+  NON_EPIC_ISSUE_WITHOUT_PARENT: 'Non epic issues must have a parent Issue',
+  CONTENT_TYPE_REQUIRED: 'Content Type is required',
+  INVALID_ISSUE_TYPE: 'Invalid issue type',
+  INVALID_DATES: 'Invalid dates',
+  MEMBER_NOT_FOUND: 'Member not found in project !',
+  NOT_AUTHORIZED: 'You are not authorized to delete this issue !',
+  HAS_CHILDREN: 'Cannot delete issue with child issues',
+  CANNOT_REMOVE_MEMBER_HAS_ISSUES:
+    'Cannot remove member who has assigned issues in this project',
+  FAILED_TO_UPDATE_ISSUE: 'Failed to update issue',
+  ONLY_PROJECT_MANAGER_CAN_START_SPRINT:
+    'Only project manager can start sprint',
+  ONLY_PROJECT_MANAGER_CAN_CREATE_SPRINT:
+    'Only project manager can create sprint',
+  UNAUTHORIZED_TO_CREATE_PROJECT:
+    'Unauthorized to create project in this workspace',
+  UNAUTHORIZED_TO_UPDATE_PROJECT:
+    'Unauthorized to update project in this workspace',
+  UNAUTHORIZED_TO_ADD_PROJECT_MEMBER: 'Unauthorized to add project member',
+  UNAUTHORIZED_TO_REMOVE_PROJECT_MEMBER:
+    'Unauthorized to remove project member',
+  UNAUTHORIZED_TO_DELETE_PROJECT: 'Unauthorized to delete project',
+  UNAUTHORIZED_TO_UPDATE_MEMBER_ROLE:
+    'Unauthorized to update project member role',
+};

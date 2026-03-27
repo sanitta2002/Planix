@@ -22,6 +22,7 @@ import { PaymentModule } from './payment/payment.module';
 import { StripeModule } from './common/stripe/stripe.module';
 import { InvitationModule } from './invitation/invitation.module';
 import { RoleModule } from './role/role.module';
+import { ProjectModule } from './project/project.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { RoleModule } from './role/role.module';
     StripeModule,
     InvitationModule,
     RoleModule,
+    ProjectModule,
   ],
 
   controllers: [AppController],
