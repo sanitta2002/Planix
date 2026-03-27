@@ -60,4 +60,10 @@ export const API_ROUTES = {
     UPDATE_ROLE: "/role/:roleId",
     DELETE_ROLE:"/role/:roleId"
   },
+  PROJECT:{
+    CREATE_PROJECT:'/projects/:workspaceId',
+    GET_ALL_PROJECTS:'/projects/project',
+    UPDATE_PROJECT:"/projects/:projectId",
+     DELETE_PROJECT:"/projects/:projectId",
+  }
 };
