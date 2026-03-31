@@ -1,7 +1,7 @@
-import { X, Folder, Plus } from "lucide-react";
+import { X, Folder } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useCreateProject } from "../../hooks/project/projectHook";
-import { useSelector } from "react-redux";
+import { useCreateProject, useUpdateProject } from "../../hooks/project/projectHook";
+import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../store/Store";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
@@ -9,15 +9,18 @@ import type { WorkspaceMember } from "../../types/workspaceMember";
 import type { Role } from "../../types/role";
 import type { ProjectMember } from "../../types/ProjectMember";
 import { useGetRoles, useWorkspaceMembers } from "../../hooks/user/userHook";
+import type { Project } from "../../types/project";
+import { setCurrentProject } from "../../store/projectSlice";
 
 
 
 interface ProjectModalProps {
     isOpen?: boolean;
     onClose?: () => void;
+    project?: Project | null;
 }
 
-const ProjectModal = ({ isOpen, onClose }: ProjectModalProps) => {
+const ProjectModal = ({ isOpen, onClose, project }: ProjectModalProps) => {
     const [projectName, setProjectName] = useState('');
     const [projectKey, setProjectKey] = useState('');
     const [description, setDescription] = useState('');
@@ -34,6 +37,10 @@ const ProjectModal = ({ isOpen, onClose }: ProjectModalProps) => {
     const [selectedRole, setSelectedRole] = useState<string>('');
     const { data: roleData } = useGetRoles();
     const { data: WorkspaceMembers } = useWorkspaceMembers(currentWorkspace?.id || '')
+    const updateProjectMutation = useUpdateProject();
+
+    const dispatch = useDispatch();
+
 
     useEffect(() => {
         if (roleData) {
@@ -54,6 +61,30 @@ const ProjectModal = ({ isOpen, onClose }: ProjectModalProps) => {
 
 
     useEffect(() => {
+        if (!isOpen) {
+            setProjectName('');
+            setProjectKey('');
+            setDescription('');
+            setMembers([]);
+            setSelectedUser('');
+            setSelectedRole('');
+        } else if (project) {
+            setProjectName(project.projectName || '');
+            setProjectKey(project.key || '');
+            setDescription(project.description || '');
+            if (project.members) {
+                setMembers(project.members.map((m:any) => ({
+                    userId: m.user?.id || m.user?._id,
+                    roleId: m.role?.id || m.role?._id,
+                })));
+            } else {
+                setMembers([]);
+            }
+        }
+    }, [isOpen, project]);
+
+    useEffect(() => {
+        if (project) return;
         if (!projectName) return;
 
         const words = projectName.trim().split(" ").filter(Boolean);
@@ -62,13 +93,17 @@ const ProjectModal = ({ isOpen, onClose }: ProjectModalProps) => {
         if (words.length === 1) {
             key = words[0].slice(0, 3);
         } else {
-            key = words[0][0] + words[1].slice(0, 2);
+            if (words[1]) {
+                key = words[0][0] + words[1].slice(0, 2);
+            } else {
+                key = words[0].slice(0, 3);
+            }
         }
 
         setProjectKey(key.toUpperCase());
-    }, [projectName]);
+    }, [projectName, project]);
 
-    const handleCreateProject = () => {
+    const handleSubmit = () => {
         if (!projectName.trim()) {
             toast.error("Project name is required");
             return;
@@ -79,35 +114,69 @@ const ProjectModal = ({ isOpen, onClose }: ProjectModalProps) => {
             return;
         }
 
-        if (!workspaceId) {
-            toast.error("Workspace not found");
-            return;
-        }
+        if (project) {
+            const originalMembers = project.members ? project.members.map((m:any) => ({
+                userId: m.user?.id || m.user?._id,
+                roleId: m.role?.id || m.role?._id,
+            })) : [];
 
-        createProjectMutation.mutate(
-            {
-                projectName,
-                key: projectKey,
-                description,
-                workspaceId,
-                members
+            const isNameUnchanged = projectName.trim() === (project.projectName || '').trim();
+            const isDescUnchanged = description.trim() === (project.description || '').trim();
+            const isMembersUnchanged = members.length === originalMembers.length && 
+                members.every(m => originalMembers.some((om:any) => om.userId === m.userId && om.roleId === m.roleId));
 
-            },
-            {
-                onSuccess: () => {
-                    toast.success("Project created successfully");
-                    onClose?.();
-                    setProjectName("");
-                    setProjectKey("");
-                    setDescription("");
-                },
-                onError: (error) => {
-                    if (error instanceof AxiosError) {
-                        toast.error(error.response?.data.message)
-                    }
-                },
+            if (isNameUnchanged && isDescUnchanged && isMembersUnchanged) {
+                toast.info("No changes made to update");
+                return;
             }
-        );
+
+            updateProjectMutation.mutate(
+                {
+                    projectId: project.id,
+                    projectName,
+                    description,
+                    members
+                },
+                {
+                    onSuccess: (updatedProject) => {
+                        toast.success("Project updated successfully");
+                        dispatch(setCurrentProject(updatedProject));
+                        onClose?.();
+                    },
+                    onError: (error) => {
+                        if (error instanceof AxiosError) {
+                            toast.error(error.response?.data?.message || "Something went wrong");
+                        }
+                    },
+                }
+            );
+        } else {
+            if (!workspaceId) {
+                toast.error("Workspace not found");
+                return;
+            }
+
+            createProjectMutation.mutate(
+                {
+                    projectName,
+                    key: projectKey,
+                    description,
+                    workspaceId,
+                    members
+                },
+                {
+                    onSuccess: () => {
+                        toast.success("Project created successfully");
+                        onClose?.();
+                    },
+                    onError: (error) => {
+                        if (error instanceof AxiosError) {
+                            toast.error(error.response?.data?.message || "Something went wrong");
+                        }
+                    },
+                }
+            );
+        }
     };
 
 
@@ -125,7 +194,7 @@ const ProjectModal = ({ isOpen, onClose }: ProjectModalProps) => {
                         <div className="p-2 rounded-xl bg-[#6366F1]/10 text-[#6366F1] border border-[#6366F1]/20">
                             <Folder className="h-5 w-5" />
                         </div>
-                        <h2 className="text-xl font-bold text-white">Create Project</h2>
+                        <h2 className="text-xl font-bold text-white">{project ? 'Update Project' : 'Create Project'}</h2>
                     </div>
                     <button
                         onClick={onClose}
@@ -174,8 +243,9 @@ const ProjectModal = ({ isOpen, onClose }: ProjectModalProps) => {
                                     onChange={(e) =>
                                         setProjectKey(e.target.value.toUpperCase())
                                     }
+                                    disabled={!!project}
                                     placeholder="PRJ"
-                                    className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-4 py-3 text-sm text-slate-200 mb-2 focus:outline-none focus:border-[#5558dd] transition-colors uppercase"
+                                    className={`w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-4 py-3 text-sm text-slate-200 mb-2 focus:outline-none focus:border-[#5558dd] transition-colors uppercase ${project ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 />
                             </div>
 
@@ -220,7 +290,7 @@ const ProjectModal = ({ isOpen, onClose }: ProjectModalProps) => {
                                     className="flex-1 bg-[#0F172A] border border-[#1E293B] rounded-xl px-4 py-3 text-sm text-white"
                                 >
                                     <option value="">Select Member</option>
-                                    {workspaceMembers .filter(member => member.id !== currentWorkspace?.ownerId?.id).map((user) => (
+                                    {workspaceMembers.filter(member => member.id !== currentWorkspace?.ownerId?.id).map((user) => (
                                         <option key={user.id} value={user.id}>
                                             {user.firstName}
                                         </option>
@@ -309,7 +379,7 @@ const ProjectModal = ({ isOpen, onClose }: ProjectModalProps) => {
                                             </div>
 
                                             {/* Remove button */}
-                                            <button
+                                            {/* <button
                                                 onClick={() =>
                                                     setMembers(prev =>
                                                         prev.filter((_, i) => i !== index)
@@ -318,7 +388,7 @@ const ProjectModal = ({ isOpen, onClose }: ProjectModalProps) => {
                                                 className="opacity-0 group-hover:opacity-100 p-1.5 text-red-400"
                                             >
                                                 <X className="w-3.5 h-3.5" />
-                                            </button>
+                                            </button> */}
                                         </div>
                                     );
                                 })}
@@ -338,13 +408,13 @@ const ProjectModal = ({ isOpen, onClose }: ProjectModalProps) => {
                     </button>
 
                     <button
-                        onClick={handleCreateProject}
-                        disabled={createProjectMutation.isPending}
+                        onClick={handleSubmit}
+                        disabled={createProjectMutation.isPending || updateProjectMutation.isPending}
                         className="px-6 py-2.5 bg-[#6366F1] hover:bg-[#5558DD] text-white rounded-lg disabled:opacity-50"
                     >
-                        {createProjectMutation.isPending
-                            ? "Creating..."
-                            : "Create Project"}
+                        {createProjectMutation.isPending || updateProjectMutation.isPending
+                            ? (project ? "Updating..." : "Creating...")
+                            : (project ? "Update Project" : "Create Project")}
                     </button>
                 </div>
             </div>

@@ -62,8 +62,9 @@ export const API_ROUTES = {
   },
   PROJECT:{
     CREATE_PROJECT:'/projects/:workspaceId',
-    GET_ALL_PROJECTS:'/projects/project',
+    GET_ALL_PROJECTS:'/projects/:workspaceId/projects',
     UPDATE_PROJECT:"/projects/:projectId",
      DELETE_PROJECT:"/projects/:projectId",
+    REMOVE_MEMBER: "/projects/:projectId/member/:userId",
   }
 };
