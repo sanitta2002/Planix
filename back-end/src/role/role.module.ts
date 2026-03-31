@@ -20,5 +20,6 @@ import { Role, RoleSchema } from './Model/role.schema';
       useClass: RoleRepository,
     },
   ],
+  exports: ['IRoleRepository', 'IRoleService'],
 })
 export class RoleModule {}

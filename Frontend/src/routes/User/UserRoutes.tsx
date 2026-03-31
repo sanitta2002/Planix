@@ -18,6 +18,7 @@ import InviteMemberPage from '../../pages/user/team/InviteMemberPage'
 import { AcceptInvitePage } from '../../pages/user/team/AcceptInvitePage'
 import SettingPage from '../../pages/user/setting/SettingPage'
 import PaymentDetails from '../../pages/user/payment/PaymentDetails'
+import ProjectPage from '../../pages/user/project/ProjectPage'
 
 function UserRoutes() {
   return (
@@ -38,6 +39,7 @@ function UserRoutes() {
           <Route path={FRONTEND_ROUTES.INVITE} element={<InviteMemberPage />} />
           <Route path={FRONTEND_ROUTES.SETTING} element={<SettingPage />}/>
           <Route path={FRONTEND_ROUTES.PAYMENT} element={<PaymentDetails/>}/>
+          <Route path={FRONTEND_ROUTES.PROJECT} element={<ProjectPage/>}/>
         </Route>
         <Route path={FRONTEND_ROUTES.PLAN} element={<SubscriptionPage />} />
         <Route path={FRONTEND_ROUTES.PAYMENT_SUCCESS} element={<PaymentSuccess />} />
