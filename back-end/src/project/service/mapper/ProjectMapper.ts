@@ -27,18 +27,18 @@ export class ProjectMapper {
       description: project.description,
       workspaceId: project.workspaceId.toString(),
       createdBy: project.createdBy.toString(),
+      createdAt: project.createdAt,
     };
   }
-  static toProjectListResponse(
-    projects: ProjectDocument[],
-  ): ProjectListItemDto[] {
-    return projects.map((project) => ({
+  static toListItem(project: ProjectDocument): ProjectListItemDto {
+    return {
       id: project._id.toString(),
       projectName: project.projectName,
       key: project.key,
       description: project.description,
       workspaceId: project.workspaceId.toString(),
       createdBy: project.createdBy.toString(),
-    }));
+      createdAt: project.createdAt,
+    };
   }
 }

@@ -25,7 +25,36 @@ export class ProjectRepository
       key: key,
     });
   }
-  getAllProject(): Promise<ProjectDocument[]> {
-    return this._ProjectModal.find();
+  getProjectsByWorkspace(workspaceId: string): Promise<ProjectDocument[]> {
+    return this._ProjectModal.find({
+      workspaceId: new Types.ObjectId(workspaceId),
+    });
+  }
+  async findAllProjects(
+    page: number,
+    limit: number,
+    workspaceId: string,
+    search?: string,
+  ): Promise<{ projects: ProjectDocument[]; total: number }> {
+    const filter = {
+      workspaceId: new Types.ObjectId(workspaceId),
+      ...(search && {
+        $or: [
+          { projectName: { $regex: search, $options: 'i' } },
+          { key: { $regex: search, $options: 'i' } },
+        ],
+      }),
+    };
+    const [projects, total] = await Promise.all([
+      this._ProjectModal
+        .find(filter)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .sort({ createdAt: -1 }),
+
+      this._ProjectModal.countDocuments(filter),
+    ]);
+
+    return { projects, total };
   }
 }

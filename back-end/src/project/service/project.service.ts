@@ -22,6 +22,8 @@ import type { IRoleRepository } from 'src/role/interface/IRoleRepository';
 import type { IProjectMemberRepository } from '../interfaces/IProjectMemberRepository';
 import { AddProjectMemberDto } from '../dto/req/AddProjectMemberDTO';
 import { Permission, ProjectRole } from 'src/common/type/ProjectRole';
+import { GetAllProjectsDTO } from '../dto/req/GetAllProjectsDTO';
+import { GetAllProjectsResponseDTO } from '../dto/res/GetAllProjectsResponseDTO';
 
 @Injectable()
 export class ProjectService implements IProjectService {
@@ -102,20 +104,76 @@ export class ProjectService implements IProjectService {
 
     return ProjectMapper.toResponse(createProject);
   }
-  async getAllProject(): Promise<ProjectListItemDto[]> {
-    const project = await this._projectRepository.getAllProject();
-    return ProjectMapper.toProjectListResponse(project);
+
+  async getAllProjects(
+    dto: GetAllProjectsDTO,
+  ): Promise<GetAllProjectsResponseDTO> {
+    const page = Number(dto.page) || 1;
+    const limit = Number(dto.limit) || 10;
+    const { projects, total } = await this._projectRepository.findAllProjects(
+      page,
+      limit,
+      dto.workspaceId,
+      dto.search,
+    );
+    const data = await Promise.all(
+      projects.map(async (project) => {
+        const members = await this._projectMemberRepo.getProjectMembers(
+          project._id.toString(),
+        );
+        return {
+          ...ProjectMapper.toListItem(project),
+          members: members.map((m) => ({
+            user: {
+              id: m.userId._id.toString(),
+              firstName: m.userId.firstName,
+            },
+            role: {
+              id: m.roleId._id.toString(),
+              name: m.roleId.name,
+            },
+          })),
+        };
+      }),
+    );
+    return {
+      data,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
+
   async updateProject(
     projectId: string,
     dto: UpdateProjectDto,
   ): Promise<ProjectListItemDto> {
-    const updateProject = await this._projectRepository.updateById(
-      projectId,
-      dto,
-    );
+    const existingProject = await this._projectRepository.findById(projectId);
+
+    if (!existingProject) {
+      throw new NotFoundException(PROJECT_ERRORS.PROJECT_NOT_FOUND);
+    }
+    const updateProject = await this._projectRepository.updateById(projectId, {
+      projectName: dto.projectName,
+      description: dto.description,
+    });
     if (!updateProject) {
       throw new NotFoundException(PROJECT_ERRORS.PROJECT_NOT_FOUND);
+    }
+    if (dto.members) {
+      for (const member of dto.members) {
+        const exists = await this._projectMemberRepo.findById(member.userId);
+        if (!exists) {
+          await this._projectMemberRepo.addMembersToProject({
+            projectId,
+            userId: member.userId,
+            roleId: member.roleId,
+          });
+        }
+      }
     }
     return ProjectMapper.toResponse(updateProject);
   }
@@ -124,5 +182,15 @@ export class ProjectService implements IProjectService {
     if (!deletedProject) {
       throw new NotFoundException(PROJECT_ERRORS.NO_PROJECTS_FOUND);
     }
+  }
+  async removeProjectMember(projectId: string, userId: string): Promise<void> {
+    const member = await this._projectMemberRepo.findProjectAndUser(
+      projectId,
+      userId,
+    );
+    if (!member) {
+      throw new NotFoundException('Member not found in project');
+    }
+    await this._projectMemberRepo.removeMember(projectId, userId);
   }
 }

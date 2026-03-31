@@ -22,7 +22,7 @@ interface AuthRequest extends Request {
     userId: string;
   };
 }
-@UseGuards(SubscriptionGuardGuard)
+
 @Controller('invitation')
 export class InvitationController {
   constructor(
@@ -30,6 +30,7 @@ export class InvitationController {
     private readonly _invitationService: IInvitationService,
   ) {}
   @UseGuards(JwtAuthGuard)
+  @UseGuards(SubscriptionGuardGuard)
   @Post(':workspaceId')
   async inviteMember(
     @Param('workspaceId') workspaceId: string,

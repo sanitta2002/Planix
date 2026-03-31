@@ -5,4 +5,15 @@ export class ProjectListItemDto {
   description: string;
   workspaceId: string;
   createdBy: string;
+  createdAt: Date;
+  members?: {
+    user: {
+      id: string;
+      firstName: string;
+    };
+    role: {
+      id: string;
+      name: string;
+    };
+  }[];
 }

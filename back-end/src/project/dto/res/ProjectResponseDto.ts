@@ -5,4 +5,5 @@ export class ProjectResponseDto {
   description: string;
   workspaceId: string;
   createdBy: string;
+  createdAt: Date;
 }

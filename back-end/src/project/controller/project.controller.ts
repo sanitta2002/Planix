@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -17,6 +18,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ApiResponse } from 'src/common/utils/api-response.util';
 import { PROJECT } from 'src/common/constants/messages.constant';
 import { UpdateProjectDto } from '../dto/req/UpdateProjectDto';
+import { GetAllProjectsDTO } from '../dto/req/GetAllProjectsDTO';
 
 interface AuthRequest extends Request {
   user: { userId: string };
@@ -47,12 +49,18 @@ export class ProjectController {
       project,
     );
   }
-  @Get('projects')
-  async getAllProjects() {
-    const projects = await this._projectService.getAllProject();
+  @Get(':workspaceId/projects')
+  async getAllProjects(
+    @Param('workspaceId') workspaceId: string,
+    @Query() dto: GetAllProjectsDTO,
+  ) {
+    const projects = await this._projectService.getAllProjects({
+      ...dto,
+      workspaceId,
+    });
     return ApiResponse.success(
       HttpStatus.OK,
-      PROJECT.PROJECT_FETCH_SUCCESS,
+      PROJECT.GET_ALL_PROJECTS,
       projects,
     );
   }
@@ -68,13 +76,28 @@ export class ProjectController {
       project,
     );
   }
-  @Delete('projectId')
+  @Delete(':projectId')
   async deleteProject(@Param('projectId') projectId: string) {
     const deleteProject = await this._projectService.deleteProject(projectId);
     return ApiResponse.success(
       HttpStatus.OK,
       PROJECT.PROJECT_DELETED_SUCCESSFULLY,
       deleteProject,
+    );
+  }
+  @Delete(':projectId/member/:userId')
+  async removeMember(
+    @Param('projectId') projectId: string,
+    @Param('userId') userId: string,
+  ) {
+    const deleteMember = await this._projectService.removeProjectMember(
+      projectId,
+      userId,
+    );
+    return ApiResponse.success(
+      HttpStatus.OK,
+      PROJECT.PROJECT_MEMBER_REMOVED_SUCCESSFULLY,
+      deleteMember,
     );
   }
 }

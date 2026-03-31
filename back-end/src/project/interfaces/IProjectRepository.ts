@@ -6,5 +6,11 @@ export interface IprojectRepository extends IBaseRepository<ProjectDocument> {
     workspaceId: string,
     key: string,
   ): Promise<ProjectDocument | null>;
-  getAllProject(): Promise<ProjectDocument[]>;
+  getProjectsByWorkspace(workspaceId: string): Promise<ProjectDocument[]>;
+  findAllProjects(
+    page: number,
+    limit: number,
+    workspaceId: string,
+    search?: string,
+  ): Promise<{ projects: ProjectDocument[]; total: number }>;
 }
