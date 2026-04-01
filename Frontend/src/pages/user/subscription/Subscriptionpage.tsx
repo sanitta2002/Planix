@@ -7,6 +7,7 @@ import { createCheckoutSession } from '../../../Service/user/userService';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store/Store';
 import { useSearchParams } from 'react-router';
+import { AxiosError } from 'axios';
 
 
 interface Plan {
@@ -40,8 +41,8 @@ const SubscriptionPage = () => {
     const { mutate: upgradeSubscription } = useUpgradeSubscription();
 
     const { data: paymentData } = useWorkspacePaymentDetails(workspaceId ?? '');
-    const subscription = paymentData?.data;
-
+    const subscriptions = paymentData?.data || [];
+    const subscription = subscriptions[0] || null;
 
     // const navigate = useNavigate()
 
@@ -60,7 +61,12 @@ const SubscriptionPage = () => {
             return
         }
 
-        const mutation = subscription?.plan ? upgradeSubscription : createSubscribtion;
+       const hasSubscription = !!subscription;
+
+
+        const mutation = hasSubscription
+            ? upgradeSubscription
+            : createSubscribtion;
 
         mutation({
             planId: selectedPlan,
@@ -77,13 +83,18 @@ const SubscriptionPage = () => {
                     })
                     window.location.href = session.url
                 } catch (error) {
-                    toast.error("Payment initialization failed");
-                    console.log(error)
+                    if (error instanceof AxiosError) {
+                        toast.error(error.response?.data.message)
+                    }
+
                 }
 
             },
-            onError: () => {
-                toast.error("Payment initialization failed");
+            onError: (error) => {
+
+                if (error instanceof AxiosError) {
+                    toast.error(error.response?.data.message)
+                }
             }
         })
     }

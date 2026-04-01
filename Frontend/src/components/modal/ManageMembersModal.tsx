@@ -202,8 +202,8 @@ const ManageMembersModal = ({
                                     style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: `right 1rem center`, backgroundRepeat: `no-repeat`, backgroundSize: `1.5em 1.5em` }}
                                 >
                                     <option value="" className="bg-[#0F172A]">Select Role</option>
-                                    {roles?.map((role) => (
-                                        <option key={role._id} value={role._id} className="bg-[#0F172A] py-2">
+                                    {roles?.map((role: any) => (
+                                        <option key={role._id || role.id} value={role._id || role.id} className="bg-[#0F172A] py-2">
                                             {role.name}
                                         </option>
                                     ))}
@@ -270,8 +270,8 @@ const ManageMembersModal = ({
                                                     <p className="text-sm font-semibold text-slate-200 group-hover:text-white">
                                                         {user?.firstName || "New Member"}
                                                     </p>
-                                                    <p className="text-xs text-slate-500 mt-0.5">
-
+                                                    <p className="text-[10px] px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20">
+                                                        {role?.name ? role.name.replace(/_/g, ' ').toLowerCase() : 'No Role Assigned'}
                                                     </p>
                                                 </div>
                                             </div>
@@ -293,8 +293,9 @@ const ManageMembersModal = ({
                                                             }}
                                                             className="w-full bg-[#0F172A]/50 border border-white/5 rounded-lg px-3 py-2 text-sm text-slate-300"
                                                         >
-                                                            {roles?.map((r) => (
-                                                                <option key={r._id} value={r._id}>
+                                                            <option value="" disabled>Select Role</option>
+                                                            {roles?.map((r: any) => (
+                                                                <option key={r._id || r.id} value={r._id || r.id}>
                                                                     {r.name}
                                                                 </option>
                                                             ))}
