@@ -76,6 +76,7 @@ export class ProjectController {
       project,
     );
   }
+
   @Delete(':projectId')
   async deleteProject(@Param('projectId') projectId: string) {
     const deleteProject = await this._projectService.deleteProject(projectId);

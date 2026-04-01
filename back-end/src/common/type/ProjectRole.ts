@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 export enum ProjectRole {
   PROJECT_MANAGER = 'PROJECT_MANAGER',
   BACKEND_DEVELOPER = 'BACKEND_DEVELOPER',

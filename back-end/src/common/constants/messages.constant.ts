@@ -77,7 +77,8 @@ export const SUBSCRIPTION_MESSAGE = {
   SUBSCRIPTION_FAILD: 'subscription update failed',
   SUBSCRIPTION: 'subscription already active',
   SUBSCRIPTION_EXPIED: 'Subscription expired',
-  ACTIVE_SUBSCRIPTION: 'workspace already  active subscription',
+  ACTIVE_SUBSCRIPTION:
+    'Youre already subscribed for this workspace. No need to make another payment',
 };
 
 export const WORKSPACE_MESSAGE = {

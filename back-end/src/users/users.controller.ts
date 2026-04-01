@@ -21,7 +21,7 @@ import { ApiResponse } from 'src/common/utils/api-response.util';
 import { USER_MESSAGES } from 'src/common/constants/messages.constant';
 import type { IUserServicePRO } from './interfaces/user/IUserService';
 
-export interface AuthRequest extends Request {
+interface AuthRequest extends Request {
   user: {
     userId: string;
     email?: string;
