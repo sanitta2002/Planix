@@ -31,7 +31,8 @@ export const FRONTEND_ROUTES = {
   SETTING:"/settings",
   PAYMENT:"/payment",
 //PROJECT
-  PROJECT:'/projects'
+  PROJECT:'/projects',
 
+  BACKLOG: '/backlog',
 
 };

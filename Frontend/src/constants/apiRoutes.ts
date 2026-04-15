@@ -66,5 +66,10 @@ export const API_ROUTES = {
     UPDATE_PROJECT:"/projects/:projectId",
      DELETE_PROJECT:"/projects/:projectId",
     REMOVE_MEMBER: "/projects/:projectId/member/:userId",
+  },
+  ISSUE: {
+    CREATE_ISSUE: "/issues", 
+    GET_ISSUES_BY_PROJECT: "/issues/:projectId",
+    UPDATE_ISSUE: "/issues/:issueId",
   }
 };

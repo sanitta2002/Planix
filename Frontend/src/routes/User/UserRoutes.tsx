@@ -19,6 +19,7 @@ import { AcceptInvitePage } from '../../pages/user/team/AcceptInvitePage'
 import SettingPage from '../../pages/user/setting/SettingPage'
 import PaymentDetails from '../../pages/user/payment/PaymentDetails'
 import ProjectPage from '../../pages/user/project/ProjectPage'
+import BacklogPage from '../../pages/user/component/backlogPage'
 
 function UserRoutes() {
   return (
@@ -40,6 +41,7 @@ function UserRoutes() {
           <Route path={FRONTEND_ROUTES.SETTING} element={<SettingPage />}/>
           <Route path={FRONTEND_ROUTES.PAYMENT} element={<PaymentDetails/>}/>
           <Route path={FRONTEND_ROUTES.PROJECT} element={<ProjectPage/>}/>
+          <Route path={FRONTEND_ROUTES.BACKLOG} element={<BacklogPage/>} />
         </Route>
         <Route path={FRONTEND_ROUTES.PLAN} element={<SubscriptionPage />} />
         <Route path={FRONTEND_ROUTES.PAYMENT_SUCCESS} element={<PaymentSuccess />} />
