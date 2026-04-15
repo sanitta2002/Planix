@@ -35,6 +35,7 @@ import { ProjectMemberRepository } from './repository/ProjectMember/ProjectMembe
       useClass: ProjectMemberRepository,
     },
   ],
+  exports: ['IprojectRepository', 'IProjectMemberRepository'],
   controllers: [ProjectController],
 })
 export class ProjectModule {}

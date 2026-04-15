@@ -190,3 +190,37 @@ export const PROJECT_ERRORS = {
   UNAUTHORIZED_TO_UPDATE_MEMBER_ROLE:
     'Unauthorized to update project member role',
 };
+
+export const ISSUE_SUCCESS = {
+  ISSUE_CREATED: 'Issue created successfully',
+  ISSUE_UPDATED: 'Issue updated successfully',
+  ISSUE_DELETED: 'Issue deleted successfully',
+
+  ISSUE_FETCHED: 'Issue fetched successfully',
+  ISSUES_FETCHED: 'Issues fetched successfully',
+
+  CHILD_ISSUES_FETCHED: 'Child issues fetched successfully',
+};
+
+export const ISSUE_ERRORS = {
+  INVALID_TITLE: 'Issue title is required',
+
+  ISSUE_NOT_FOUND: 'Issue not found',
+  PARENT_ISSUE_NOT_FOUND: 'Parent issue not found',
+
+  PROJECT_NOT_FOUND: 'Project not found',
+  USER_NOT_PROJECT_MEMBER: 'User is not a member of this project',
+
+  NOT_AUTHORIZED: 'You are not authorized to perform this action',
+
+  EPIC_CANNOT_HAVE_PARENT: 'Epic cannot have a parent',
+  STORY_PARENT_INVALID: 'Story must have an Epic as parent',
+  TASK_PARENT_INVALID: 'Task or Bug must have a Story as parent',
+  SUBTASK_PARENT_INVALID: 'Subtask must have a Task as parent',
+
+  INVALID_ISSUE_TYPE: 'Invalid issue type',
+
+  ISSUE_CREATION_FAILED: 'Failed to create issue',
+  ISSUE_UPDATE_FAILED: 'Failed to update issue',
+  ISSUE_DELETE_FAILED: 'Failed to delete issue',
+};

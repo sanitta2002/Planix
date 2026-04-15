@@ -121,7 +121,6 @@ export class ProjectService implements IProjectService {
         const members = await this._projectMemberRepo.getProjectMembers(
           project._id.toString(),
         );
-        this._logger.log(data);
         return {
           ...ProjectMapper.toListItem(project),
           members: members.map((m) => ({

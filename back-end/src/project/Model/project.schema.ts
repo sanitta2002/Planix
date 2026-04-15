@@ -10,37 +10,37 @@ export type ProjectDocument = Project &
 @Schema({ timestamps: true })
 export class Project {
   @Prop({ required: true })
-  projectName: string;
+  projectName!: string;
 
   @Prop({
     required: true,
     trim: true,
     uppercase: true,
   })
-  key: string;
+  key!: string;
 
   @Prop({ required: true })
-  description: string;
+  description!: string;
 
   @Prop({
     type: Types.ObjectId,
     ref: 'Workspace',
     required: true,
   })
-  workspaceId: Types.ObjectId;
+  workspaceId!: Types.ObjectId;
 
   @Prop({
     type: Types.ObjectId,
     ref: 'User',
     required: true,
   })
-  createdBy: Types.ObjectId;
+  createdBy!: Types.ObjectId;
 
   @Prop({
     type: Number,
     default: 0,
   })
-  issueCounter: number;
+  issueCounter!: number;
 }
 export const ProjectSchema = SchemaFactory.createForClass(Project);
 

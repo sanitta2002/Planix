@@ -13,4 +13,5 @@ export interface IprojectRepository extends IBaseRepository<ProjectDocument> {
     workspaceId: string,
     search?: string,
   ): Promise<{ projects: ProjectDocument[]; total: number }>;
+  incrementIssueCounter(projectId: string): Promise<number>;
 }
