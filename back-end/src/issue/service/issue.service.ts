@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { IIssueService } from '../interface/IIssueService';
@@ -15,7 +16,6 @@ import {
 } from 'src/common/constants/messages.constant';
 import { IssueType } from 'src/common/type/IssueType';
 import type { IprojectRepository } from 'src/project/interfaces/IProjectRepository';
-import type { IRoleRepository } from 'src/role/interface/IRoleRepository';
 import { IssueMapper } from './mapper/IssueMapper';
 import type { IProjectMemberRepository } from 'src/project/interfaces/IProjectMemberRepository';
 import { Types } from 'mongoose';
@@ -23,13 +23,13 @@ import { UpdateIssueDTO } from '../dto/req/UpdateIssueDTO';
 
 @Injectable()
 export class IssueService implements IIssueService {
+  private readonly _logger = new Logger(IssueService.name);
   constructor(
     @Inject('IIssueRepository') private readonly _IissueRepo: IIssueRepository,
     @Inject('IprojectRepository')
     private readonly _projectRepo: IprojectRepository,
     @Inject('IProjectMemberRepository')
     private readonly _projectMemberRepo: IProjectMemberRepository,
-    @Inject('IRoleRepository') private readonly _roleReop: IRoleRepository,
   ) {}
   async createIssue(
     dto: CreateIssueDTO,
@@ -53,19 +53,19 @@ export class IssueService implements IIssueService {
         dto.issueType === IssueType.STORY &&
         parent.issueType !== IssueType.EPIC
       ) {
-        throw new BadRequestException('Story must have Epic as parent');
+        throw new BadRequestException(ISSUE_ERRORS.STORY_PARENT_INVALID);
       }
       if (
         (dto.issueType === IssueType.TASK || dto.issueType === IssueType.BUG) &&
         parent.issueType !== IssueType.STORY
       ) {
-        throw new BadRequestException('Task/Bug must have Story as parent');
+        throw new BadRequestException(ISSUE_ERRORS.TASK_PARENT_INVALID);
       }
       if (
         dto.issueType === IssueType.SUBTASK &&
         parent.issueType !== IssueType.TASK
       ) {
-        throw new BadRequestException('Subtask must have Task as parent');
+        throw new BadRequestException(ISSUE_ERRORS.SUBTASK_PARENT_INVALID);
       }
     }
     const project = await this._projectRepo.findById(dto.projectId);
@@ -78,14 +78,6 @@ export class IssueService implements IIssueService {
     );
     if (!projectMember) {
       throw new ForbiddenException(PROJECT_ERRORS.MEMBER_NOT_FOUND);
-    }
-    if (dto.issueType !== IssueType.SUBTASK) {
-      const role = await this._roleReop.findById(
-        projectMember.roleId.toString(),
-      );
-      if (!role || role.name !== 'PROJECT_MANAGER') {
-        throw new ForbiddenException('Not authorized');
-      }
     }
     const nextNumber = await this._projectRepo.incrementIssueCounter(
       dto.projectId,
@@ -156,7 +148,7 @@ export class IssueService implements IIssueService {
     const updatedIssue = await this._IissueRepo.updateById(id, updateData);
 
     if (!updatedIssue) {
-      throw new BadRequestException('Update failed');
+      throw new BadRequestException(ISSUE_ERRORS.ISSUE_UPDATE_FAILED);
     }
 
     return IssueMapper.toResponse(updatedIssue);
