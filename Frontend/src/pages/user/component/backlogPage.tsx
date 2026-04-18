@@ -50,7 +50,7 @@ function BacklogPage() {
   const [sprintExpanded, setSprintExpanded] = useState(true);
   const [backlogExpanded, setBacklogExpanded] = useState(true);
   
-  // Local state to track frontend drag & drop sprint assignments before backend APIs exist
+
   const [localSprintAssignments, setLocalSprintAssignments] = useState<Record<string, string>>({});
 
   const { mutateAsync: createIssue, isPending } = useCreateIssue();
