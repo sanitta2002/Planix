@@ -6,30 +6,30 @@ export type InvitationDocument = Invitation & Document;
 @Schema({ timestamps: true })
 export class Invitation {
   @Prop({ type: Types.ObjectId, ref: 'Workspace', required: true })
-  workspaceId: Types.ObjectId;
+  workspaceId!: Types.ObjectId;
 
   @Prop({ required: true })
-  email: string;
+  email!: string;
 
   @Prop({ required: true })
-  name: string;
+  name!: string;
 
   @Prop({
     enum: ['owner', 'member'],
     default: 'member',
   })
-  role: string;
+  role!: string;
 
   @Prop({
     enum: ['pending', 'accepted', 'rejected'],
     default: 'pending',
   })
-  status: string;
+  status!: string;
 
   @Prop({ required: true, unique: true })
-  token: string;
+  token!: string;
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  invitedBy: Types.ObjectId;
+  invitedBy!: Types.ObjectId;
 }
 export const InvitationSchema = SchemaFactory.createForClass(Invitation);

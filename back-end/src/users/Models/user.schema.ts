@@ -5,23 +5,23 @@ export type UserDocument = HydratedDocument<User>;
 @Schema({ timestamps: true })
 export class User extends Document {
   @Prop({ required: true })
-  firstName: string;
+  firstName!: string;
   @Prop({ required: true })
-  lastName: string;
+  lastName!: string;
   @Prop({ required: true, unique: true, lowercase: true })
-  email: string;
+  email!: string;
   @Prop()
-  phone: string;
+  phone!: string;
   @Prop({ required: false })
   @IsString()
   @MinLength(8)
-  password: string;
+  password!: string;
   @Prop({ default: false })
-  isBlocked: boolean;
+  isBlocked!: boolean;
   @Prop()
   avatarKey?: string;
   @Prop({ default: false })
-  isEmailVerified: boolean;
+  isEmailVerified!: boolean;
   @Prop()
   lastSeenAt?: Date;
   @Prop({
@@ -29,7 +29,7 @@ export class User extends Document {
     enum: ['USER', 'ADMIN'],
     default: 'USER',
   })
-  role: 'USER' | 'ADMIN';
+  role!: 'USER' | 'ADMIN';
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

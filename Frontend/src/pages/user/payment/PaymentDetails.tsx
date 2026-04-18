@@ -153,7 +153,7 @@ const PaymentDetails = () => {
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1A1F3D] border border-slate-700/50 text-slate-300 text-sm font-medium hover:bg-[#1E2445]"
             >
               <CreditCard className="w-4 h-4" />
-              Upgrade Plan
+              {subscription?.plan ? "Upgrade Plan" : "Choose Plan"}
             </button>
           </div>
 

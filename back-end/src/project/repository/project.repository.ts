@@ -57,4 +57,15 @@ export class ProjectRepository
 
     return { projects, total };
   }
+  async incrementIssueCounter(projectId: string): Promise<number> {
+    const project = await this._ProjectModal.findByIdAndUpdate(
+      new Types.ObjectId(projectId),
+      { $inc: { issueCounter: 1 } },
+      { new: true },
+    );
+    if (!project) {
+      throw new Error('Project not found');
+    }
+    return project.issueCounter;
+  }
 }

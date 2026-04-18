@@ -1,3 +1,4 @@
+
 import Table from "../../../components/ui/Table";
 import { useGetAllpayments } from "../../../hooks/Admin/adminHook";
 import { downloadReport } from "../../../Service/admin/adminService";
@@ -53,6 +54,8 @@ const AdminPayments = () => {
         },
     ];
 
+
+
     const handleDownloadPDF = async () => {
         try {
             const blob = await downloadReport();
@@ -80,11 +83,12 @@ const AdminPayments = () => {
                 <h1 className="text-2xl font-bold">All Payments</h1>
 
                 <button
-                    onClick={() => handleDownloadPDF()} // ✅ FIXED
+                    onClick={() => handleDownloadPDF()} 
                     className="px-4 py-2 rounded-lg bg-indigo-500/20 text-indigo-400 hover:bg-indigo-500/30 text-sm"
                 >
                     Download PDF
                 </button>
+                
             </div>
 
             {/* Table */}

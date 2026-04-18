@@ -23,6 +23,8 @@ import { StripeModule } from './common/stripe/stripe.module';
 import { InvitationModule } from './invitation/invitation.module';
 import { RoleModule } from './role/role.module';
 import { ProjectModule } from './project/project.module';
+import { IssueModule } from './issue/issue.module';
+import { SprintModule } from './sprint/sprint.module';
 
 @Module({
   imports: [
@@ -45,6 +47,8 @@ import { ProjectModule } from './project/project.module';
     InvitationModule,
     RoleModule,
     ProjectModule,
+    IssueModule,
+    SprintModule,
   ],
 
   controllers: [AppController],

@@ -1,0 +1,156 @@
+import {
+  BadRequestException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
+import { IIssueService } from '../interface/IIssueService';
+import type { IIssueRepository } from '../interface/IIssueRepository';
+import { CreateIssueDTO } from '../dto/req/CreateIssueDTO';
+import { IssueResponse } from '../dto/res/IssueResponse';
+import {
+  ISSUE_ERRORS,
+  PROJECT_ERRORS,
+} from 'src/common/constants/messages.constant';
+import { IssueType } from 'src/common/type/IssueType';
+import type { IprojectRepository } from 'src/project/interfaces/IProjectRepository';
+import { IssueMapper } from './mapper/IssueMapper';
+import type { IProjectMemberRepository } from 'src/project/interfaces/IProjectMemberRepository';
+import { Types } from 'mongoose';
+import { UpdateIssueDTO } from '../dto/req/UpdateIssueDTO';
+
+@Injectable()
+export class IssueService implements IIssueService {
+  private readonly _logger = new Logger(IssueService.name);
+  constructor(
+    @Inject('IIssueRepository') private readonly _IissueRepo: IIssueRepository,
+    @Inject('IprojectRepository')
+    private readonly _projectRepo: IprojectRepository,
+    @Inject('IProjectMemberRepository')
+    private readonly _projectMemberRepo: IProjectMemberRepository,
+  ) {}
+  async createIssue(
+    dto: CreateIssueDTO,
+    userId: string,
+  ): Promise<IssueResponse> {
+    console.log('**************', userId);
+    if (!dto.title || !dto.title.trim()) {
+      throw new BadRequestException(PROJECT_ERRORS.ISSUE_INVALIDATION);
+    }
+    if (dto.parentId) {
+      const parent = await this._IissueRepo.findById(dto.parentId);
+      if (!parent) {
+        throw new NotFoundException(ISSUE_ERRORS.PARENT_ISSUE_NOT_FOUND);
+      }
+      if (dto.issueType === IssueType.EPIC) {
+        throw new BadRequestException(
+          PROJECT_ERRORS.NON_EPIC_ISSUE_WITHOUT_PARENT,
+        );
+      }
+      if (
+        dto.issueType === IssueType.STORY &&
+        parent.issueType !== IssueType.EPIC
+      ) {
+        throw new BadRequestException(ISSUE_ERRORS.STORY_PARENT_INVALID);
+      }
+      if (
+        (dto.issueType === IssueType.TASK || dto.issueType === IssueType.BUG) &&
+        parent.issueType !== IssueType.STORY
+      ) {
+        throw new BadRequestException(ISSUE_ERRORS.TASK_PARENT_INVALID);
+      }
+      if (
+        dto.issueType === IssueType.SUBTASK &&
+        parent.issueType !== IssueType.TASK
+      ) {
+        throw new BadRequestException(ISSUE_ERRORS.SUBTASK_PARENT_INVALID);
+      }
+    }
+    const project = await this._projectRepo.findById(dto.projectId);
+    if (!project) {
+      throw new NotFoundException(PROJECT_ERRORS.NO_PROJECTS_FOUND);
+    }
+    const projectMember = await this._projectMemberRepo.findProjectAndUser(
+      dto.projectId,
+      userId,
+    );
+    if (!projectMember) {
+      throw new ForbiddenException(PROJECT_ERRORS.MEMBER_NOT_FOUND);
+    }
+    const nextNumber = await this._projectRepo.incrementIssueCounter(
+      dto.projectId,
+    );
+    const key = `${project.key}-${nextNumber}`;
+    const data = IssueMapper.toEntity(dto, userId);
+    const issue = await this._IissueRepo.create({
+      ...data,
+      key,
+    });
+    return IssueMapper.toResponse(issue);
+  }
+  async getIssuesByProject(projectId: string): Promise<IssueResponse[]> {
+    const project = await this._projectRepo.findById(projectId);
+    if (!project) {
+      throw new NotFoundException(PROJECT_ERRORS.NO_PROJECTS_FOUND);
+    }
+    const issues = await this._IissueRepo.findByProject(projectId);
+    return issues.map((issue) => IssueMapper.toResponse(issue));
+  }
+  async updateIssue(
+    id: string,
+    dto: UpdateIssueDTO,
+    userId: string,
+  ): Promise<IssueResponse> {
+    const issue = await this._IissueRepo.findById(id);
+    if (!issue) {
+      throw new NotFoundException(ISSUE_ERRORS.ISSUE_NOT_FOUND);
+    }
+    const projectMember = await this._projectMemberRepo.findProjectAndUser(
+      issue.projectId.toString(),
+      userId,
+    );
+    if (!projectMember) {
+      throw new ForbiddenException(PROJECT_ERRORS.MEMBER_NOT_FOUND);
+    }
+    const updateData: Partial<typeof issue> = {};
+    if (dto.title) updateData.title = dto.title;
+    if (dto.description) updateData.description = dto.description;
+    if (dto.status) updateData.status = dto.status;
+    if (dto.issueType) updateData.issueType = dto.issueType;
+    if (dto.parentId) {
+      const parent = await this._IissueRepo.findById(dto.parentId);
+      if (!parent) {
+        throw new NotFoundException(ISSUE_ERRORS.PARENT_ISSUE_NOT_FOUND);
+      }
+      updateData.parentId = new Types.ObjectId(dto.parentId);
+    }
+    if (dto.sprintId) {
+      updateData.sprintId = new Types.ObjectId(dto.sprintId);
+    }
+
+    if (dto.assigneeId) {
+      updateData.assigneeId = dto.assigneeId;
+    }
+
+    if (dto.startDate) {
+      updateData.startDate = new Date(dto.startDate);
+    }
+
+    if (dto.endDate) {
+      updateData.endDate = new Date(dto.endDate);
+    }
+
+    if (dto.attachments) {
+      updateData.attachments = dto.attachments;
+    }
+    const updatedIssue = await this._IissueRepo.updateById(id, updateData);
+
+    if (!updatedIssue) {
+      throw new BadRequestException(ISSUE_ERRORS.ISSUE_UPDATE_FAILED);
+    }
+
+    return IssueMapper.toResponse(updatedIssue);
+  }
+}
