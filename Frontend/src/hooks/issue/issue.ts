@@ -5,7 +5,8 @@ export const useCreateIssue = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateIssueProps) => createIssue(data),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["issues", variables.projectId] });
       queryClient.invalidateQueries({ queryKey: ["issues"] });
     },
   });
@@ -15,7 +16,9 @@ export const useUpdateIssue = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: ({ id, data }: { id: string; data: UpdateIssueProps }) => updateIssue(id, data),
-        onSuccess: () => {
+        onSuccess: (response: any) => {
+            const projectId = response?.data?.projectId;
+            queryClient.invalidateQueries({ queryKey: ["issues", projectId] });
             queryClient.invalidateQueries({ queryKey: ["issues"] });
         },
     });

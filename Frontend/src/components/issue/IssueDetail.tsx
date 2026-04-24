@@ -85,10 +85,10 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
             editStartDate !== (issue.startDate ? new Date(issue.startDate).toISOString().split('T')[0] : "") ||
             editEndDate !== (issue.endDate ? new Date(issue.endDate).toISOString().split('T')[0] : "");
 
-        if (!hasChanges) {
-            toast.info("No changes detected");
-            return;
-        }
+        // if (!hasChanges) {
+        //     toast.info("No changes detected");
+        //     return;
+        // }
 
         updateMutation({
             id: issue.id || (issue)._id || "",
