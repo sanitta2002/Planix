@@ -29,6 +29,8 @@ export class IssueMapper {
   static toResponse(issue: IssueDocument) {
     return {
       id: issue._id.toString(),
+      projectId: issue.projectId.toString(),
+      workspaceId: issue.workspaceId.toString(),
       title: issue.title,
       description: issue.description ?? null,
       status: issue.status,
@@ -36,6 +38,7 @@ export class IssueMapper {
       issueType: issue.issueType,
       key: issue.key,
       assigneeId: issue.assigneeId,
+      sprintId: issue.sprintId ? issue.sprintId.toString() : null,
       createdAt: issue.createdAt,
       parentId: issue.parentId ? issue.parentId.toString() : null,
       startDate: issue.startDate,
