@@ -79,7 +79,7 @@ export class AdminMapper {
             email: owner.email,
           },
 
-          members: workspace.members?.map((m) => m.toString()) || [],
+          members: workspace.members?.map((m) => m.user.toString()) || [],
           subscriptionId: workspace.subscriptionId?.toString(),
           createdAt: workspace.createdAt,
           updatedAt: workspace.updatedAt,

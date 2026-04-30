@@ -7,7 +7,9 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import type { IIssueService } from '../interface/IIssueService';
 import { CreateIssueDTO } from '../dto/req/CreateIssueDTO';
@@ -19,6 +21,8 @@ import { ApiResponse } from 'src/common/utils/api-response.util';
 import { ISSUE_SUCCESS } from 'src/common/constants/messages.constant';
 import { ApiResponseDto } from 'src/common/dto/api-response.dto';
 import { UpdateIssueDTO } from '../dto/req/UpdateIssueDTO';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { AddAttachmentDTO } from '../dto/req/AttachmentDTO';
 
 @UseGuards(JwtAuthGuard)
 @Controller('issues')
@@ -58,6 +62,27 @@ export class IssueController {
     @GetUser() user: AuthUser,
   ): Promise<ApiResponseDto<IssueResponse>> {
     const issue = await this._issueService.updateIssue(id, dto, user.userId);
+
+    return ApiResponse.success(
+      HttpStatus.OK,
+      ISSUE_SUCCESS.ISSUE_UPDATED,
+      issue,
+    );
+  }
+  @Post(':issueId/attachments')
+  @UseInterceptors(FilesInterceptor('files'))
+  async addAttachments(
+    @Param('issueId') issueId: string,
+    @Body() dto: AddAttachmentDTO,
+    @UploadedFiles() files: Express.Multer.File[],
+    @GetUser() user: AuthUser,
+  ): Promise<ApiResponseDto<IssueResponse>> {
+    const issue = await this._issueService.addAttachments(
+      issueId,
+      dto,
+      user.userId,
+      files,
+    );
 
     return ApiResponse.success(
       HttpStatus.OK,

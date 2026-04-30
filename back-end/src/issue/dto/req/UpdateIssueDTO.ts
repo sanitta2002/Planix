@@ -39,7 +39,7 @@ export class UpdateIssueDTO {
   @IsOptional()
   attachments?: {
     type: string;
-    url: string;
+    key: string;
     fileName?: string;
   }[];
 }

@@ -47,7 +47,7 @@ export class Issue {
     type: [
       {
         type: { type: String },
-        url: { type: String },
+        key: { type: String },
         fileName: { type: String },
       },
     ],
@@ -55,7 +55,7 @@ export class Issue {
   })
   attachments!: {
     type: string;
-    url: string;
+    key: string;
     fileName?: string;
   }[];
 

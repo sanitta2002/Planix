@@ -23,7 +23,7 @@ export class WorkspaceMapper {
         lastName: owner.lastName,
         email: owner.email,
       },
-      members: workspace.members?.map((m) => m.toString()),
+      members: workspace.members?.map((m) => m.user.toString()),
       subscriptionId: workspace.subscriptionId?.toString(),
       logo: workspace.logo,
       logoUrl: logoUrl ?? null,

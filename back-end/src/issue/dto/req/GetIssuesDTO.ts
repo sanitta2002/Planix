@@ -1,9 +1,4 @@
-import { IsOptional, IsString, IsEnum } from 'class-validator';
-
-export enum DateFilter {
-  RECENT = 'RECENT',
-  DUE_SOON = 'DUE_SOON',
-}
+import { IsOptional, IsString } from 'class-validator';
 
 export class GetAllIssuesFilterDTO {
   @IsString()
@@ -19,8 +14,4 @@ export class GetAllIssuesFilterDTO {
 
   @IsOptional()
   sprintId?: string | null;
-
-  @IsOptional()
-  @IsEnum(DateFilter)
-  dateFilter?: DateFilter;
 }

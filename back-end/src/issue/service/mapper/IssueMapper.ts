@@ -43,6 +43,7 @@ export class IssueMapper {
       parentId: issue.parentId ? issue.parentId.toString() : null,
       startDate: issue.startDate,
       endDate: issue.endDate,
+      attachments: issue.attachments || [],
     };
   }
 }
