@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import type { EpicFormData } from "../../../components/issue/CreateEpicModal";
 import { CreateEpicModal } from "../../../components/issue/CreateEpicModal";
 import IssueDetail from "../../../components/issue/IssueDetail";
-import { useCreateIssue, useGetIssuesByProject, useUpdateIssue } from "../../../hooks/issue/issue";
+import { useCreateIssue, useGetIssuesByProject, useUpdateIssue, useAddAttachments } from "../../../hooks/issue/issue";
 import { IssueType } from "../../../types/IssueType";
 import { useMemo } from "react";
 import type { RootState } from "../../../store/Store";
@@ -50,6 +50,7 @@ function BacklogPage() {
   const { mutateAsync: createIssue, isPending } = useCreateIssue();
   const { mutateAsync: createSprint } = useCreateSprint();
   const { mutateAsync: updateIssue } = useUpdateIssue();
+  const { mutateAsync: addAttachments } = useAddAttachments();
   const { mutateAsync: startSprint, isPending: isStartingSprint } = useStartSprint();
   const { mutateAsync: completeSprint, isPending: isCompletingSprint } = useCompleteSprint();
   const currentProject = useSelector(
@@ -100,7 +101,7 @@ function BacklogPage() {
     if (!currentProject) return;
 
     try {
-      await createIssue({
+      const newIssueResponse = await createIssue({
         workspaceId: currentProject.workspaceId,
         projectId: currentProject.id,
         title: formData.title,
@@ -116,8 +117,17 @@ function BacklogPage() {
         endDate: formData.endDate
           ? new Date(formData.endDate).toISOString()
           : null,
-        attachments: formData.attachments,
       });
+
+      const issueId = newIssueResponse?.data?._id || newIssueResponse?.data?.id || newIssueResponse?._id || newIssueResponse?.id;
+      
+      if (issueId && ((formData.files && formData.files.length > 0) || (formData.links && formData.links.length > 0))) {
+        await addAttachments({
+          issueId: issueId,
+          files: formData.files || [],
+          links: formData.links || [],
+        });
+      }
 
       toast.success("Epic created successfully");
       setIsOpen(false);
@@ -269,12 +279,12 @@ function BacklogPage() {
       newSprintId = null;
     } else {
       // Check if overId is a sprint ID
-      const targetSprint = sprints.find((s: any) => s._id === overId);
+      const targetSprint = sprints.find((s) => s._id === overId);
       if (targetSprint) {
         newSprintId = targetSprint._id;
       } else {
         // Check if overId is an issue ID
-        const targetIssue = allIssues.find((i: any) => (i.id || i._id) === overId);
+        const targetIssue = allIssues.find((i) => (i.id || i._id) === overId);
         if (targetIssue) {
           newSprintId = targetIssue.sprintId || null;
         }
@@ -282,7 +292,7 @@ function BacklogPage() {
     }
 
     // Find the active issue
-    const activeIssue = allIssues.find((i: any) => (i.id || i._id) === issueId);
+    const activeIssue = allIssues.find((i) => (i.id || i._id) === issueId);
 
     // Only update if the sprintId actually changed
     if (activeIssue && activeIssue.sprintId !== newSprintId) {

@@ -12,6 +12,7 @@ export interface IssueData {
   parentId?: string | null;
   startDate?: string | null;
   endDate?: string | null;
+  attachments?: any[];
 }
 
 export interface ExtendedIssue extends IssueData {

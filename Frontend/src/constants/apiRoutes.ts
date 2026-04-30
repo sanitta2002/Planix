@@ -71,6 +71,7 @@ export const API_ROUTES = {
     CREATE_ISSUE: "/issues", 
     GET_ISSUES_BY_PROJECT: "/issues/:projectId",
     UPDATE_ISSUE: "/issues/:issueId",
+    ADD_ATTACHMENT:"issues/:issueId/attachments"
   },
   SPRINT: {
     CREATE: "/sprint",
