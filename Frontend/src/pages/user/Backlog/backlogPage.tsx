@@ -53,9 +53,13 @@ function BacklogPage() {
   const { mutateAsync: addAttachments } = useAddAttachments();
   const { mutateAsync: startSprint, isPending: isStartingSprint } = useStartSprint();
   const { mutateAsync: completeSprint, isPending: isCompletingSprint } = useCompleteSprint();
+  // const { user } = useSelector((state: RootState) => state.auth);
   const currentProject = useSelector(
     (state: RootState) => state.project.currentProject
   );
+
+  // const currentUserRole = currentProject?.members.find(m => m.user.id === user?.id)?.role;
+  // const canCreateEpic = currentUserRole?.id === '' || currentUserRole?.name.toLowerCase() === 'admin' || currentUserRole?.permissions?.includes("CREATE_EPIC") || false;
 
   const { data: issuesResponse } = useGetIssuesByProject(currentProject?.id || "");
   const { data: sprintsResponse } = useGetSprintsByProject(currentProject?.id || "");
@@ -324,6 +328,7 @@ function BacklogPage() {
           onToggleEpic={toggleEpic}
           onOpenCreateEpic={() => setIsOpen(true)}
           onIssueClick={setSelectedDrawerIssue}
+          // canCreateEpic={canCreateEpic}
         />
 
         <div className="flex-grow p-8 px-10">

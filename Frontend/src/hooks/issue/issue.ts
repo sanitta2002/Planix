@@ -4,6 +4,7 @@ import {
   getIssuesByProject,
   updateIssue,
   uploadAttachments,
+  deleteAttachment,
   type CreateIssueProps,
   type UpdateIssueProps,
 } from "../../Service/issue/issue";
@@ -54,6 +55,26 @@ export const useAddAttachments = () => {
       files: File[];
       link?: string[];
     }) => uploadAttachments(issueId, files, link),
+
+    onSuccess: (response) => {
+      const projectId = response?.data?.projectId;
+
+      queryClient.invalidateQueries({ queryKey: ["issues", projectId] });
+      queryClient.invalidateQueries({ queryKey: ["issues"] });
+    },
+  });
+};
+
+export const useDeleteAttachment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      issueId,
+      attachmentKey,
+    }: {
+      issueId: string;
+      attachmentKey: string;
+    }) => deleteAttachment(issueId, attachmentKey),
 
     onSuccess: (response) => {
       const projectId = response?.data?.projectId;

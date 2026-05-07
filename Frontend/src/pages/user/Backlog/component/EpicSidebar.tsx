@@ -7,9 +7,10 @@ interface EpicSidebarProps {
   onToggleEpic: (id: string) => void;
   onOpenCreateEpic: () => void;
   onIssueClick: (issue: IssueData) => void;
+  canCreateEpic?: boolean;
 }
 
-const EpicSidebar = ({ epics, expandedEpics, onToggleEpic, onOpenCreateEpic, onIssueClick }: EpicSidebarProps) => {
+const EpicSidebar = ({ epics, expandedEpics, onToggleEpic, onOpenCreateEpic, onIssueClick, canCreateEpic = true }: EpicSidebarProps) => {
   return (
     <div className="w-[320px] bg-[#101827] mt-10 border-r border-slate-800 flex flex-col h-full rounded-tr-xl">
       <div className="flex items-center justify-between py-2.5 px-5 border-b border-slate-800/50 min-h-[44px]">
@@ -92,15 +93,17 @@ const EpicSidebar = ({ epics, expandedEpics, onToggleEpic, onOpenCreateEpic, onI
         ))}
       </div>
 
-      <div className="p-4 border-t border-slate-800/50">
-        <button
-          onClick={onOpenCreateEpic}
-          className="w-full py-2 flex items-center justify-center gap-2 border border-[#2D3958] rounded-lg text-blue-400 hover:bg-[#2D3958]/30 transition-colors"
-        >
-          <Plus size={16} />
-          Create epic
-        </button>
-      </div>
+      {canCreateEpic && (
+        <div className="p-4 border-t border-slate-800/50">
+          <button
+            onClick={onOpenCreateEpic}
+            className="w-full py-2 flex items-center justify-center gap-2 border border-[#2D3958] rounded-lg text-blue-400 hover:bg-[#2D3958]/30 transition-colors"
+          >
+            <Plus size={16} />
+            Create epic
+          </button>
+        </div>
+      )}
     </div>
   );
 };

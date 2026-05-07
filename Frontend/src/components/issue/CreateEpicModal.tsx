@@ -279,15 +279,15 @@ export const CreateEpicModal = ({ isOpen, projectName, onClose, onSubmit, isLoad
                                 </div>
 
                                 {/* RIGHT → Epic Color */}
-                                <div className="space-y-2 text-right">
-                                    <label className="text-sm text-zinc-300">Epic Color</label>
+                                {/* <div className="space-y-2 text-right"> */}
+                                    {/* <label className="text-sm text-zinc-300">Epic Color</label> */}
 
-                                    <div className="flex justify-end gap-1 pt-1">
-                                        <div className="w-8 h-8 rounded-full bg-[#6366F1] flex items-center justify-center">
-                                            <Check className="w-4 h-4 text-white" />
-                                        </div>
-                                    </div>
-                                </div>
+                                    {/* <div className="flex justify-end gap-1 pt-1"> */}
+                                        {/* <div className="w-8 h-8 rounded-full bg-[#6366F1] flex items-center justify-center"> */}
+                                            {/* <Check className="w-4 h-4 text-white" /> */}
+                                        {/* </div> */}
+                                    {/* </div> */}
+                                {/* </div> */}
 
                             </div>
                         </div>

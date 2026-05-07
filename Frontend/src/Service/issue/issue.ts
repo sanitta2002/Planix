@@ -88,3 +88,26 @@ export const uploadAttachments = async (
 
   return response.data;
 };
+
+export const deleteAttachment = async (
+  issueId: string,
+  attachmentKey: string,
+) => {
+  const response = await AxiosInstance.delete(
+    API_ROUTES.ISSUE.DELETE_ATTACHMENT.replace(":issueId", issueId),
+    { params: { key: attachmentKey } },
+  );
+  return response.data;
+};
+
+export const getAttachmentUrl = async (
+  issueId: string,
+  attachmentKey: string,
+) => {
+  const response = await AxiosInstance.get(
+    API_ROUTES.ISSUE.GET_ATTACHMENT_URL
+      .replace(":issueId", issueId),
+    { params: { key: attachmentKey } },
+  );
+  return response.data;
+};

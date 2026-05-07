@@ -7,6 +7,7 @@ interface Member {
   role: {
     id: string;
     name: string;
+    permissions?: string[];
   };
 }
 

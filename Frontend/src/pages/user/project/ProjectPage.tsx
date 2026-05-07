@@ -180,7 +180,7 @@ const ProjectPage = () => {
             </div>
 
             {/* Tags */}
-            <div className="bg-[#0F172A] p-4 rounded-xl border border-white/10 flex items-start gap-4 hover:bg-white/[0.02] transition-colors duration-200">
+            {/* <div className="bg-[#0F172A] p-4 rounded-xl border border-white/10 flex items-start gap-4 hover:bg-white/[0.02] transition-colors duration-200">
               <div className="w-10 h-10 rounded-lg bg-yellow-500/10 flex items-center justify-center border border-yellow-500/20 shrink-0">
                 <Tag className="w-5 h-5 text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]" />
               </div>
@@ -201,7 +201,7 @@ const ProjectPage = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
           </div>
         </div>
