@@ -224,3 +224,35 @@ export const ISSUE_ERRORS = {
   ISSUE_UPDATE_FAILED: 'Failed to update issue',
   ISSUE_DELETE_FAILED: 'Failed to delete issue',
 };
+
+export const SPRINT_MESSAGES = {
+  CREATED: 'Sprint created successfully',
+  FETCHED: 'Sprints fetched successfully',
+  UPDATED: 'Sprints update successfully',
+  STARTED: 'Sprint Started successfully',
+  INVALID_DATES: 'End date must be after start date',
+  INVALID_DATE_FORMAT: 'Invalid date format',
+  START_DATE_IN_PAST: 'Start date cannot be in the past',
+  SPRINT_NOT_STARTED_YET: 'Sprint has not started yet',
+
+  ACTIVE_SPRINT_EXISTS: 'An active sprint already exists for this project',
+  SPRINT_NOT_FOUND: 'Sprint not found',
+  PROJECT_NOT_FOUND: 'Project not found',
+  SPRINT_ALREADY_COMPLETED: 'Sprint is already completed',
+  SPRINT_ALREADY_ACTIVE: 'Sprint is already active',
+  SPRINT_NOT_STARTED: 'Sprint has not been started yet',
+
+  ONLY_PLANNED_CAN_START: 'Only planned sprints can be started',
+  ONLY_ACTIVE_CAN_COMPLETE: 'Only active sprints can be completed',
+
+  REQUIRED_FIELDS: 'All required fields must be provided',
+  INVALID_SPRINT_ID: 'Invalid sprint ID',
+
+  SPRINT_OVERLAP: 'Sprint dates overlap with an existing sprint',
+
+  CANNOT_MODIFY_COMPLETED: 'Cannot modify a completed sprint',
+  CANNOT_CHANGE_START_DATE: 'Cannot change start date of active sprint',
+
+  ISSUE_ALREADY_ASSIGNED: 'Issue is already assigned to another sprint',
+  ISSUE_NOT_FOUND: 'Issue not found',
+};

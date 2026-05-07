@@ -1,3 +1,4 @@
+import { AddAttachmentDTO } from '../dto/req/AttachmentDTO';
 import { CreateIssueDTO } from '../dto/req/CreateIssueDTO';
 import { UpdateIssueDTO } from '../dto/req/UpdateIssueDTO';
 import { IssueResponse } from '../dto/res/IssueResponse';
@@ -10,4 +11,20 @@ export interface IIssueService {
     dto: UpdateIssueDTO,
     userId: string,
   ): Promise<IssueResponse>;
+  addAttachments(
+    issueId: string,
+    dto: AddAttachmentDTO,
+    userId: string,
+    files?: Express.Multer.File[],
+  ): Promise<IssueResponse>;
+  deleteAttachment(
+    issueId: string,
+    attachmentKey: string,
+    userId: string,
+  ): Promise<IssueResponse>;
+  getAttachmentUrl(
+    issueId: string,
+    attachmentKey: string,
+    userId: string,
+  ): Promise<{ url: string }>;
 }

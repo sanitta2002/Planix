@@ -9,8 +9,8 @@ import { IssueStatus } from 'src/common/type/IssueStatus';
 import { IssueType } from 'src/common/type/IssueType';
 
 export interface IAttachment {
-  type: string;
-  url: string;
+  key: string;
+  type: 'image' | 'document' | 'link';
   fileName?: string;
 }
 

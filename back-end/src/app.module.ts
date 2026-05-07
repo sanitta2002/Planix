@@ -25,10 +25,12 @@ import { RoleModule } from './role/role.module';
 import { ProjectModule } from './project/project.module';
 import { IssueModule } from './issue/issue.module';
 import { SprintModule } from './sprint/sprint.module';
+import { AppLoggerModule } from './config/logger';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    AppLoggerModule,
     DatabaseModule,
     UsersModule,
     AuthModule,

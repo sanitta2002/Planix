@@ -2,10 +2,12 @@ interface Member {
   user: {
     id: string;
     firstName: string;
+    avatarUrl?: string;
   };
   role: {
     id: string;
     name: string;
+    permissions?: string[];
   };
 }
 

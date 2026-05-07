@@ -3,7 +3,6 @@ import {
   ConflictException,
   Inject,
   Injectable,
-  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { IuserService } from '../interfaces/user.service.interface';
@@ -29,16 +28,17 @@ import {
   USER_MESSAGES,
 } from 'src/common/constants/messages.constant';
 import { AuthMapper, TempUser } from '../mapper/auth.mapper';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class AuthService implements IuserService {
-  private readonly logger = new Logger(AuthService.name);
   private googleClient = new OAuth2Client({
     client_id: process.env.GOOGLE_CLIENT_ID,
     client_secret: process.env.GOOGLE_CLIENT_SECRET,
     redirectUri: 'postmessage',
   });
   constructor(
+    private readonly _logger: PinoLogger,
     @Inject('IUserRepository') private readonly userRepository: IUserRepository,
     @Inject('IHashingService') private readonly hashingService: IHashingService,
     @Inject('IOtpService') private readonly otpService: IOtpService,
@@ -60,19 +60,19 @@ export class AuthService implements IuserService {
     await this.tempStore.set(`register:${dto.email}`, tempUser);
 
     const otp = await this.otpService.sendOtp(`otp:${dto.email}`);
-    this.logger.log(`OTP generated for ${dto.email}`);
-    this.logger.log(`otp ${otp}`);
+    this._logger.info(`OTP generated for ${dto.email}`);
+    this._logger.info(`otp ${otp}`);
     if (!otp) {
       throw new ConflictException(OTP_MESSAGES.FAILED_TO_GENERATE);
     }
     await this.mailService.sendOtpMail(dto.email, otp);
-    this.logger.log(`Registration OTP sent to ${dto.email}`);
+    this._logger.info(`Registration OTP sent to ${dto.email}`);
   }
 
   async verifyEmail(dto: VerifyEmailDto): Promise<void> {
     const { email, otp } = dto;
     await this.otpService.verifyOtp(`otp:${email}`, otp);
-    this.logger.log(`${otp} verifyed`);
+    this._logger.info(`${otp} verifyed`);
     const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
       await this.otpService.delete(`otp:${email}`);
@@ -98,16 +98,16 @@ export class AuthService implements IuserService {
       throw new BadRequestException(USER_MESSAGES.NOT_FOUND);
     }
     const otp = await this.otpService.sendOtp(`otp:${email}`);
-    this.logger.log('resendOtp:', otp);
+    this._logger.info('resendOtp:', otp);
     if (!otp) {
       throw new ConflictException(OTP_MESSAGES.FAILED_TO_GENERATE);
     }
     await this.mailService.sendOtpMail(email, otp);
-    this.logger.log(`OTP resent successfully  ${email}`);
+    this._logger.info(`OTP resent successfully  ${email}`);
   }
 
   async login(dto: LoginRequestDto): Promise<LoginResponseDto> {
-    this.logger.log('login attempted');
+    this._logger.info('login attempted');
     const { email, password } = dto;
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
@@ -130,7 +130,7 @@ export class AuthService implements IuserService {
       userId: user._id.toString(),
       email: user.email,
     };
-    this.logger.log(payload);
+    this._logger.info(payload);
     const accessToken = this.jwtService.signAccessToken(payload);
     const refreshToken = this.jwtService.signRefreshToken(payload);
     console.log('accessToken', accessToken);
@@ -145,7 +145,7 @@ export class AuthService implements IuserService {
       throw new UnauthorizedException(AUTH_MESSAGES.EMAIL_NOT_EXIsTING);
     }
     if (!user.isEmailVerified) {
-      this.logger.warn(`unverified email: ${email}`);
+      this._logger.info(`unverified email: ${email}`);
       throw new UnauthorizedException(AUTH_MESSAGES.EMAIL_NOT_VERIFIED);
     }
     const otp = await this.otpService.sendOtp(`otp:${email}`);
@@ -154,7 +154,7 @@ export class AuthService implements IuserService {
       throw new ConflictException(OTP_MESSAGES.FAILED_TO_GENERATE);
     }
     await this.mailService.sendOtpMail(email, otp);
-    this.logger.log(`Password reset OTP sent to ${email}`);
+    this._logger.info(`Password reset OTP sent to ${email}`);
   }
 
   async resetPassword(dto: ResetPasswordDto): Promise<void> {
@@ -173,7 +173,7 @@ export class AuthService implements IuserService {
     if (!update) {
       throw new ConflictException(AUTH_MESSAGES.PASSWORD_RESET_FAILED);
     }
-    this.logger.log(`Password reset successful for ${email}`);
+    this._logger.info(`Password reset successful for ${email}`);
   }
   async googleLogin(dto: GoogleLoginDto): Promise<LoginResponseDto> {
     const token = await this.googleClient.getToken(dto.idToken);

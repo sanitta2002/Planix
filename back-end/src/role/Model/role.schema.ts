@@ -6,11 +6,11 @@ export type RoleDocument = Role & Document;
 @Schema({ timestamps: true })
 export class Role {
   @Prop({ required: true, unique: true })
-  name: string;
+  name!: string;
   @Prop({ type: [String], required: true })
-  permissions: string[];
+  permissions!: string[];
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  createdBy: Types.ObjectId;
+  createdBy!: Types.ObjectId;
 }
 
 export const RoleSchema = SchemaFactory.createForClass(Role);

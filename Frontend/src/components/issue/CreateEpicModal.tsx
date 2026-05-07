@@ -3,7 +3,6 @@ import { X, Loader2, FileText, Link as LinkIcon, Image as ImageIcon, User, Arrow
 import { useSelector } from "react-redux";
 // import { getAttachmentUploadUrl, uploadFileToS3 } from "../../Service/issue/issue";
 import { IssueStatus } from "../../types/IssueType";
-import type { IAttachement } from "../../types/IssueType";
 import type { RootState } from "../../store/Store";
 import { toast } from "sonner";
 
@@ -22,7 +21,8 @@ export interface EpicFormData {
     status: string;
     startDate: string;
     endDate: string;
-    attachments: IAttachement[];
+    files?: File[];
+    links?: { url: string; fileName?: string }[];
     assigneeId?: string | null;
 }
 
@@ -37,7 +37,7 @@ export const CreateEpicModal = ({ isOpen, projectName, onClose, onSubmit, isLoad
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [assigneeId, setAssigneeId] = useState("");
-    const [attachments, setAttachments] = useState<IAttachement[]>([]);
+    const [attachments, setAttachments] = useState<{ type: 'file' | 'link', file?: File, url?: string, fileName: string }[]>([]);
 
     // Attachments section state
     const [attachmentTab, setAttachmentTab] = useState<'file' | 'image' | 'link'>('file');
@@ -48,25 +48,64 @@ export const CreateEpicModal = ({ isOpen, projectName, onClose, onSubmit, isLoad
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
-            setSelectedFile(e.target.files[0]);
+            const file = e.target.files[0];
+            
+            const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+            if (file.size > MAX_FILE_SIZE) {
+                toast.error("File size should not exceed 5MB");
+                return;
+            }
+            
+            if (attachmentTab === 'image' && !file.type.startsWith('image/')) {
+                toast.error("Please select a valid image file");
+                return;
+            }
+
+            setSelectedFile(file);
         }
     };
 
     const handleAddAttachment = () => {
         if (attachmentTab === 'link') {
-            if (!linkUrl.trim()) return;
+            if (!linkUrl.trim()) {
+                toast.error("Please enter a link");
+                return;
+            }
             let formattedUrl = linkUrl.trim();
             if (!/^https?:\/\//i.test(formattedUrl)) {
                 formattedUrl = 'https://' + formattedUrl;
             }
+
+            try {
+                new URL(formattedUrl);
+            } catch (e) {
+                toast.error("Please enter a valid URL");
+                return;
+            }
+
+            if (attachments.some(att => att.url === formattedUrl)) {
+                toast.error("This link has already been added");
+                return;
+            }
+
             setAttachments(prev => [...prev, { type: 'link', url: formattedUrl, fileName: linkUrl }]);
             setLinkUrl("");
+            toast.success("Link added");
         } else {
-            if (!selectedFile) return;
-            setAttachments(prev => [...prev, { type: 'file', url: URL.createObjectURL(selectedFile), fileName: selectedFile.name }]);
+            if (!selectedFile) {
+                toast.error(`Please select ${attachmentTab === 'image' ? 'an image' : 'a file'} first`);
+                return;
+            }
+
+            if (attachments.some(att => att.type === 'file' && att.file?.name === selectedFile.name && att.file?.size === selectedFile.size)) {
+                toast.error("This file has already been added");
+                return;
+            }
+
+            setAttachments(prev => [...prev, { type: 'file', file: selectedFile, url: URL.createObjectURL(selectedFile), fileName: selectedFile.name }]);
             setSelectedFile(null);
+            toast.success("File added");
         }
-        toast.success("Attachment added");
     };
 
     const removeAttachment = (index: number) => {
@@ -84,7 +123,19 @@ export const CreateEpicModal = ({ isOpen, projectName, onClose, onSubmit, isLoad
             toast.error("End date cannot be earlier than start date");
             return;
         }
-        await onSubmit({ title, description, status, startDate, endDate, attachments, assigneeId: assigneeId || null });
+        const filesToUpload = attachments.filter(a => a.type === 'file' && a.file).map(a => a.file as File);
+        const linksToUpload = attachments.filter(a => a.type === 'link' && a.url).map(a => ({ url: a.url as string, fileName: a.fileName }));
+
+        await onSubmit({ 
+            title, 
+            description, 
+            status, 
+            startDate, 
+            endDate, 
+            files: filesToUpload, 
+            links: linksToUpload, 
+            assigneeId: assigneeId || null 
+        });
         setTitle("");
         setDescription("");
         setStartDate("");
@@ -228,15 +279,15 @@ export const CreateEpicModal = ({ isOpen, projectName, onClose, onSubmit, isLoad
                                 </div>
 
                                 {/* RIGHT → Epic Color */}
-                                <div className="space-y-2 text-right">
-                                    <label className="text-sm text-zinc-300">Epic Color</label>
+                                {/* <div className="space-y-2 text-right"> */}
+                                    {/* <label className="text-sm text-zinc-300">Epic Color</label> */}
 
-                                    <div className="flex justify-end gap-1 pt-1">
-                                        <div className="w-8 h-8 rounded-full bg-[#6366F1] flex items-center justify-center">
-                                            <Check className="w-4 h-4 text-white" />
-                                        </div>
-                                    </div>
-                                </div>
+                                    {/* <div className="flex justify-end gap-1 pt-1"> */}
+                                        {/* <div className="w-8 h-8 rounded-full bg-[#6366F1] flex items-center justify-center"> */}
+                                            {/* <Check className="w-4 h-4 text-white" /> */}
+                                        {/* </div> */}
+                                    {/* </div> */}
+                                {/* </div> */}
 
                             </div>
                         </div>
@@ -291,7 +342,7 @@ export const CreateEpicModal = ({ isOpen, projectName, onClose, onSubmit, isLoad
                                     {attachments.map((att, i) => (
                                         <div key={i} className="flex items-center gap-3 px-4 py-3 bg-[#0F172A] border border-[#1E293B] rounded-xl group/item">
                                             {att.type === 'file' ? <FileText className="w-4 h-4 text-blue-400" /> : <LinkIcon className="w-4 h-4 text-emerald-400" />}
-                                            <span className="flex-1 text-sm text-zinc-300">{att.fileName || att.url}</span>
+                                            <span className="flex-1 text-sm text-zinc-300 truncate">{att.fileName || att.url}</span>
                                             <button type="button" onClick={() => removeAttachment(i)} className="opacity-0 group-hover/item:opacity-100 text-zinc-500 hover:text-red-400">
                                                 <X className="w-4 h-4" />
                                             </button>
@@ -326,10 +377,15 @@ export const CreateEpicModal = ({ isOpen, projectName, onClose, onSubmit, isLoad
                                     </button>
                                 </div>
 
-                                <div className="relative w-full h-[46px] bg-white rounded-md cursor-pointer overflow-hidden">
+                                <div className="relative w-full">
                                     <input
                                         type="text"
-                                        className="w-full h-full bg-white px-3 text-black text-sm focus:outline-none"
+                                        className={`w-full bg-[#0F172A] border border-[#1E293B] rounded-lg px-4 py-3 text-sm text-slate-200 placeholder:text-zinc-500 focus:outline-none focus:border-[#6366F1] transition-colors ${attachmentTab !== 'link' ? 'cursor-pointer' : ''}`}
+                                        placeholder={
+                                            attachmentTab === 'link' 
+                                                ? "Paste a link here..." 
+                                                : `Click to select ${attachmentTab === 'image' ? 'an image' : 'a file'}...`
+                                        }
                                         value={attachmentTab === 'link' ? linkUrl : (selectedFile?.name || '')}
                                         onChange={(e) => {
                                             if (attachmentTab === 'link') {
@@ -342,6 +398,7 @@ export const CreateEpicModal = ({ isOpen, projectName, onClose, onSubmit, isLoad
                                         <input
                                             type="file"
                                             onChange={handleFileSelect}
+                                            onClick={(e) => { (e.target as HTMLInputElement).value = '' }}
                                             className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
                                             accept={attachmentTab === 'image' ? "image/*" : "*"}
                                         />

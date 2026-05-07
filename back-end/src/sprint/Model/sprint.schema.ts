@@ -1,8 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Types } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 import { SprintStatus } from 'src/common/type/SprintStatus';
 
-export type SprintDocument = Sprint & Document;
+export type SprintDocument = HydratedDocument<Sprint> & {
+  createdAt: Date;
+};
 
 @Schema({ timestamps: true })
 export class Sprint {
@@ -15,10 +17,10 @@ export class Sprint {
   @Prop({ required: true, trim: true })
   name!: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   startDate!: Date;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   endDate!: Date;
 
   @Prop({
@@ -31,8 +33,8 @@ export class Sprint {
   @Prop()
   goal?: string;
 
-  @Prop({ required: true })
-  createdBy!: string;
+  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+  createdBy!: Types.ObjectId;
 }
 
 export const SprintSchema = SchemaFactory.createForClass(Sprint);

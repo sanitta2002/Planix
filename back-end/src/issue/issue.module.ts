@@ -6,12 +6,14 @@ import { Issue, IssueSchema } from './Model/issue.schema';
 import { IssueRepository } from './repository/IssueRepository';
 import { ProjectModule } from 'src/project/project.module';
 import { RoleModule } from 'src/role/role.module';
+import { S3Module } from 'src/common/s3/s3.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Issue.name, schema: IssueSchema }]),
     ProjectModule,
     RoleModule,
+    S3Module,
   ],
   providers: [
     {

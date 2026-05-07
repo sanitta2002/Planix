@@ -20,6 +20,8 @@ import { IssueMapper } from './mapper/IssueMapper';
 import type { IProjectMemberRepository } from 'src/project/interfaces/IProjectMemberRepository';
 import { Types } from 'mongoose';
 import { UpdateIssueDTO } from '../dto/req/UpdateIssueDTO';
+import { AddAttachmentDTO } from '../dto/req/AttachmentDTO';
+import type { IS3Service } from 'src/common/s3/interfaces/s3.service.interface';
 
 @Injectable()
 export class IssueService implements IIssueService {
@@ -30,6 +32,7 @@ export class IssueService implements IIssueService {
     private readonly _projectRepo: IprojectRepository,
     @Inject('IProjectMemberRepository')
     private readonly _projectMemberRepo: IProjectMemberRepository,
+    @Inject('IS3Service') private readonly _S3Service: IS3Service,
   ) {}
   async createIssue(
     dto: CreateIssueDTO,
@@ -152,5 +155,146 @@ export class IssueService implements IIssueService {
     }
 
     return IssueMapper.toResponse(updatedIssue);
+  }
+  async addAttachments(
+    issueId: string,
+    dto: AddAttachmentDTO,
+    userId: string,
+    files?: Express.Multer.File[],
+  ): Promise<IssueResponse> {
+    console.log(dto);
+    const issue = await this._IissueRepo.findById(issueId);
+
+    if (!issue) {
+      throw new NotFoundException(ISSUE_ERRORS.ISSUE_NOT_FOUND);
+    }
+
+    const fileAttachments = await Promise.all(
+      (files || []).map(async (file) => {
+        const { key } = await this._S3Service.uploadFile(
+          file,
+          userId,
+          'issues',
+        );
+
+        const url = await this._S3Service.createSignedUrl(key);
+
+        return {
+          key,
+          url,
+          type: file.mimetype.startsWith('image') ? 'image' : 'document',
+          fileName: file.originalname,
+        };
+      }),
+    );
+
+    const linkAttachments = (dto.link || []).map((url) => ({
+      key: url,
+      url: url,
+      type: 'link',
+      fileName: url,
+    }));
+
+    const updatedIssue = await this._IissueRepo.updateById(issueId, {
+      attachments: [
+        ...(issue.attachments || []),
+        ...fileAttachments.map(({ key, type, fileName, url }) => ({
+          key,
+          type,
+          fileName,
+          url,
+        })),
+        ...linkAttachments.map(({ key, type, fileName, url }) => ({
+          key,
+          type,
+          fileName,
+          url,
+        })),
+      ],
+    });
+
+    if (!updatedIssue) {
+      throw new BadRequestException('Failed to add attachments');
+    }
+
+    return IssueMapper.toResponse(updatedIssue);
+  }
+  async deleteAttachment(
+    issueId: string,
+    attachmentKey: string,
+    userId: string,
+  ): Promise<IssueResponse> {
+    const issue = await this._IissueRepo.findById(issueId);
+
+    if (!issue) {
+      throw new NotFoundException(ISSUE_ERRORS.ISSUE_NOT_FOUND);
+    }
+
+    const projectMember = await this._projectMemberRepo.findProjectAndUser(
+      issue.projectId.toString(),
+      userId,
+    );
+
+    if (!projectMember) {
+      throw new ForbiddenException(PROJECT_ERRORS.MEMBER_NOT_FOUND);
+    }
+
+    const exists = (issue.attachments || []).some(
+      (att) => att.key === attachmentKey,
+    );
+
+    if (!exists) {
+      throw new NotFoundException('Attachment not found');
+    }
+
+    const updatedAttachments = (issue.attachments || []).filter(
+      (att) => att.key !== attachmentKey,
+    );
+
+    const updatedIssue = await this._IissueRepo.updateById(issueId, {
+      attachments: updatedAttachments,
+    });
+
+    if (!updatedIssue) {
+      throw new BadRequestException('Failed to delete attachment');
+    }
+    try {
+      await this._S3Service.deleteFile(attachmentKey);
+    } catch (err) {
+      this._logger.warn('S3 delete failed', err);
+    }
+
+    return IssueMapper.toResponse(updatedIssue);
+  }
+  async getAttachmentUrl(
+    issueId: string,
+    attachmentKey: string,
+    userId: string,
+  ): Promise<{ url: string }> {
+    const issue = await this._IissueRepo.findById(issueId);
+
+    if (!issue) {
+      throw new NotFoundException(ISSUE_ERRORS.ISSUE_NOT_FOUND);
+    }
+
+    const projectMember = await this._projectMemberRepo.findProjectAndUser(
+      issue.projectId.toString(),
+      userId,
+    );
+
+    if (!projectMember) {
+      throw new ForbiddenException(PROJECT_ERRORS.MEMBER_NOT_FOUND);
+    }
+
+    const attachment = (issue.attachments || []).find(
+      (att) => att.key === attachmentKey,
+    );
+
+    if (!attachment) {
+      throw new NotFoundException('Attachment not found');
+    }
+
+    const url = await this._S3Service.createSignedUrl(attachmentKey);
+    return { url };
   }
 }

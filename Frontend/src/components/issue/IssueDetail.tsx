@@ -1,27 +1,31 @@
-import { X, Check, MoreHorizontal, Plus, Loader2, ChevronDown } from "lucide-react";
+import { X, Check, MoreHorizontal, Plus, Loader2, ChevronDown, Paperclip, FileText, ImageIcon, Link as LinkIcon, Trash2, Eye, ExternalLink, Download } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store/Store";
-import { useCreateIssue, useUpdateIssue } from "../../hooks/issue/issue";
+import { useCreateIssue, useUpdateIssue, useAddAttachments, useDeleteAttachment } from "../../hooks/issue/issue";
 import { CreateIssueModal } from "./CreateIssueModal";
 import type { IssueFormData } from "./CreateIssueModal";
 import { toast } from "sonner";
+import ConfirmationModal from "../modal/ConfirmationModal";
+import { getAttachmentUrl } from "../../Service/issue/issue";
 
 export interface Issue {
-  id?: string;
-  _id?: string;
-  title: string;
-  description?: string;
-  issueType?: string;
-  type?: string;
-  status: string;
-  projectId: string;
-  parentId?: string;
-  parentTitle?: string;
-  startDate?: string;
-  endDate?: string;
-  tasks?: Issue[];
-  projectName?: string;
+    id?: string;
+    _id?: string;
+    title: string;
+    description?: string;
+    issueType?: string;
+    type?: string;
+    status: string;
+    projectId: string;
+    parentId?: string;
+    parentTitle?: string;
+    startDate?: string;
+    endDate?: string;
+    tasks?: Issue[];
+    projectName?: string;
+    attachments?: any[];
+    assigneeId?: string;
 }
 
 interface IssueDetailProps {
@@ -34,7 +38,10 @@ interface IssueDetailProps {
 export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: IssueDetailProps) {
     // const [activeTab, setActiveTab] = useState("file");
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    
+    const [deleteAttachmentKey, setDeleteAttachmentKey] = useState<string | null>(null);
+    const [previewAttachment, setPreviewAttachment] = useState<{ url: string; fileName: string; type: string } | null>(null);
+    const [isLoadingPreview, setIsLoadingPreview] = useState(false);
+
     const { currentProject } = useSelector((state: RootState) => state.project);
 
     const { mutate: createIssue, isPending: isCreatingIssue } = useCreateIssue();
@@ -45,6 +52,150 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
     const [editDescription, setEditDescription] = useState("");
     const [editStartDate, setEditStartDate] = useState("");
     const [editEndDate, setEditEndDate] = useState("");
+
+    // Attachment states
+    const [attachmentTab, setAttachmentTab] = useState<'file' | 'image' | 'link'>('file');
+    const [linkUrl, setLinkUrl] = useState("");
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const { mutate: addAttachments, isPending: isAddingAttachment } = useAddAttachments();
+    const { mutate: deleteAttachmentMutation, isPending: isDeletingAttachment } = useDeleteAttachment();
+
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const MAX_FILE_SIZE = 5 * 1024 * 1024; 
+            const newFiles: File[] = [];
+
+            for (let i = 0; i < e.target.files.length; i++) {
+                const file = e.target.files[i];
+
+                if (file.size > MAX_FILE_SIZE) {
+                    toast.error(`"${file.name}" exceeds 5MB limit`);
+                    continue;
+                }
+
+                if (attachmentTab === 'image' && !file.type.startsWith('image/')) {
+                    toast.error(`"${file.name}" is not a valid image`);
+                    continue;
+                }
+
+                newFiles.push(file);
+            }
+
+            if (newFiles.length > 0) {
+                setSelectedFiles(prev => [...prev, ...newFiles]);
+            }
+        }
+    };
+
+    const handleAddAttachment = () => {
+        if (attachmentTab === 'link') {
+            if (!linkUrl.trim()) {
+                toast.error("Please enter a link");
+                return;
+            }
+            let formattedUrl = linkUrl.trim();
+            if (!/^https?:\/\//i.test(formattedUrl)) {
+                formattedUrl = 'https://' + formattedUrl;
+            }
+
+            try {
+                new URL(formattedUrl);
+            } catch (error: unknown) {
+                toast.error("Please enter a valid URL");
+                console.log(error)
+                return;
+            }
+
+            addAttachments({
+                issueId: issue?.id || issue?._id || "",
+                files: [],
+                link: [formattedUrl]
+            }, {
+                onSuccess: () => {
+                    toast.success("Link added successfully");
+                    setLinkUrl("");
+                },
+                onError: () => toast.error("Failed to add link")
+            });
+
+        } else {
+            if (selectedFiles.length === 0) {
+                toast.error(`Please select ${attachmentTab === 'image' ? 'an image' : 'a file'} first`);
+                return;
+            }
+
+            addAttachments({
+                issueId: issue?.id || issue?._id || "",
+                files: selectedFiles,
+                link: []
+            }, {
+                onSuccess: () => {
+                    toast.success(`${selectedFiles.length} file${selectedFiles.length > 1 ? 's' : ''} added successfully`);
+                    setSelectedFiles([]);
+                },
+                onError: () => toast.error("Failed to add files")
+            });
+        }
+    };
+
+    const handleDeleteAttachment = (attachmentKey: string) => {
+        setDeleteAttachmentKey(attachmentKey);
+    };
+
+    const confirmDeleteAttachment = () => {
+        if (!deleteAttachmentKey) return;
+        deleteAttachmentMutation({
+            issueId: issue?.id || issue?._id || "",
+            attachmentKey: deleteAttachmentKey,
+        }, {
+            onSuccess: () => {
+                toast.success("Attachment deleted successfully");
+                setDeleteAttachmentKey(null);
+            },
+            onError: () => {
+                toast.error("Failed to delete attachment");
+                setDeleteAttachmentKey(null);
+            }
+        });
+    };
+
+    const handleViewAttachment = async (att: any) => {
+        // Links open directly in new tab
+        if (att.type === 'link') {
+            window.open(att.url || att.key, '_blank');
+            return;
+        }
+
+        setIsLoadingPreview(true);
+        try {
+            const response = await getAttachmentUrl(
+                issue?.id || issue?._id || "",
+                att.key
+            );
+            const freshUrl = response?.data?.url;
+
+            if (!freshUrl) {
+                toast.error("Failed to load attachment");
+                return;
+            }
+
+            // Images: show preview lightbox
+            if (att.type === 'image') {
+                setPreviewAttachment({
+                    url: freshUrl,
+                    fileName: att.fileName || att.key,
+                    type: 'image',
+                });
+            } else {
+                // Documents/files: open in new tab
+                window.open(freshUrl, '_blank');
+            }
+        } catch {
+            toast.error("Failed to load attachment");
+        } finally {
+            setIsLoadingPreview(false);
+        }
+    };
 
     // Sync local state when issue changes
     useState(() => {
@@ -79,16 +230,16 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
             return;
         }
 
-        const hasChanges = 
+        const hasChanges =
             editTitle !== issue.title ||
             editDescription !== (issue.description || "") ||
             editStartDate !== (issue.startDate ? new Date(issue.startDate).toISOString().split('T')[0] : "") ||
             editEndDate !== (issue.endDate ? new Date(issue.endDate).toISOString().split('T')[0] : "");
 
-        if (!hasChanges) {
-            toast.info("No changes detected");
-            return;
-        }
+        // if (!hasChanges) {
+        //     toast.info("No changes detected");
+        //     return;
+        // }
 
         updateMutation({
             id: issue.id || (issue)._id || "",
@@ -146,24 +297,22 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
                     {/* Header Row */}
                     <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-4">
-                            <div className={`w-10 h-10 flex items-center justify-center rounded-xl border ${
-                                (issue.type || issue.issueType || "").toUpperCase() === 'SUBTASK' ? 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30' :
+                            <div className={`w-10 h-10 flex items-center justify-center rounded-xl border ${(issue.type || issue.issueType || "").toUpperCase() === 'SUBTASK' ? 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30' :
                                 (issue.type || issue.issueType || "").toUpperCase() === 'BUG' ? 'bg-red-500/20 text-red-500 border-red-500/30' :
-                                (issue.type || issue.issueType || "").toUpperCase() === 'TASK' ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' :
-                                (issue.type || issue.issueType || "").toUpperCase() === 'STORY' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' :
-                                'bg-blue-500/20 text-blue-400 border-blue-500/30'
-                            }`}>
+                                    (issue.type || issue.issueType || "").toUpperCase() === 'TASK' ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' :
+                                        (issue.type || issue.issueType || "").toUpperCase() === 'STORY' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' :
+                                            'bg-blue-500/20 text-blue-400 border-blue-500/30'
+                                }`}>
                                 <span className="text-lg font-bold">
                                     {(issue.type || issue.issueType || (issue.projectName ? "E" : "T")).charAt(0).toUpperCase()}
                                 </span>
                             </div>
-                            <input 
+                            <input
                                 value={editTitle}
                                 onChange={(e) => setEditTitle(e.target.value)}
                                 placeholder="Issue title..."
-                                className={`px-4 py-1.5 rounded-full bg-[#1A2542] text-blue-400 text-sm font-semibold border focus:outline-none min-w-[200px] transition-colors ${
-                                    !editTitle.trim() ? 'border-red-500/50 hover:border-red-500' : 'border-[#23355B] focus:border-blue-500/50'
-                                }`}
+                                className={`px-4 py-1.5 rounded-full bg-[#1A2542] text-blue-400 text-sm font-semibold border focus:outline-none min-w-[200px] transition-colors ${!editTitle.trim() ? 'border-red-500/50 hover:border-red-500' : 'border-[#23355B] focus:border-blue-500/50'
+                                    }`}
                             />
                         </div>
                         {/* Keeping an X to close the drawer for UX */}
@@ -186,69 +335,67 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
                     {/* Child Work Items */}
                     {(issue.type || issue.issueType || "").toUpperCase() !== "SUBTASK" && (
                         <div className="mb-10">
-                        <div className="flex justify-between items-end mb-4">
-                            <h3 className="font-semibold text-white text-base">
-                                {(issue.type || issue.issueType || "").toUpperCase() === "EPIC" ? "Story" : "Subtasks"}
-                            </h3>
-                            {(issue.tasks && issue.tasks.length > 0) && (
-                                <span className="text-xs font-medium text-zinc-500 tracking-wide">
-                                    {issue.tasks.filter((t: Issue) => t.status === "DONE").length}/{issue.tasks.length} completed
-                                </span>
-                            )}
-                        </div>
+                            <div className="flex justify-between items-end mb-4">
+                                <h3 className="font-semibold text-white text-base">
+                                    {(issue.type || issue.issueType || "").toUpperCase() === "EPIC" ? "Story" : "Subtasks"}
+                                </h3>
+                                {(issue.tasks && issue.tasks.length > 0) && (
+                                    <span className="text-xs font-medium text-zinc-500 tracking-wide">
+                                        {issue.tasks.filter((t: Issue) => t.status === "DONE").length}/{issue.tasks.length} completed
+                                    </span>
+                                )}
+                            </div>
 
-                        <div className="flex flex-col gap-3">
-                            {issue.tasks && issue.tasks.map((task: Issue) => {
-                                const isCompleted = task.status === "DONE";
-                                return (
-                                    <div 
-                                        key={task.id || task._id} 
-                                        onClick={() => onIssueClick && onIssueClick(task)}
-                                        className="flex items-center gap-4 bg-[#111827] rounded-xl px-4 py-3.5 border border-transparent relative overflow-hidden group hover:border-[#1E293B] cursor-pointer"
-                                    >
-                                        <div 
-                                            onClick={(e) => e.stopPropagation()} 
-                                            className={`w-5 h-5 rounded flex items-center justify-center shrink-0 cursor-pointer transition-colors ${isCompleted ? 'bg-blue-500 hover:bg-blue-600 shadow-sm' : 'border border-zinc-600 hover:border-zinc-400'}`}
+                            <div className="flex flex-col gap-3">
+                                {issue.tasks && issue.tasks.map((task: Issue) => {
+                                    const isCompleted = task.status === "DONE";
+                                    return (
+                                        <div
+                                            key={task.id || task._id}
+                                            onClick={() => onIssueClick && onIssueClick(task)}
+                                            className="flex items-center gap-4 bg-[#111827] rounded-xl px-4 py-3.5 border border-transparent relative overflow-hidden group hover:border-[#1E293B] cursor-pointer"
                                         >
-                                            {isCompleted && <Check size={14} className="text-white" strokeWidth={3} />}
+                                            <div
+                                                onClick={(e) => e.stopPropagation()}
+                                                className={`w-5 h-5 rounded flex items-center justify-center shrink-0 cursor-pointer transition-colors ${isCompleted ? 'bg-blue-500 hover:bg-blue-600 shadow-sm' : 'border border-zinc-600 hover:border-zinc-400'}`}
+                                            >
+                                                {isCompleted && <Check size={14} className="text-white" strokeWidth={3} />}
+                                            </div>
+                                            <span className={`flex-1 text-[13px] truncate transition-colors ${isCompleted ? 'text-zinc-500 line-through' : 'text-zinc-300 group-hover:text-white'}`}>
+                                                {task.title}
+                                            </span>
+                                            <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wide shrink-0 border ${task.status === 'DONE' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                                                task.status === 'IN_PROGRESS' || task.status === 'IN PROGRESS' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                                                    'bg-zinc-800 text-zinc-400 border-zinc-700'
+                                                }`}>
+                                                {task.status?.replace('_', ' ').toUpperCase() || 'TODO'}
+                                            </span>
+                                            <span className={`px-3 py-1 rounded-full text-[11px] font-bold tracking-wide shrink-0 border ${(task.issueType || task.type || "").toUpperCase() === 'SUBTASK' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
+                                                (task.issueType || task.type || "").toUpperCase() === 'BUG' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
+                                                    (task.issueType || task.type || "").toUpperCase() === 'TASK' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
+                                                        (task.issueType || task.type || "").toUpperCase() === 'STORY' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
+                                                            'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                                                }`}>
+                                                {task.issueType || 'Task'}
+                                            </span>
+                                            <div className="w-7 h-7 rounded-full bg-[#1E293B] border border-zinc-700 flex items-center justify-center text-xs text-zinc-300 shrink-0">
+                                                U
+                                            </div>
+                                            <button onClick={(e) => e.stopPropagation()} className="text-zinc-600 hover:text-zinc-300 transition-colors">
+                                                <MoreHorizontal className="w-5 h-5" />
+                                            </button>
                                         </div>
-                                        <span className={`flex-1 text-[13px] truncate transition-colors ${isCompleted ? 'text-zinc-500 line-through' : 'text-zinc-300 group-hover:text-white'}`}>
-                                            {task.title}
-                                        </span>
-                                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wide shrink-0 border ${
-                                            task.status === 'DONE' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                                            task.status === 'IN_PROGRESS' || task.status === 'IN PROGRESS' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                                            'bg-zinc-800 text-zinc-400 border-zinc-700'
-                                        }`}>
-                                            {task.status?.replace('_', ' ').toUpperCase() || 'TODO'}
-                                        </span>
-                                        <span className={`px-3 py-1 rounded-full text-[11px] font-bold tracking-wide shrink-0 border ${
-                                            (task.issueType || task.type || "").toUpperCase() === 'SUBTASK' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
-                                            (task.issueType || task.type || "").toUpperCase() === 'BUG' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
-                                            (task.issueType || task.type || "").toUpperCase() === 'TASK' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
-                                            (task.issueType || task.type || "").toUpperCase() === 'STORY' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                                            'bg-blue-500/10 text-blue-400 border-blue-500/20'
-                                        }`}>
-                                            {task.issueType || 'Task'}
-                                        </span>
-                                        <div className="w-7 h-7 rounded-full bg-[#1E293B] border border-zinc-700 flex items-center justify-center text-xs text-zinc-300 shrink-0">
-                                            U
-                                        </div>
-                                        <button onClick={(e) => e.stopPropagation()} className="text-zinc-600 hover:text-zinc-300 transition-colors">
-                                            <MoreHorizontal className="w-5 h-5" />
-                                        </button>
-                                    </div>
-                                );
-                            })}
-                        </div>
+                                    );
+                                })}
+                            </div>
 
-                        <button
-                            onClick={() => setIsCreateModalOpen(true)}
-                            className="mt-5 px-5 py-2.5 bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-xl text-white font-medium text-sm flex items-center gap-2 transition-colors shadow-lg shadow-purple-500/20 active:scale-95"
-                        >
-                            <Plus size={16} /> {(issue.type || issue.issueType || "").toUpperCase() === "EPIC" ? "Create story" : "Create subtask"}
-                        </button>
-                    </div>
+                            <button
+                                onClick={() => setIsCreateModalOpen(true)}
+                                className="mt-5 px-5 py-2.5 bg-[#8B5CF6] hover:bg-[#7C3AED] rounded-xl text-white font-medium text-sm flex items-center gap-2 transition-colors shadow-lg shadow-purple-500/20 active:scale-95"
+                            >
+                                <Plus size={16} /> {(issue.type || issue.issueType || "").toUpperCase() === "EPIC" ? "Create story" : "Create subtask"}
+                            </button>
+                        </div>
                     )}
 
                     {/* Details & Timeline Grid */}
@@ -261,7 +408,7 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
                                 <div>
                                     <span className="text-[11px] font-medium text-zinc-500 block mb-2">Status</span>
                                     <div className="relative">
-                                        <select 
+                                        <select
                                             value={issue?.status || "TODO"}
                                             onChange={(e) => {
                                                 updateMutation({
@@ -287,19 +434,57 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
 
                                 <div>
                                     <span className="text-[11px] font-medium text-zinc-500 block mb-2">Assignee</span>
-                                    <button className="w-full flex items-center justify-between group">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-7 h-7 rounded-full bg-[#1A2133] border border-zinc-700 font-medium text-xs flex items-center justify-center text-zinc-500">?</div>
-                                            <span className="text-sm text-zinc-300 font-medium">Unassigned</span>
+                                    <div className="relative">
+                                        <select
+                                            value={issue?.assigneeId || ""}
+                                            onChange={(e) => {
+                                                const newAssigneeId = e.target.value;
+                                                updateMutation({
+                                                    id: issue.id || (issue)._id || "",
+                                                    data: { assigneeId: newAssigneeId || null }
+                                                }, {
+                                                    onSuccess: () => {
+                                                        toast.info(`Assignee updated`);
+                                                    }
+                                                });
+                                            }}
+                                            className="w-full bg-[#0A0E17] border border-[#1E293B] rounded-xl pl-12 pr-10 py-2.5 text-[13px] font-semibold text-zinc-300 appearance-none focus:outline-none focus:border-[#8B5CF6] hover:border-[#334155] transition-colors cursor-pointer"
+                                        >
+                                            <option value="">Unassigned</option>
+                                            {currentProject?.members?.map((member: any) => (
+                                                <option key={member.user.id} value={member.user.id}>
+                                                    {member.user.firstName}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center">
+                                            {issue?.assigneeId ? (
+                                                (() => {
+                                                    const assignedMember = currentProject?.members?.find((m: any) => m.user.id === issue.assigneeId);
+                                                    if (assignedMember?.user?.avatarUrl) {
+                                                        return <img src={assignedMember.user.avatarUrl} alt="Assignee" className="w-6 h-6 rounded-full object-cover" />;
+                                                    } else {
+                                                        return <div className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 font-bold text-[11px] flex items-center justify-center border border-blue-500/30">
+                                                            {assignedMember ? assignedMember.user.firstName.charAt(0).toUpperCase() : '?'}
+                                                        </div>;
+                                                    }
+                                                })()
+                                            ) : (
+                                                <div className="w-6 h-6 rounded-full bg-[#1A2133] border border-zinc-700 font-medium text-[11px] flex items-center justify-center text-zinc-500">
+                                                    ?
+                                                </div>
+                                            )}
                                         </div>
-                                        <ChevronDown size={16} className="text-zinc-600 group-hover:text-zinc-400 transition-colors" />
-                                    </button>
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                            <ChevronDown size={16} className="text-zinc-600" />
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div>
                                     <span className="text-[11px] font-medium text-zinc-500 block mb-2">Parent</span>
                                     {issue?.parentTitle && issue?.parentId ? (
-                                        <div 
+                                        <div
                                             onClick={() => onIssueClick && onIssueClick({ id: issue.parentId } as Issue)}
                                             className="bg-[#1A2542] border border-[#23355B] rounded-xl p-3 text-sm text-blue-400 font-semibold cursor-pointer hover:bg-[#1E2B4D] transition-colors truncate"
                                         >
@@ -351,48 +536,137 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
                     </div>
 
                     {/* Attachments Section */}
-                    {/* <div className="mb-4"> */}
-                        {/* <h3 className="font-semibold text-white text-base mb-4">Attachments</h3> */}
+                    <div className="mb-4">
+                        <h3 className="font-semibold text-white text-base mb-4">Attachments</h3>
 
-                        {/* <div className="border border-dashed border-[#1E293B] bg-[#111827]/50 rounded-2xl py-10 flex flex-col items-center justify-center gap-3 mb-4"> */}
-                            {/* <div className="w-10 h-10 rounded-full bg-[#1E293B] flex items-center justify-center">
-                                <Paperclip className="w-4 h-4 text-zinc-400" />
-                            </div> */}
-                            {/* <span className="text-xs font-medium text-zinc-500">No attachments yet.</span> */}
-                        {/* </div> */}
+                        {(!issue?.attachments || issue.attachments.length === 0) ? (
+                            <div className="border border-dashed border-[#1E293B] bg-[#111827]/50 rounded-2xl py-10 flex flex-col items-center justify-center gap-3 mb-4">
+                                <div className="w-10 h-10 rounded-full bg-[#1E293B] flex items-center justify-center">
+                                    <Paperclip className="w-4 h-4 text-zinc-400" />
+                                </div>
+                                <span className="text-xs font-medium text-zinc-500">No attachments yet.</span>
+                            </div>
+                        ) : (
+                            <div className="space-y-2 mb-4">
+                                {issue.attachments.map((att, i: number) => (
+                                    <div key={i} className="flex items-center gap-3 px-4 py-3 bg-[#111827] border border-[#1E293B] rounded-xl group/item hover:border-[#334155] transition-colors">
+                                        {(att.type === 'image' || att.type === 'document' || att.type === 'file') ? <FileText className="w-4 h-4 text-blue-400" /> : <LinkIcon className="w-4 h-4 text-emerald-400" />}
+                                        <button
+                                            onClick={() => handleViewAttachment(att)}
+                                            disabled={isLoadingPreview}
+                                            className="flex-1 text-left text-sm text-zinc-300 hover:text-white transition-colors truncate disabled:opacity-50"
+                                        >
+                                            {att.fileName || att.url || att.key}
+                                        </button>
+                                        <button
+                                            onClick={() => handleViewAttachment(att)}
+                                            disabled={isLoadingPreview}
+                                            title="View attachment"
+                                            className="opacity-0 group-hover/item:opacity-100 p-1.5 rounded-lg text-zinc-500 hover:text-blue-400 hover:bg-blue-500/10 transition-all disabled:opacity-50"
+                                        >
+                                            {att.type === 'link' ? <ExternalLink className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteAttachment(att.key)}
+                                            disabled={isDeletingAttachment}
+                                            title="Delete attachment"
+                                            className="opacity-0 group-hover/item:opacity-100 p-1.5 rounded-lg text-zinc-500 hover:text-red-400 hover:bg-red-500/10 transition-all disabled:opacity-50"
+                                        >
+                                            <Trash2 className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
 
-                        {/* <div className="bg-[#111827] rounded-2xl p-6 border border-transparent"> */}
-                            {/* <div className="flex items-center gap-6 border-b border-[#1E293B] pb-3 mb-5"> */}
-                                {/* <button
-                                    onClick={() => setActiveTab("file")}
-                                    className={`flex items-center gap-2 pb-3 -mb-[13px] text-xs font-bold transition-all border-b-2 ${activeTab === 'file' ? 'text-[#8B5CF6] border-[#8B5CF6]' : 'text-zinc-500 border-transparent hover:text-zinc-300'}`}
+                        <div className="bg-[#111827] rounded-2xl p-6 border border-transparent">
+                            <div className="flex items-center gap-6 border-b border-[#1E293B] pb-3 mb-5">
+                                <button
+                                    onClick={() => setAttachmentTab("file")}
+                                    className={`flex items-center gap-2 pb-3 -mb-[13px] text-xs font-bold transition-all border-b-2 ${attachmentTab === 'file' ? 'text-[#8B5CF6] border-[#8B5CF6]' : 'text-zinc-500 border-transparent hover:text-zinc-300'}`}
                                 >
                                     <FileText className="w-3.5 h-3.5" /> file
-                                </button> */}
-                                {/* <button
-                                    onClick={() => setActiveTab("image")}
-                                    className={`flex items-center gap-2 pb-3 -mb-[13px] text-xs font-bold transition-all border-b-2 ${activeTab === 'image' ? 'text-[#8B5CF6] border-[#8B5CF6]' : 'text-zinc-500 border-transparent hover:text-zinc-300'}`}
+                                </button>
+                                <button
+                                    onClick={() => setAttachmentTab("image")}
+                                    className={`flex items-center gap-2 pb-3 -mb-[13px] text-xs font-bold transition-all border-b-2 ${attachmentTab === 'image' ? 'text-[#8B5CF6] border-[#8B5CF6]' : 'text-zinc-500 border-transparent hover:text-zinc-300'}`}
                                 >
                                     <ImageIcon className="w-3.5 h-3.5" /> image
-                                </button> */}
-                                {/* <button
-                                    onClick={() => setActiveTab("link")}
-                                    className={`flex items-center gap-2 pb-3 -mb-[13px] text-xs font-bold transition-all border-b-2 ${activeTab === 'link' ? 'text-[#8B5CF6] border-[#8B5CF6]' : 'text-zinc-500 border-transparent hover:text-zinc-300'}`}
+                                </button>
+                                <button
+                                    onClick={() => setAttachmentTab("link")}
+                                    className={`flex items-center gap-2 pb-3 -mb-[13px] text-xs font-bold transition-all border-b-2 ${attachmentTab === 'link' ? 'text-[#8B5CF6] border-[#8B5CF6]' : 'text-zinc-500 border-transparent hover:text-zinc-300'}`}
                                 >
                                     <LinkIcon className="w-3.5 h-3.5" /> link
-                                </button> */}
-                            {/* </div> */}
+                                </button>
+                            </div>
 
-                            {/* <input
-                                type="text"
-                                className="w-full h-11 bg-white rounded-lg px-4 text-sm text-black focus:outline-none focus:ring-2 focus:ring-[#8B5CF6] mb-4"
-                            /> */}
+                            <div className="relative w-full mb-4">
+                                <input
+                                    type="text"
+                                    className={`w-full h-11 bg-[#0A0E17] border border-[#1E293B] rounded-lg px-4 ${attachmentTab !== 'link' && selectedFiles.length > 0 ? 'pr-10' : ''} text-sm text-zinc-300 placeholder:text-zinc-500 focus:outline-none focus:border-[#8B5CF6] transition-colors ${attachmentTab !== 'link' ? 'cursor-pointer' : ''}`}
+                                    placeholder={
+                                        attachmentTab === 'link'
+                                            ? "Paste a link here..."
+                                            : `Click to select ${attachmentTab === 'image' ? 'images' : 'files'}...`
+                                    }
+                                    value={attachmentTab === 'link' ? linkUrl : (selectedFiles.length > 0 ? `${selectedFiles.length} file${selectedFiles.length > 1 ? 's' : ''} selected` : '')}
+                                    onChange={(e) => {
+                                        if (attachmentTab === 'link') {
+                                            setLinkUrl(e.target.value);
+                                        }
+                                    }}
+                                    readOnly={attachmentTab !== 'link'}
+                                />
+                                {attachmentTab !== 'link' && selectedFiles.length > 0 && (
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); setSelectedFiles([]); }}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-1 rounded-full text-zinc-500 hover:text-zinc-200 hover:bg-zinc-700/50 transition-colors"
+                                        title="Clear selected files"
+                                    >
+                                        <X size={14} />
+                                    </button>
+                                )}
+                                {attachmentTab !== 'link' && (
+                                    <input
+                                        type="file"
+                                        multiple
+                                        onChange={handleFileSelect}
+                                        onClick={(e) => { (e.target as HTMLInputElement).value = '' }}
+                                        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                                        accept={attachmentTab === 'image' ? "image/*" : "*"}
+                                    />
+                                )}
+                            </div>
 
-                            {/* <button className="w-full py-3 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-[13px] font-bold rounded-xl transition-colors shadow-lg shadow-purple-500/20 active:scale-95">
-                                Add Attachment
-                            </button> */}
-                        {/* </div> */}
-                    {/* </div> */}
+                            {/* Selected files preview */}
+                            {attachmentTab !== 'link' && selectedFiles.length > 0 && (
+                                <div className="mb-4 space-y-1.5 max-h-[120px] overflow-y-auto custom-scrollbar">
+                                    {selectedFiles.map((file, i) => (
+                                        <div key={i} className="flex items-center gap-2 px-3 py-2 bg-[#0A0E17] border border-[#1E293B] rounded-lg group/file">
+                                            {file.type.startsWith('image/') ? <ImageIcon className="w-3.5 h-3.5 text-emerald-400 shrink-0" /> : <FileText className="w-3.5 h-3.5 text-blue-400 shrink-0" />}
+                                            <span className="flex-1 text-xs text-zinc-400 truncate">{file.name}</span>
+                                            <span className="text-[10px] text-zinc-600 shrink-0">{(file.size / 1024).toFixed(0)}KB</span>
+                                            <button
+                                                onClick={() => setSelectedFiles(prev => prev.filter((_, idx) => idx !== i))}
+                                                className="opacity-0 group-hover/file:opacity-100 p-0.5 text-zinc-600 hover:text-red-400 transition-all"
+                                            >
+                                                <X size={12} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            <button
+                                onClick={handleAddAttachment}
+                                disabled={isAddingAttachment}
+                                className="w-full flex items-center justify-center py-3 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-[13px] font-bold rounded-xl transition-colors shadow-lg shadow-purple-500/20 active:scale-95 disabled:opacity-50"
+                            >
+                                {isAddingAttachment ? <Loader2 className="w-4 h-4 animate-spin" /> : `Add Attachment${attachmentTab !== 'link' && selectedFiles.length > 1 ? `s (${selectedFiles.length})` : ''}`}
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Footer */}
@@ -403,7 +677,7 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
                     >
                         Cancel
                     </button>
-                    <button 
+                    <button
                         onClick={handleUpdate}
                         disabled={isUpdating}
                         className="px-6 py-2.5 rounded-xl bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-sm font-bold transition-all shadow-lg shadow-purple-500/20 active:scale-95 disabled:opacity-50 flex items-center gap-2"
@@ -424,6 +698,86 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
                 parentIssueId={issue.id || issue.id}
                 projectName={issue.projectName}
             />
+
+            {/* Delete Attachment Confirmation Modal */}
+            <ConfirmationModal
+                isOpen={deleteAttachmentKey !== null}
+                onClose={() => setDeleteAttachmentKey(null)}
+                onConfirm={confirmDeleteAttachment}
+                title="Delete Attachment"
+                message="Are you sure you want to delete this attachment? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                type="danger"
+                isLoading={isDeletingAttachment}
+            />
+
+            {/* Attachment Preview Lightbox */}
+            {previewAttachment && (
+                <div
+                    className="fixed inset-0 z-[90] flex items-center justify-center bg-black/80 backdrop-blur-md"
+                    onClick={() => setPreviewAttachment(null)}
+                >
+                    <div className="relative max-w-[90vw] max-h-[90vh] flex flex-col items-center" onClick={(e) => e.stopPropagation()}>
+                        {/* Header bar */}
+                        <div className="w-full flex items-center justify-between px-4 py-3 bg-[#0A0E17]/90 rounded-t-xl border border-[#1E293B] border-b-0">
+                            <span className="text-sm text-zinc-300 font-medium truncate max-w-[60%]">
+                                {previewAttachment.fileName}
+                            </span>
+                            <div className="flex items-center gap-2">
+                                <a
+                                    href={previewAttachment.url}
+                                    download={previewAttachment.fileName}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-[#1E293B] transition-colors"
+                                    title="Download"
+                                >
+                                    <Download className="w-4 h-4" />
+                                </a>
+                                <a
+                                    href={previewAttachment.url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-[#1E293B] transition-colors"
+                                    title="Open in new tab"
+                                >
+                                    <ExternalLink className="w-4 h-4" />
+                                </a>
+                                <button
+                                    onClick={() => setPreviewAttachment(null)}
+                                    className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-[#1E293B] transition-colors"
+                                    title="Close"
+                                >
+                                    <X className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                        {/* Image */}
+                        <div className="bg-[#0A0E17]/90 rounded-b-xl border border-[#1E293B] border-t-0 p-4 flex items-center justify-center overflow-auto">
+                            <img
+                                src={previewAttachment.url}
+                                alt={previewAttachment.fileName}
+                                className="max-w-full max-h-[75vh] object-contain rounded-lg"
+                                onError={() => {
+                                    toast.error("Failed to load image");
+                                    setPreviewAttachment(null);
+                                }}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Loading overlay for attachment preview */}
+            {isLoadingPreview && (
+                <div className="fixed inset-0 z-[85] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                    <div className="flex flex-col items-center gap-3">
+                        <Loader2 className="w-8 h-8 text-[#8B5CF6] animate-spin" />
+                        <span className="text-sm text-zinc-400">Loading attachment...</span>
+                    </div>
+                </div>
+            )}
         </>
     );
 }

@@ -3,6 +3,7 @@ import { Issue, IssueDocument } from '../Model/issue.schema';
 import { IIssueRepository } from '../interface/IIssueRepository';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import { IssueStatus } from 'src/common/type/IssueStatus';
 
 export class IssueRepository
   extends BaseRepository<IssueDocument>
@@ -19,5 +20,21 @@ export class IssueRepository
         projectId: new Types.ObjectId(projectId),
       })
       .lean();
+  }
+  async moveIncompleteIssues(
+    sprintId: string,
+    newSprintId: string | null,
+  ): Promise<void> {
+    await this._IssueModel.updateMany(
+      {
+        sprintId: new Types.ObjectId(sprintId),
+        status: { $ne: IssueStatus.DONE },
+      },
+      {
+        $set: {
+          sprintId: newSprintId ? new Types.ObjectId(newSprintId) : null,
+        },
+      },
+    );
   }
 }
