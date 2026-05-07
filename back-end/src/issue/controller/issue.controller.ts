@@ -1,12 +1,14 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Inject,
   Param,
   Patch,
   Post,
+  Query,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -15,6 +17,8 @@ import type { IIssueService } from '../interface/IIssueService';
 import { CreateIssueDTO } from '../dto/req/CreateIssueDTO';
 import { IssueResponse } from '../dto/res/IssueResponse';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ProjectPermissionGuard } from 'src/auth/guards/project-permission.guard';
+import { Permissions } from 'src/common/decorators/permissions.decorator';
 import { GetUser } from 'src/common/decorators/getuser.decorator';
 import type { AuthUser } from 'src/common/decorators/getuser.decorator';
 import { ApiResponse } from 'src/common/utils/api-response.util';
@@ -24,7 +28,7 @@ import { UpdateIssueDTO } from '../dto/req/UpdateIssueDTO';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { AddAttachmentDTO } from '../dto/req/AttachmentDTO';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, ProjectPermissionGuard)
 @Controller('issues')
 export class IssueController {
   constructor(
@@ -56,6 +60,7 @@ export class IssueController {
   }
 
   @Patch(':id')
+  @Permissions('UPDATE_TASK')
   async updateIssue(
     @Param('id') id: string,
     @Body() dto: UpdateIssueDTO,
@@ -89,5 +94,37 @@ export class IssueController {
       ISSUE_SUCCESS.ISSUE_UPDATED,
       issue,
     );
+  }
+  @Delete(':issueId/attachments')
+  async deleteAttachment(
+    @Param('issueId') issueId: string,
+    @Query('key') key: string,
+    @GetUser() user: AuthUser,
+  ): Promise<ApiResponseDto<IssueResponse>> {
+    const issue = await this._issueService.deleteAttachment(
+      issueId,
+      key,
+      user.userId,
+    );
+
+    return ApiResponse.success(
+      HttpStatus.OK,
+      ISSUE_SUCCESS.ISSUE_DELETED,
+      issue,
+    );
+  }
+  @Get(':issueId/attachments/url')
+  async getAttachmentUrl(
+    @Param('issueId') issueId: string,
+    @Query('key') key: string,
+    @GetUser() user: AuthUser,
+  ): Promise<ApiResponseDto<{ url: string }>> {
+    const result = await this._issueService.getAttachmentUrl(
+      issueId,
+      key,
+      user.userId,
+    );
+
+    return ApiResponse.success(HttpStatus.OK, 'Attachment URL fetched', result);
   }
 }

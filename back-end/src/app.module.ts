@@ -25,13 +25,12 @@ import { RoleModule } from './role/role.module';
 import { ProjectModule } from './project/project.module';
 import { IssueModule } from './issue/issue.module';
 import { SprintModule } from './sprint/sprint.module';
-import { WinstonModule } from 'nest-winston';
-import { winstonConfig } from './config/logger.config';
+import { AppLoggerModule } from './config/logger';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    WinstonModule.forRoot(winstonConfig),
+    AppLoggerModule,
     DatabaseModule,
     UsersModule,
     AuthModule,

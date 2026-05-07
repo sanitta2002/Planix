@@ -219,4 +219,82 @@ export class IssueService implements IIssueService {
 
     return IssueMapper.toResponse(updatedIssue);
   }
+  async deleteAttachment(
+    issueId: string,
+    attachmentKey: string,
+    userId: string,
+  ): Promise<IssueResponse> {
+    const issue = await this._IissueRepo.findById(issueId);
+
+    if (!issue) {
+      throw new NotFoundException(ISSUE_ERRORS.ISSUE_NOT_FOUND);
+    }
+
+    const projectMember = await this._projectMemberRepo.findProjectAndUser(
+      issue.projectId.toString(),
+      userId,
+    );
+
+    if (!projectMember) {
+      throw new ForbiddenException(PROJECT_ERRORS.MEMBER_NOT_FOUND);
+    }
+
+    const exists = (issue.attachments || []).some(
+      (att) => att.key === attachmentKey,
+    );
+
+    if (!exists) {
+      throw new NotFoundException('Attachment not found');
+    }
+
+    const updatedAttachments = (issue.attachments || []).filter(
+      (att) => att.key !== attachmentKey,
+    );
+
+    const updatedIssue = await this._IissueRepo.updateById(issueId, {
+      attachments: updatedAttachments,
+    });
+
+    if (!updatedIssue) {
+      throw new BadRequestException('Failed to delete attachment');
+    }
+    try {
+      await this._S3Service.deleteFile(attachmentKey);
+    } catch (err) {
+      this._logger.warn('S3 delete failed', err);
+    }
+
+    return IssueMapper.toResponse(updatedIssue);
+  }
+  async getAttachmentUrl(
+    issueId: string,
+    attachmentKey: string,
+    userId: string,
+  ): Promise<{ url: string }> {
+    const issue = await this._IissueRepo.findById(issueId);
+
+    if (!issue) {
+      throw new NotFoundException(ISSUE_ERRORS.ISSUE_NOT_FOUND);
+    }
+
+    const projectMember = await this._projectMemberRepo.findProjectAndUser(
+      issue.projectId.toString(),
+      userId,
+    );
+
+    if (!projectMember) {
+      throw new ForbiddenException(PROJECT_ERRORS.MEMBER_NOT_FOUND);
+    }
+
+    const attachment = (issue.attachments || []).find(
+      (att) => att.key === attachmentKey,
+    );
+
+    if (!attachment) {
+      throw new NotFoundException('Attachment not found');
+    }
+
+    const url = await this._S3Service.createSignedUrl(attachmentKey);
+    return { url };
+  }
 }

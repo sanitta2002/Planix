@@ -75,6 +75,12 @@ export class ProjectService implements IProjectService {
           Permission.MANAGE_MEMBERS,
           Permission.UPDATE_TASK,
           Permission.VIEW_PROJECT,
+          Permission.CREATE_EPIC,
+          Permission.CREATE_SPRINT,
+          Permission.COMPLETE_SPRINT,
+          Permission.ASSIGN_TASK,
+          Permission.INVITE_MEMBER,
+          Permission.REMOVE_MEMBER,
         ],
         createdBy: new Types.ObjectId(userId),
       });

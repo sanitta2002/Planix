@@ -6,11 +6,15 @@ import { Sprint, SprintSchema } from './Model/sprint.schema';
 import { SprintService } from './service/sprint.service';
 import { SprintRepository } from './repository/sprintRepository';
 import { IssueModule } from 'src/issue/issue.module';
+import { ProjectModule } from 'src/project/project.module';
+import { RoleModule } from 'src/role/role.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Sprint.name, schema: SprintSchema }]),
     IssueModule,
+    ProjectModule,
+    RoleModule,
   ],
   providers: [
     {
@@ -25,6 +29,6 @@ import { IssueModule } from 'src/issue/issue.module';
   ],
 
   controllers: [SprintController],
-  exports: ['Isprintservice'],
+  exports: ['Isprintservice', 'IsprintRepository'],
 })
 export class SprintModule {}

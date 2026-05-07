@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Inject,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import type { IsprintRepository } from '../interface/IsprintRepository';
@@ -15,11 +14,12 @@ import { ISprintservice } from '../interface/IsprintSerivce';
 import { SprintStatus } from 'src/common/type/SprintStatus';
 import { UpdateSprintDto } from '../dto/req/UpdateSprintDto ';
 import type { IIssueRepository } from 'src/issue/interface/IIssueRepository';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class SprintService implements ISprintservice {
-  private readonly _logger = new Logger(SprintService.name);
   constructor(
+    private readonly _logger: PinoLogger,
     @Inject('IsprintRepository')
     private readonly _sprintRepo: IsprintRepository,
     @Inject('IIssueRepository')
@@ -29,7 +29,7 @@ export class SprintService implements ISprintservice {
     dto: CreateSprintDto,
     userId: string,
   ): Promise<SprintResponse> {
-    this._logger.log(`creating sprint: ${dto.projectId}`);
+    this._logger.info(`creating sprint: ${dto.projectId}`);
     const { projectId, startDate, endDate } = dto;
     if (startDate && endDate) {
       const start = new Date(startDate);
@@ -47,7 +47,7 @@ export class SprintService implements ISprintservice {
     const sprintEntity = SprintMapper.toEntity(dto, userId);
 
     const sprint = await this._sprintRepo.create(sprintEntity);
-    this._logger.log(`sprint created success: ${sprint._id.toString()}`);
+    this._logger.info(`sprint created success: ${sprint._id.toString()}`);
     return SprintMapper.toResponse(sprint);
   }
   async getSprintsByProject(projectId: string): Promise<SprintResponse[]> {
@@ -58,7 +58,7 @@ export class SprintService implements ISprintservice {
     dto: UpdateSprintDto,
     sprintId: string,
   ): Promise<SprintResponse> {
-    this._logger.log(`Starting sprint: ${sprintId}`);
+    this._logger.info(`Starting sprint: ${sprintId}`);
 
     if (!sprintId) {
       throw new BadRequestException(SPRINT_MESSAGES.INVALID_SPRINT_ID);
@@ -114,7 +114,7 @@ export class SprintService implements ISprintservice {
       throw new NotFoundException(SPRINT_MESSAGES.SPRINT_NOT_FOUND);
     }
 
-    this._logger.log(`Sprint started successfully: ${sprintId}`);
+    this._logger.info(`Sprint started successfully: ${sprintId}`);
 
     return SprintMapper.toResponse(updatedSprint);
   }
@@ -123,7 +123,7 @@ export class SprintService implements ISprintservice {
     dto: UpdateSprintDto,
     sprintId: string,
   ): Promise<SprintResponse> {
-    this._logger.log(`Completing sprint: ${sprintId}`);
+    this._logger.info(`Completing sprint: ${sprintId}`);
 
     if (!sprintId) {
       throw new BadRequestException(SPRINT_MESSAGES.INVALID_SPRINT_ID);
@@ -158,7 +158,7 @@ export class SprintService implements ISprintservice {
       throw new NotFoundException(SPRINT_MESSAGES.SPRINT_NOT_FOUND);
     }
 
-    this._logger.log(`Sprint completed successfully: ${sprintId}`);
+    this._logger.info(`Sprint completed successfully: ${sprintId}`);
 
     return SprintMapper.toResponse(updatedSprint);
   }

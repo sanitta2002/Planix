@@ -17,4 +17,14 @@ export interface IIssueService {
     userId: string,
     files?: Express.Multer.File[],
   ): Promise<IssueResponse>;
+  deleteAttachment(
+    issueId: string,
+    attachmentKey: string,
+    userId: string,
+  ): Promise<IssueResponse>;
+  getAttachmentUrl(
+    issueId: string,
+    attachmentKey: string,
+    userId: string,
+  ): Promise<{ url: string }>;
 }

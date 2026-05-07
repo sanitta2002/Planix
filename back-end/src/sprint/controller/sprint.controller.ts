@@ -19,14 +19,17 @@ import { ApiResponse } from 'src/common/utils/api-response.util';
 import { SPRINT_MESSAGES } from 'src/common/constants/messages.constant';
 import type { ISprintservice } from '../interface/IsprintSerivce';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ProjectPermissionGuard } from 'src/auth/guards/project-permission.guard';
+import { Permissions } from 'src/common/decorators/permissions.decorator';
 import { UpdateSprintDto } from '../dto/req/UpdateSprintDto ';
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, ProjectPermissionGuard)
 @Controller('sprint')
 export class SprintController {
   constructor(
     @Inject('Isprintservice') private readonly _sprintService: ISprintservice,
   ) {}
   @Post()
+  @Permissions('CREATE_SPRINT')
   async createSprint(
     @Body() dto: CreateSprintDto,
     @GetUser() user: AuthUser,
@@ -47,9 +50,9 @@ export class SprintController {
 
     return ApiResponse.success(HttpStatus.OK, SPRINT_MESSAGES.FETCHED, sprints);
   }
-  @Patch(':id/start')
+  @Patch(':sprintId/start')
   async startSprint(
-    @Param('id') sprintId: string,
+    @Param('sprintId') sprintId: string,
     @Body() dto: UpdateSprintDto,
   ): Promise<ApiResponseDto<SprintResponse>> {
     const sprint = await this._sprintService.startSprint(dto, sprintId);
@@ -57,9 +60,10 @@ export class SprintController {
     return ApiResponse.success(HttpStatus.OK, SPRINT_MESSAGES.STARTED, sprint);
   }
 
-  @Patch(':id/complete')
+  @Patch(':sprintId/complete')
+  @Permissions('COMPLETE_SPRINT')
   async completeSprint(
-    @Param('id') sprintId: string,
+    @Param('sprintId') sprintId: string,
     @Body() dto: UpdateSprintDto,
   ): Promise<ApiResponseDto<SprintResponse>> {
     const sprint = await this._sprintService.completeSprint(dto, sprintId);
