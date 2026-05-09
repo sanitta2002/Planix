@@ -1,4 +1,4 @@
-interface Member {
+export interface Member {
   user: {
     id: string;
     firstName: string;
