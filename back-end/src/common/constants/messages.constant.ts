@@ -256,3 +256,23 @@ export const SPRINT_MESSAGES = {
   ISSUE_ALREADY_ASSIGNED: 'Issue is already assigned to another sprint',
   ISSUE_NOT_FOUND: 'Issue not found',
 };
+
+export const COMMENT_MESSAGES = {
+  CREATED: 'Comment added successfully.',
+  FETCHED: 'Comments retrieved successfully.',
+  UPDATED: 'Comment updated successfully.',
+  DELETED: 'Comment deleted successfully.',
+
+  NOT_FOUND: 'Comment not found or has been deleted.',
+  ISSUE_NOT_FOUND: 'The issue you are trying to comment on does not exist.',
+  FORBIDDEN_UPDATE: 'You do not have permission to edit this comment.',
+  FORBIDDEN_DELETE: 'You do not have permission to delete this comment.',
+  CREATE_FAILED: 'Failed to add comment. Please try again later.',
+  UPDATE_FAILED: 'Failed to update comment. Please try again later.',
+  DELETE_FAILED: 'Failed to delete comment. Please try again later.',
+  FETCH_FAILED: 'Failed to retrieve comments. Please try again later.',
+
+  CONTENT_REQUIRED: 'Comment content cannot be empty.',
+  CONTENT_TOO_LONG: 'Comment content exceeds the maximum character limit.',
+  INVALID_ISSUE_ID: 'Invalid issue ID provided.',
+};

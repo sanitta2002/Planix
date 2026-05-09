@@ -26,6 +26,7 @@ import { ProjectModule } from './project/project.module';
 import { IssueModule } from './issue/issue.module';
 import { SprintModule } from './sprint/sprint.module';
 import { AppLoggerModule } from './config/logger';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { AppLoggerModule } from './config/logger';
     ProjectModule,
     IssueModule,
     SprintModule,
+    CommentModule,
   ],
 
   controllers: [AppController],
