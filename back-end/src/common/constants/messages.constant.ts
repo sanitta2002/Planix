@@ -276,3 +276,27 @@ export const COMMENT_MESSAGES = {
   CONTENT_TOO_LONG: 'Comment content exceeds the maximum character limit.',
   INVALID_ISSUE_ID: 'Invalid issue ID provided.',
 };
+
+export const NOTIFICATION_MESSAGES = {
+  FETCHED: 'Notifications fetched successfully',
+  COUNT_FETCHED: 'Unread count fetched successfully',
+  MARKED_AS_READ: 'Notification marked as read',
+  ALL_MARKED_AS_READ: 'All notifications marked as read',
+  INVALID_RECEIVER_ID: 'Invalid receiver ID provided',
+  INVALID_NOTIFICATION_ID: 'Invalid notification ID provided',
+  NOT_FOUND: 'Notification not found',
+};
+
+export const NOTIFICATION_TEMPLATES = {
+  ISSUE_CREATED: (title: string) => `A new issue "${title}" has been created.`,
+  ISSUE_ASSIGNED: (title: string) =>
+    `You have been assigned to the issue "${title}".`,
+  ISSUE_UPDATED: (title: string) => `The issue "${title}" has been updated.`,
+  ISSUE_MENTIONED: (sender: string, title: string) =>
+    `${sender} mentioned you in "${title}".`,
+  PROJECT_MEMBER_ADDED: (projectName: string) =>
+    `You have been added to the project "${projectName}".`,
+  SPRINT_STARTED: (sprintName: string) =>
+    `The sprint "${sprintName}" has started.`,
+  NEW_MESSAGE: (sender: string) => `New message from ${sender}.`,
+};

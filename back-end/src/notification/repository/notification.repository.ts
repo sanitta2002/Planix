@@ -41,4 +41,23 @@ export class NotificationRepository
       },
     );
   }
+
+  async getNotificationsByReceiver(
+    receiverId: string,
+  ): Promise<NotificationDocument[]> {
+    return await this._notification
+      .find({ receiver: new Types.ObjectId(receiverId) })
+      .sort({ createdAt: -1 })
+      .populate('sender', 'firstName lastName avatar')
+      .exec();
+  }
+
+  async getUnreadCount(receiverId: string): Promise<number> {
+    return await this._notification
+      .countDocuments({
+        receiver: new Types.ObjectId(receiverId),
+        isRead: false,
+      })
+      .exec();
+  }
 }
