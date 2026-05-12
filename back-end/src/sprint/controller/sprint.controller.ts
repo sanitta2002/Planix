@@ -54,8 +54,13 @@ export class SprintController {
   async startSprint(
     @Param('sprintId') sprintId: string,
     @Body() dto: UpdateSprintDto,
+    @GetUser() user: AuthUser,
   ): Promise<ApiResponseDto<SprintResponse>> {
-    const sprint = await this._sprintService.startSprint(dto, sprintId);
+    const sprint = await this._sprintService.startSprint(
+      dto,
+      sprintId,
+      user.userId,
+    );
 
     return ApiResponse.success(HttpStatus.OK, SPRINT_MESSAGES.STARTED, sprint);
   }
@@ -65,8 +70,13 @@ export class SprintController {
   async completeSprint(
     @Param('sprintId') sprintId: string,
     @Body() dto: UpdateSprintDto,
+    @GetUser() user: AuthUser,
   ): Promise<ApiResponseDto<SprintResponse>> {
-    const sprint = await this._sprintService.completeSprint(dto, sprintId);
+    const sprint = await this._sprintService.completeSprint(
+      dto,
+      sprintId,
+      user.userId,
+    );
 
     return ApiResponse.success(HttpStatus.OK, SPRINT_MESSAGES.UPDATED, sprint);
   }

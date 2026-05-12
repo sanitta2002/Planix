@@ -28,10 +28,12 @@ import { SprintModule } from './sprint/sprint.module';
 import { AppLoggerModule } from './config/logger';
 import { CommentModule } from './comment/comment.module';
 import { NotificationModule } from './notification/notification.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    EventEmitterModule.forRoot(),
     AppLoggerModule,
     DatabaseModule,
     UsersModule,

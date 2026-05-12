@@ -12,6 +12,9 @@ import { COMMENT_MESSAGES } from 'src/common/constants/messages.constant';
 import type { IIssueRepository } from 'src/issue/interface/IIssueRepository';
 import { Types } from 'mongoose';
 import { CommentMapper } from './Mapper/comment.mapper';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { IssueCommentedEvent } from 'src/notification/events/notification.events';
+import { NotificationType } from 'src/common/type/NotificationType';
 
 @Injectable()
 export class CommentService implements ICommentService {
@@ -19,6 +22,7 @@ export class CommentService implements ICommentService {
     @Inject('ICommentRepository')
     private readonly _commentRepo: ICommentRepository,
     @Inject('IIssueRepository') private readonly _issueRepo: IIssueRepository,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
   async createComment(
     userId: string,
@@ -40,6 +44,22 @@ export class CommentService implements ICommentService {
     };
     const createComment =
       await this._commentRepo.createCommentWithPopulate(newComment);
+
+    // Trigger Notification for the assignee or reporter
+    const receiverId =
+      issue.assigneeId?.toString() || issue.createdBy.toString();
+
+    this.eventEmitter.emit(
+      NotificationType.ISSUE_COMMENTED,
+      new IssueCommentedEvent(
+        issue._id.toString(),
+        issue.title,
+        content,
+        receiverId,
+        userId,
+      ),
+    );
+
     return CommentMapper.toResponse(createComment);
   }
 

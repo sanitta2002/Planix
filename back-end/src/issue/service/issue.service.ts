@@ -23,6 +23,10 @@ import { UpdateIssueDTO } from '../dto/req/UpdateIssueDTO';
 import { AddAttachmentDTO } from '../dto/req/AttachmentDTO';
 import type { IS3Service } from 'src/common/s3/interfaces/s3.service.interface';
 
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { IssueAssignedEvent } from 'src/notification/events/notification.events';
+import { NotificationType } from 'src/common/type/NotificationType';
+
 @Injectable()
 export class IssueService implements IIssueService {
   private readonly _logger = new Logger(IssueService.name);
@@ -33,6 +37,7 @@ export class IssueService implements IIssueService {
     @Inject('IProjectMemberRepository')
     private readonly _projectMemberRepo: IProjectMemberRepository,
     @Inject('IS3Service') private readonly _S3Service: IS3Service,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
   async createIssue(
     dto: CreateIssueDTO,
@@ -91,6 +96,18 @@ export class IssueService implements IIssueService {
       ...data,
       key,
     });
+
+    if (dto.assigneeId) {
+      this.eventEmitter.emit(
+        NotificationType.ISSUE_ASSIGNED,
+        new IssueAssignedEvent(
+          issue._id.toString(),
+          issue.title,
+          dto.assigneeId,
+          userId,
+        ),
+      );
+    }
     return IssueMapper.toResponse(issue);
   }
   async getIssuesByProject(projectId: string): Promise<IssueResponse[]> {
@@ -152,6 +169,18 @@ export class IssueService implements IIssueService {
 
     if (!updatedIssue) {
       throw new BadRequestException(ISSUE_ERRORS.ISSUE_UPDATE_FAILED);
+    }
+
+    if (dto.assigneeId && dto.assigneeId !== issue.assigneeId?.toString()) {
+      this.eventEmitter.emit(
+        NotificationType.ISSUE_ASSIGNED,
+        new IssueAssignedEvent(
+          updatedIssue._id.toString(),
+          updatedIssue.title,
+          dto.assigneeId,
+          userId,
+        ),
+      );
     }
 
     return IssueMapper.toResponse(updatedIssue);

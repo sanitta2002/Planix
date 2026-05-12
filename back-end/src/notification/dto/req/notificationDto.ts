@@ -6,7 +6,7 @@ import {
   IsString,
 } from 'class-validator';
 
-import { NotificationEventType } from 'src/common/type/NotificationType';
+import { NotificationType } from 'src/common/type/NotificationType';
 
 export class CreateNotificationDto {
   @IsMongoId()
@@ -15,8 +15,8 @@ export class CreateNotificationDto {
   @IsMongoId()
   receiver!: string;
 
-  @IsEnum(NotificationEventType)
-  notificationType!: NotificationEventType;
+  @IsEnum(NotificationType)
+  notificationType!: NotificationType;
 
   @IsString()
   @IsNotEmpty()

@@ -16,6 +16,11 @@ import { UpdateSprintDto } from '../dto/req/UpdateSprintDto ';
 import type { IIssueRepository } from 'src/issue/interface/IIssueRepository';
 import { PinoLogger } from 'nestjs-pino';
 
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { SprintStartedEvent } from 'src/notification/events/notification.events';
+import { NotificationType } from 'src/common/type/NotificationType';
+import type { IProjectMemberRepository } from 'src/project/interfaces/IProjectMemberRepository';
+
 @Injectable()
 export class SprintService implements ISprintservice {
   constructor(
@@ -24,6 +29,9 @@ export class SprintService implements ISprintservice {
     private readonly _sprintRepo: IsprintRepository,
     @Inject('IIssueRepository')
     private readonly _issueRepo: IIssueRepository,
+    @Inject('IProjectMemberRepository')
+    private readonly _projectMemberRepo: IProjectMemberRepository,
+    private readonly _eventEmitter: EventEmitter2,
   ) {}
   async createSprint(
     dto: CreateSprintDto,
@@ -57,6 +65,7 @@ export class SprintService implements ISprintservice {
   async startSprint(
     dto: UpdateSprintDto,
     sprintId: string,
+    userId: string,
   ): Promise<SprintResponse> {
     this._logger.info(`Starting sprint: ${sprintId}`);
 
@@ -116,12 +125,28 @@ export class SprintService implements ISprintservice {
 
     this._logger.info(`Sprint started successfully: ${sprintId}`);
 
+    const members = await this._projectMemberRepo.getProjectMembers(
+      updatedSprint.projectId.toString(),
+    );
+    const memberIds = members.map((m) => m.userId._id.toString());
+
+    this._eventEmitter.emit(
+      NotificationType.SPRINT_STARTED,
+      new SprintStartedEvent(
+        updatedSprint._id.toString(),
+        updatedSprint.name,
+        memberIds,
+        userId,
+      ),
+    );
+
     return SprintMapper.toResponse(updatedSprint);
   }
 
   async completeSprint(
     dto: UpdateSprintDto,
     sprintId: string,
+    userId: string,
   ): Promise<SprintResponse> {
     this._logger.info(`Completing sprint: ${sprintId}`);
 
@@ -159,6 +184,21 @@ export class SprintService implements ISprintservice {
     }
 
     this._logger.info(`Sprint completed successfully: ${sprintId}`);
+
+    const members = await this._projectMemberRepo.getProjectMembers(
+      updatedSprint.projectId.toString(),
+    );
+    const memberIds = members.map((m) => m.userId._id.toString());
+
+    this._eventEmitter.emit(
+      NotificationType.SPRINT_COMPLETED,
+      new SprintStartedEvent(
+        updatedSprint._id.toString(),
+        updatedSprint.name,
+        memberIds,
+        userId,
+      ),
+    );
 
     return SprintMapper.toResponse(updatedSprint);
   }
