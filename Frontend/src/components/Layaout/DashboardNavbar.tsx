@@ -18,6 +18,7 @@ import {
 } from "../../store/workspaceSlice";
 import { useGetAllProjects } from "../../hooks/project/projectHook";
 import { setCurrentProject } from "../../store/projectSlice";
+import { NotificationDropdown } from "../Notification/NotificationDropdown";
 
 
 interface DashboardNavbarProps {
@@ -32,7 +33,7 @@ interface Workspace {
 export const DashboardNavbar = ({ onMenuClick }: DashboardNavbarProps) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    
+
 
 
     const user = useSelector((state: RootState) => state.auth.user);
@@ -56,7 +57,7 @@ export const DashboardNavbar = ({ onMenuClick }: DashboardNavbarProps) => {
     const [open, setOpen] = useState(false);
     const [projectOpen, setProjectOpen] = useState(false);
 
-    const { data ,} = useGetAllProjects({
+    const { data, } = useGetAllProjects({
         workspaceId: currentWorkspace?.id || "",
         limit: 50,
         page: 1,
@@ -112,7 +113,7 @@ export const DashboardNavbar = ({ onMenuClick }: DashboardNavbarProps) => {
     }, []);
 
     return (
-        
+
         <header className="h-16 px-6 border-b border-border bg-background flex items-center justify-between sticky top-0 z-10">
 
             {/* LEFT */}
@@ -164,10 +165,10 @@ export const DashboardNavbar = ({ onMenuClick }: DashboardNavbarProps) => {
                                         </div>
                                         {ws.name}
                                     </div>
-                                    
+
                                 ))}
-                        
-                                
+
+
 
                                 {isOwner && (
                                     <div
@@ -228,9 +229,9 @@ export const DashboardNavbar = ({ onMenuClick }: DashboardNavbarProps) => {
                                     </div>
                                 ))}
 
-                                
 
-                                
+
+
                             </div>
                         )}
                     </div>
@@ -249,9 +250,7 @@ export const DashboardNavbar = ({ onMenuClick }: DashboardNavbarProps) => {
                     />
                 </div>
 
-                <button>
-                    <Bell className="w-5 h-5" />
-                </button>
+                <NotificationDropdown />
 
                 <button onClick={() => navigate(FRONTEND_ROUTES.SETTING)}>
                     <Settings className="w-5 h-5" />
@@ -265,8 +264,8 @@ export const DashboardNavbar = ({ onMenuClick }: DashboardNavbarProps) => {
 
                 <LogoutButton />
             </div>
-            
+
         </header>
-        
+
     );
 };

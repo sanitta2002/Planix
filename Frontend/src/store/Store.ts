@@ -6,6 +6,7 @@ import persistReducer from "redux-persist/es/persistReducer";
 import persistStore from "redux-persist/es/persistStore";
 import workspaceReducer from "./workspaceSlice";
 import projectReducer from "./projectSlice"
+import notificationReducer from "./notificationSlice";
 
 
 const persistConfig = {
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   token: tokenReducer,
   workspace: workspaceReducer,
   project: projectReducer,
+  notification: notificationReducer,
 });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
