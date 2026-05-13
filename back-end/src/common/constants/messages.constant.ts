@@ -291,12 +291,18 @@ export const NOTIFICATION_TEMPLATES = {
   ISSUE_CREATED: (title: string) => `A new issue "${title}" has been created.`,
   ISSUE_ASSIGNED: (title: string) =>
     `You have been assigned to the issue "${title}".`,
+  ISSUE_COMMENTED: (title: string, content: string) =>
+    `commented on "${title}": "${content.substring(0, 30)}${content.length > 30 ? '...' : ''}"`,
   ISSUE_UPDATED: (title: string) => `The issue "${title}" has been updated.`,
+  ISSUE_STATUS_CHANGED: (title: string, oldStatus: string, newStatus: string) =>
+    `changed status of "${title}" from ${oldStatus} to ${newStatus}`,
   ISSUE_MENTIONED: (sender: string, title: string) =>
     `${sender} mentioned you in "${title}".`,
   PROJECT_MEMBER_ADDED: (projectName: string) =>
     `You have been added to the project "${projectName}".`,
   SPRINT_STARTED: (sprintName: string) =>
     `The sprint "${sprintName}" has started.`,
+  SPRINT_COMPLETED: (sprintName: string) =>
+    `The sprint "${sprintName}" has been completed.`,
   NEW_MESSAGE: (sender: string) => `New message from ${sender}.`,
 };

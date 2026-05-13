@@ -46,19 +46,29 @@ export class CommentService implements ICommentService {
       await this._commentRepo.createCommentWithPopulate(newComment);
 
     // Trigger Notification for the assignee or reporter
-    const receiverId =
-      issue.assigneeId?.toString() || issue.createdBy.toString();
+    const reporterId = issue.createdBy.toString();
+    const assigneeId = issue.assigneeId?.toString();
 
-    this.eventEmitter.emit(
-      NotificationType.ISSUE_COMMENTED,
-      new IssueCommentedEvent(
-        issue._id.toString(),
-        issue.title,
-        content,
-        receiverId,
-        userId,
-      ),
-    );
+    const receivers = new Set<string>();
+    if (reporterId && reporterId !== userId) {
+      receivers.add(reporterId);
+    }
+    if (assigneeId && assigneeId !== userId) {
+      receivers.add(assigneeId);
+    }
+
+    receivers.forEach((receiverId) => {
+      this.eventEmitter.emit(
+        NotificationType.ISSUE_COMMENTED,
+        new IssueCommentedEvent(
+          issue._id.toString(),
+          issue.title,
+          content,
+          receiverId,
+          userId,
+        ),
+      );
+    });
 
     return CommentMapper.toResponse(createComment);
   }

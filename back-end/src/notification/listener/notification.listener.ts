@@ -5,6 +5,8 @@ import { NotificationType } from 'src/common/type/NotificationType';
 import {
   IssueAssignedEvent,
   IssueCommentedEvent,
+  IssueCreatedEvent,
+  IssueStatusChangedEvent,
   ProjectMemberEvent,
   SprintStartedEvent,
 } from '../events/notification.events';
@@ -20,6 +22,33 @@ export class NotificationListener {
     private readonly _notificationService: INotificationService,
     private readonly _notificationGateway: NotificationGateway,
   ) {}
+
+  @OnEvent(NotificationType.ISSUE_CREATED)
+  async handleIssueCreated(event: IssueCreatedEvent) {
+    const actorId = new Types.ObjectId(event.actorId);
+    const issueId = new Types.ObjectId(event.issueId);
+
+    const promises = event.projectMembers
+      .filter((memberId) => memberId !== event.actorId)
+      .map(async (memberId) => {
+        const notification = await this._notificationService.createNotification(
+          {
+            receiver: new Types.ObjectId(memberId),
+            sender: actorId,
+            notificationType: NotificationType.ISSUE_CREATED,
+            message: NOTIFICATION_TEMPLATES.ISSUE_CREATED(event.issueTitle),
+            referenceId: issueId,
+          },
+        );
+
+        if (notification) {
+          this._notificationGateway.sendNotification(memberId, notification);
+        }
+        return notification;
+      });
+
+    await Promise.all(promises);
+  }
 
   @OnEvent(NotificationType.ISSUE_ASSIGNED)
   async handleIssueAssigned(event: IssueAssignedEvent) {
@@ -45,7 +74,32 @@ export class NotificationListener {
       receiver: new Types.ObjectId(event.receiverId),
       sender: new Types.ObjectId(event.senderId),
       notificationType: NotificationType.ISSUE_COMMENTED,
-      message: `${event.issueTitle}: ${event.commentContent.substring(0, 50)}...`,
+      message: NOTIFICATION_TEMPLATES.ISSUE_COMMENTED(
+        event.issueTitle,
+        event.commentContent,
+      ),
+      referenceId: new Types.ObjectId(event.issueId),
+    });
+
+    if (notification) {
+      this._notificationGateway.sendNotification(
+        event.receiverId,
+        notification,
+      );
+    }
+  }
+
+  @OnEvent(NotificationType.ISSUE_STATUS_CHANGED)
+  async handleIssueStatusChanged(event: IssueStatusChangedEvent) {
+    const notification = await this._notificationService.createNotification({
+      receiver: new Types.ObjectId(event.receiverId),
+      sender: new Types.ObjectId(event.actorId),
+      notificationType: NotificationType.ISSUE_STATUS_CHANGED,
+      message: NOTIFICATION_TEMPLATES.ISSUE_STATUS_CHANGED(
+        event.issueTitle,
+        event.oldStatus,
+        event.newStatus,
+      ),
       referenceId: new Types.ObjectId(event.issueId),
     });
 
@@ -86,6 +140,33 @@ export class NotificationListener {
             sender: actorId,
             notificationType: NotificationType.SPRINT_STARTED,
             message: NOTIFICATION_TEMPLATES.SPRINT_STARTED(event.sprintName),
+            referenceId: sprintId,
+          },
+        );
+
+        if (notification) {
+          this._notificationGateway.sendNotification(memberId, notification);
+        }
+        return notification;
+      });
+
+    await Promise.all(promises);
+  }
+
+  @OnEvent(NotificationType.SPRINT_COMPLETED)
+  async handleSprintCompleted(event: SprintStartedEvent) {
+    const actorId = new Types.ObjectId(event.actorId);
+    const sprintId = new Types.ObjectId(event.sprintId);
+
+    const promises = event.projectMembers
+      .filter((memberId) => memberId !== event.actorId)
+      .map(async (memberId) => {
+        const notification = await this._notificationService.createNotification(
+          {
+            receiver: new Types.ObjectId(memberId),
+            sender: actorId,
+            notificationType: NotificationType.SPRINT_COMPLETED,
+            message: NOTIFICATION_TEMPLATES.SPRINT_COMPLETED(event.sprintName),
             referenceId: sprintId,
           },
         );

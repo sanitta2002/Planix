@@ -11,7 +11,7 @@ import { Types } from 'mongoose';
 import { PinoLogger } from 'nestjs-pino';
 @WebSocketGateway({
   cors: {
-    origin: process.env.FRONTEND_URL,
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
     credentials: true,
   },
   namespace: 'notification',

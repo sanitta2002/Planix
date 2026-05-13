@@ -34,3 +34,22 @@ export class ProjectMemberEvent {
     public readonly actorId: string,
   ) {}
 }
+
+export class IssueCreatedEvent {
+  constructor(
+    public readonly issueId: string,
+    public readonly issueTitle: string,
+    public readonly actorId: string,
+    public readonly projectMembers: string[],
+  ) {}
+}
+export class IssueStatusChangedEvent {
+  constructor(
+    public readonly issueId: string,
+    public readonly issueTitle: string,
+    public readonly oldStatus: string,
+    public readonly newStatus: string,
+    public readonly actorId: string,
+    public readonly receiverId: string,
+  ) {}
+}

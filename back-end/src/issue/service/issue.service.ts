@@ -24,7 +24,11 @@ import { AddAttachmentDTO } from '../dto/req/AttachmentDTO';
 import type { IS3Service } from 'src/common/s3/interfaces/s3.service.interface';
 
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { IssueAssignedEvent } from 'src/notification/events/notification.events';
+import {
+  IssueAssignedEvent,
+  IssueCreatedEvent,
+  IssueStatusChangedEvent,
+} from 'src/notification/events/notification.events';
 import { NotificationType } from 'src/common/type/NotificationType';
 
 @Injectable()
@@ -97,6 +101,10 @@ export class IssueService implements IIssueService {
       key,
     });
 
+    if (dto.issueType === IssueType.EPIC) {
+      dto.assigneeId = undefined;
+    }
+
     if (dto.assigneeId) {
       this.eventEmitter.emit(
         NotificationType.ISSUE_ASSIGNED,
@@ -108,6 +116,22 @@ export class IssueService implements IIssueService {
         ),
       );
     }
+
+    const projectMembers = await this._projectMemberRepo.getProjectMembers(
+      dto.projectId,
+    );
+    const memberIds = projectMembers.map((m) => m.userId._id.toString());
+
+    this.eventEmitter.emit(
+      NotificationType.ISSUE_CREATED,
+      new IssueCreatedEvent(
+        issue._id.toString(),
+        issue.title,
+        userId,
+        memberIds,
+      ),
+    );
+
     return IssueMapper.toResponse(issue);
   }
   async getIssuesByProject(projectId: string): Promise<IssueResponse[]> {
@@ -181,6 +205,33 @@ export class IssueService implements IIssueService {
           userId,
         ),
       );
+    }
+
+    if (dto.status && dto.status !== issue.status) {
+      const reporterId = issue.createdBy.toString();
+      const assigneeId = issue.assigneeId?.toString();
+
+      const receivers = new Set<string>();
+      if (reporterId && reporterId !== userId) {
+        receivers.add(reporterId);
+      }
+      if (assigneeId && assigneeId !== userId) {
+        receivers.add(assigneeId);
+      }
+
+      receivers.forEach((receiverId) => {
+        this.eventEmitter.emit(
+          NotificationType.ISSUE_STATUS_CHANGED,
+          new IssueStatusChangedEvent(
+            updatedIssue._id.toString(),
+            updatedIssue.title,
+            issue.status,
+            dto.status!,
+            userId,
+            receiverId,
+          ),
+        );
+      });
     }
 
     return IssueMapper.toResponse(updatedIssue);

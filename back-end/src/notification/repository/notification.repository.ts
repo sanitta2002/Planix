@@ -48,7 +48,7 @@ export class NotificationRepository
     return await this._notification
       .find({ receiver: new Types.ObjectId(receiverId) })
       .sort({ createdAt: -1 })
-      .populate('sender', 'firstName lastName avatar')
+      .populate('sender', 'firstName lastName avatarKey')
       .exec();
   }
 
