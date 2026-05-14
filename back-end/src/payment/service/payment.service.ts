@@ -14,7 +14,10 @@ import { error } from 'console';
 import type { ISubscriptionService } from 'src/subscription/interface/ISubscriptionService';
 import { Request } from 'express';
 import type { ISubscriptionRepository } from 'src/subscription/interface/ISubscriptionRepository';
-import { SubscriptionStatus } from 'src/subscription/Model/subscription.schema';
+import {
+  SubscriptionDocument,
+  SubscriptionStatus,
+} from 'src/subscription/Model/subscription.schema';
 import type { ISubscriptionPlanRepository } from 'src/subscription/interface/ISubscriptionPlanRepository';
 import { PaymentDto } from '../dto/PaymentDto';
 
@@ -167,10 +170,28 @@ export class PaymentService implements IPaymentService {
 
     return { url: session.url };
   }
-  async getAllPayments(): Promise<PaymentDto[]> {
-    const payments = await this.subscriptionRepo.findAllPayments();
+  async getAllPayments(
+    planId?: string,
+    startDate?: string,
+    endDate?: string,
+    status?: string,
+    page?: number,
+    limit?: number,
+  ): Promise<{ payments: PaymentDto[]; total: number }> {
+    const {
+      payments,
+      total,
+    }: { payments: SubscriptionDocument[]; total: number } =
+      await this.subscriptionRepo.findAllPayments(
+        planId,
+        startDate,
+        endDate,
+        status,
+        page,
+        limit,
+      );
 
-    return payments.map((sub) => {
+    const mappedPayments = (payments || []).map((sub) => {
       const user = sub.userId as unknown as { email: string };
       const plan = sub.planId as unknown as { name: string; price: number };
 
@@ -183,5 +204,7 @@ export class PaymentService implements IPaymentService {
         startDate: sub.startDate,
       };
     });
+
+    return { payments: mappedPayments, total };
   }
 }

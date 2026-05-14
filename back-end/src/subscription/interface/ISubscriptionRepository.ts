@@ -9,6 +9,13 @@ export interface ISubscriptionRepository extends IBaseRepository<SubscriptionDoc
   findByStripeSubscriptionId(
     stripeSubscriptionId: string,
   ): Promise<SubscriptionDocument | null>;
-  findAllPayments(): Promise<SubscriptionDocument[]>;
+  findAllPayments(
+    planId?: string,
+    startDate?: string,
+    endDate?: string,
+    status?: string,
+    page?: number,
+    limit?: number,
+  ): Promise<{ payments: SubscriptionDocument[]; total: number }>;
   findAllByWorkspace(workspaceId: string): Promise<SubscriptionDocument[]>;
 }

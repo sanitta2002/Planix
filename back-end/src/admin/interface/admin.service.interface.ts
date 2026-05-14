@@ -6,6 +6,9 @@ import { GetWorkspacesRequestDto } from '../dto/GetWorkspacesRequestDto ';
 import { PaginatedUsersResponseDto } from '../dto/paginated-users.response.dto';
 import { PaginatedWorkspaceResponseDto } from '../dto/PaginatedWorkspaceResponseDto ';
 import { UserStatusResponseDto } from '../dto/UserStatusResponseDto';
+import { GetPaymentsRequestDto } from '../dto/get-payments-request.dto';
+
+import { PaginatedPaymentsResponseDto } from '../dto/paginated-payments.response.dto';
 
 export interface IAdminService {
   login(dto: AdminLoginDto): AdminResponseDto;
@@ -15,4 +18,7 @@ export interface IAdminService {
   getAllWorkspaces(
     query: GetWorkspacesRequestDto,
   ): Promise<PaginatedWorkspaceResponseDto>;
+  getAllPayments(
+    query: GetPaymentsRequestDto,
+  ): Promise<PaginatedPaymentsResponseDto>;
 }

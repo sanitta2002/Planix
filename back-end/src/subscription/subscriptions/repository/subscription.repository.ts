@@ -42,12 +42,60 @@ export class subscriptionRepository
   async findByStripeSubscriptionId(stripeSubscriptionId: string) {
     return this._subscriptionModel.findOne({ stripeSubscriptionId });
   }
-  async findAllPayments(): Promise<SubscriptionDocument[]> {
-    return await this._subscriptionModel
-      .find()
-      .populate('userId', 'name email')
-      .populate('planId', 'name price')
-      .sort({ createdAt: -1 });
+  async findAllPayments(
+    planId?: string,
+    startDate?: string,
+    endDate?: string,
+    status?: string,
+    page?: number,
+    limit?: number,
+  ): Promise<{ payments: SubscriptionDocument[]; total: number }> {
+    const filter: {
+      planId?: Types.ObjectId;
+      status?: string;
+      startDate?: { $gte?: Date; $lte?: Date };
+    } = {};
+
+    if (planId && planId.trim() !== '' && Types.ObjectId.isValid(planId)) {
+      filter.planId = new Types.ObjectId(planId);
+    }
+
+    if (status && status.trim() !== '') {
+      filter.status = status;
+    }
+
+    if (startDate || endDate) {
+      const start = startDate ? new Date(startDate) : null;
+      const end = endDate ? new Date(endDate) : null;
+
+      if (
+        (start && !isNaN(start.getTime())) ||
+        (end && !isNaN(end.getTime()))
+      ) {
+        filter.startDate = {};
+        if (start && !isNaN(start.getTime())) {
+          filter.startDate.$gte = start;
+        }
+        if (end && !isNaN(end.getTime())) {
+          filter.startDate.$lte = end;
+        }
+      }
+    }
+
+    const skip = page && limit ? (page - 1) * limit : 0;
+
+    const [payments, total] = await Promise.all([
+      this._subscriptionModel
+        .find(filter)
+        .populate('userId', 'name email')
+        .populate('planId', 'name price')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit || 0),
+      this._subscriptionModel.countDocuments(filter),
+    ]);
+
+    return { payments, total };
   }
   async findAllByWorkspace(
     workspaceId: string,

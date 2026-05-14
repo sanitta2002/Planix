@@ -15,5 +15,12 @@ export interface IPaymentService {
     signature: string,
   ): Promise<{ received: boolean }>;
   retryPayment(subscriptionId: string): Promise<{ url: string | null }>;
-  getAllPayments(): Promise<PaymentDto[]>;
+  getAllPayments(
+    planId?: string,
+    startDate?: string,
+    endDate?: string,
+    status?: string,
+    page?: number,
+    limit?: number,
+  ): Promise<{ payments: PaymentDto[]; total: number }>;
 }

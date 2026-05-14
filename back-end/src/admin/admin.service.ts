@@ -23,6 +23,10 @@ import type { IS3Service } from 'src/common/s3/interfaces/s3.service.interface';
 import type { IWorkspaceRepository } from 'src/workspace/interface/IWorkspaceRepository';
 import { PaginatedWorkspaceResponseDto } from './dto/PaginatedWorkspaceResponseDto ';
 import { GetWorkspacesRequestDto } from './dto/GetWorkspacesRequestDto ';
+import { GetPaymentsRequestDto } from './dto/get-payments-request.dto';
+import { PaginatedPaymentsResponseDto } from './dto/paginated-payments.response.dto';
+import type { IPaymentService } from 'src/payment/interface/IPaymentService';
+import { PaymentDto } from 'src/payment/dto/PaymentDto';
 
 @Injectable()
 export class AdminService implements IAdminService {
@@ -33,6 +37,8 @@ export class AdminService implements IAdminService {
     @Inject('IS3Service') private readonly s3Service: IS3Service,
     @Inject('IWorkspaceRepository')
     private readonly _workspaceRepository: IWorkspaceRepository,
+    @Inject('IPaymentService')
+    private readonly _paymentService: IPaymentService,
   ) {}
   login(dto: AdminLoginDto): AdminResponseDto {
     this.logger.log(`admin login attempt: ${dto.email}`);
@@ -138,5 +144,29 @@ export class AdminService implements IAdminService {
       page,
       limit,
     );
+  }
+  async getAllPayments(
+    query: GetPaymentsRequestDto,
+  ): Promise<PaginatedPaymentsResponseDto> {
+    const page = query.page ? Number(query.page) : 1;
+    const limit = query.limit ? Number(query.limit) : 10;
+
+    const { payments, total }: { payments: PaymentDto[]; total: number } =
+      await this._paymentService.getAllPayments(
+        query.planId,
+        query.startDate,
+        query.endDate,
+        query.status,
+        page,
+        limit,
+      );
+
+    return {
+      data: payments,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 }

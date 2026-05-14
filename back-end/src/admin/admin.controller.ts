@@ -30,6 +30,7 @@ import { ApiResponse } from 'src/common/utils/api-response.util';
 import { ApiResponseDto } from 'src/common/dto/api-response.dto';
 import { GetWorkspacesRequestDto } from './dto/GetWorkspacesRequestDto ';
 import { PaginatedWorkspaceResponseDto } from './dto/PaginatedWorkspaceResponseDto ';
+import { GetPaymentsRequestDto } from './dto/get-payments-request.dto';
 import type { ISubscriptionService } from 'src/subscription/interface/ISubscriptionService';
 import type { IPaymentService } from 'src/payment/interface/IPaymentService';
 import { generateInvoiceHTML } from 'src/common/utils/pdf.util';
@@ -114,8 +115,8 @@ export class AdminController {
     return await this.adminService.getAllWorkspaces(query);
   }
   @Get('paymets')
-  async getAllPayments() {
-    const data = await this._paymentService.getAllPayments();
+  async getAllPayments(@Query() query: GetPaymentsRequestDto) {
+    const data = await this.adminService.getAllPayments(query);
     return ApiResponse.success(
       HttpStatus.OK,
       PAYMENT_MESSAGE.PAYMENT_FETCH,
@@ -123,10 +124,13 @@ export class AdminController {
     );
   }
   @Get('report')
-  async downloadReport(@Res() res: Response) {
-    const payments = await this._paymentService.getAllPayments();
+  async downloadReport(
+    @Res() res: Response,
+    @Query() query: GetPaymentsRequestDto,
+  ) {
+    const payments = await this.adminService.getAllPayments(query);
 
-    const html = generateInvoiceHTML(payments);
+    const html = generateInvoiceHTML(payments.data);
 
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
