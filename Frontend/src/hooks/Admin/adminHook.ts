@@ -141,9 +141,17 @@ export const useGetWorkspaces = (params: GetWorkspacePayload) => {
 };
 
 
-export const useGetAllpayments = ()=>{
+export const useGetAllpayments = (params?: {
+  planId?: string;
+  startDate?: string;
+  endDate?: string;
+  status?: string;
+  page?: number;
+  limit?: number;
+}) => {
   return useQuery({
-    queryKey:["admin-payments"],
-    queryFn:getAllPayments
-  })
-}
+    queryKey: ["admin-payments", params],
+    queryFn: () => getAllPayments(params),
+    select: (res) => res.data,
+  });
+};
