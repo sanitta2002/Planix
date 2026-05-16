@@ -2,7 +2,6 @@ import {
   ConflictException,
   Inject,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { IProjectService } from '../interfaces/IProjectService';
@@ -24,11 +23,12 @@ import { AddProjectMemberDto } from '../dto/req/AddProjectMemberDTO';
 import { Permission, ProjectRole } from 'src/common/type/ProjectRole';
 import { GetAllProjectsDTO } from '../dto/req/GetAllProjectsDTO';
 import { GetAllProjectsResponseDTO } from '../dto/res/GetAllProjectsResponseDTO';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class ProjectService implements IProjectService {
-  private readonly _logger = new Logger(ProjectService.name);
   constructor(
+    private readonly _logger: PinoLogger,
     @Inject('IprojectRepository')
     private readonly _projectRepository: IprojectRepository,
     @Inject('IWorkspaceRepository')
@@ -43,7 +43,7 @@ export class ProjectService implements IProjectService {
     workspaceId: string,
     userId: string,
   ): Promise<ProjectResponseDto> {
-    this._logger.log('workspaceId :', workspaceId);
+    this._logger.info('workspaceId :', workspaceId);
     const workspace = await this._workspaceRepository.findById(workspaceId);
     if (!workspace) {
       throw new NotFoundException(WORKSPACE_MESSAGE.NOT_FOUND);

@@ -3,7 +3,6 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { IIssueService } from '../interface/IIssueService';
@@ -30,24 +29,26 @@ import {
   IssueStatusChangedEvent,
 } from 'src/notification/events/notification.events';
 import { NotificationType } from 'src/common/type/NotificationType';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class IssueService implements IIssueService {
-  private readonly _logger = new Logger(IssueService.name);
   constructor(
+    private readonly _logger: PinoLogger,
     @Inject('IIssueRepository') private readonly _IissueRepo: IIssueRepository,
     @Inject('IprojectRepository')
     private readonly _projectRepo: IprojectRepository,
     @Inject('IProjectMemberRepository')
     private readonly _projectMemberRepo: IProjectMemberRepository,
     @Inject('IS3Service') private readonly _S3Service: IS3Service,
-    private readonly eventEmitter: EventEmitter2,
+    private readonly _eventEmitter: EventEmitter2,
   ) {}
   async createIssue(
     dto: CreateIssueDTO,
     userId: string,
   ): Promise<IssueResponse> {
     console.log('**************', userId);
+    this._logger.info(`issue creationed by ${userId}`);
     if (!dto.title || !dto.title.trim()) {
       throw new BadRequestException(PROJECT_ERRORS.ISSUE_INVALIDATION);
     }
@@ -106,7 +107,7 @@ export class IssueService implements IIssueService {
     }
 
     if (dto.assigneeId) {
-      this.eventEmitter.emit(
+      this._eventEmitter.emit(
         NotificationType.ISSUE_ASSIGNED,
         new IssueAssignedEvent(
           issue._id.toString(),
@@ -122,7 +123,7 @@ export class IssueService implements IIssueService {
     );
     const memberIds = projectMembers.map((m) => m.userId._id.toString());
 
-    this.eventEmitter.emit(
+    this._eventEmitter.emit(
       NotificationType.ISSUE_CREATED,
       new IssueCreatedEvent(
         issue._id.toString(),
@@ -135,6 +136,7 @@ export class IssueService implements IIssueService {
     return IssueMapper.toResponse(issue);
   }
   async getIssuesByProject(projectId: string): Promise<IssueResponse[]> {
+    this._logger.info(`${projectId}`);
     const project = await this._projectRepo.findById(projectId);
     if (!project) {
       throw new NotFoundException(PROJECT_ERRORS.NO_PROJECTS_FOUND);
@@ -196,7 +198,7 @@ export class IssueService implements IIssueService {
     }
 
     if (dto.assigneeId && dto.assigneeId !== issue.assigneeId?.toString()) {
-      this.eventEmitter.emit(
+      this._eventEmitter.emit(
         NotificationType.ISSUE_ASSIGNED,
         new IssueAssignedEvent(
           updatedIssue._id.toString(),
@@ -220,7 +222,7 @@ export class IssueService implements IIssueService {
       }
 
       receivers.forEach((receiverId) => {
-        this.eventEmitter.emit(
+        this._eventEmitter.emit(
           NotificationType.ISSUE_STATUS_CHANGED,
           new IssueStatusChangedEvent(
             updatedIssue._id.toString(),

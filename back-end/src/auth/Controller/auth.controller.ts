@@ -33,7 +33,7 @@ interface RefreshTokenCookies {
 export class AuthController {
   constructor(
     @Inject('IuserService') private readonly authService: IuserService,
-    private readonly configService: ConfigService,
+    private readonly _configService: ConfigService,
   ) {}
 
   @Post('register')
@@ -69,7 +69,7 @@ export class AuthController {
   ) {
     const { accessToken, refreshToken, user } =
       await this.authService.login(dto);
-    const maxAge = Number(this.configService.get<string>('Max_Age'));
+    const maxAge = Number(this._configService.get<string>('Max_Age'));
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       sameSite: 'strict',
@@ -101,7 +101,7 @@ export class AuthController {
   ) {
     const { accessToken, refreshToken, user } =
       await this.authService.googleLogin(dto);
-    const maxAge = Number(this.configService.get<string>('Max_Age'));
+    const maxAge = Number(this._configService.get<string>('Max_Age'));
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       sameSite: 'strict',

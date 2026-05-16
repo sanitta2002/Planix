@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Inject,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import type { ISubscriptionPlanRepository } from 'src/subscription/interface/ISubscriptionPlanRepository';
@@ -15,11 +14,12 @@ import { SubscriptionMapper } from './mapper/SubscriptionMapper';
 import { Types } from 'mongoose';
 import { SubscriptionStatus } from 'src/subscription/Model/subscription.schema';
 import type { IWorkspaceRepository } from 'src/workspace/interface/IWorkspaceRepository';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class SubscriptionsService implements ISubscriptionService {
-  private readonly _logger = new Logger(SubscriptionsService.name);
   constructor(
+    private readonly _logger: PinoLogger,
     @Inject('ISubscriptionRepository')
     private readonly _subscriptionRepo: ISubscriptionRepository,
     @Inject('ISubscriptionPlanRepository')
@@ -31,7 +31,7 @@ export class SubscriptionsService implements ISubscriptionService {
   async getActiveSubscription(
     userId: string,
   ): Promise<SubscriptionResponseDto> {
-    this._logger.log(`fetch active subs for user: ${userId}`);
+    this._logger.info(`fetch active subs for user: ${userId}`);
     const subscription = await this._subscriptionRepo.findActiveByUser(userId);
     console.log(subscription);
 
@@ -54,7 +54,7 @@ export class SubscriptionsService implements ISubscriptionService {
   ): Promise<SubscriptionResponseDto> {
     console.log(dto.planId);
     console.log(dto.workspaceId);
-    this._logger.log(`plan id : ${dto.planId}`);
+    this._logger.info(`plan id : ${dto.planId}`);
 
     const plan = await this._subscriptionPlanRepo.findById(dto.planId);
     if (!plan) {
@@ -81,7 +81,7 @@ export class SubscriptionsService implements ISubscriptionService {
     subscriptionId: string,
     stripeSubscriptionId: string,
   ): Promise<SubscriptionResponseDto> {
-    this._logger.log(`activating subs: ${subscriptionId}`);
+    this._logger.info(`activating subs: ${subscriptionId}`);
 
     const subscription = await this._subscriptionRepo.findById(subscriptionId);
     if (!subscription) {
@@ -119,7 +119,7 @@ export class SubscriptionsService implements ISubscriptionService {
         subscriptionStatus: 'active',
       },
     );
-    this._logger.log(`sub activated successfully: ${subscriptionId}`);
+    this._logger.info(`sub activated successfully: ${subscriptionId}`);
 
     return SubscriptionMapper.toResponseDto(updated);
   }

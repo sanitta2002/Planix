@@ -4,7 +4,6 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { IInvitationService } from '../interface/IInvitationService';
@@ -25,11 +24,12 @@ import type { IJwtService } from 'src/common/jwt/interfaces/jwt.service.interfac
 import { AcceptInvitationResponseDto } from '../dto/res/AcceptInvitationResponseDto';
 import { CompleteProfileDto } from '../dto/req/CompleteProfileDto';
 import type { IHashingService } from 'src/common/hashing/interface/hashing.service.interface';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class InvitationService implements IInvitationService {
-  private readonly _logger = new Logger(InvitationService.name);
   constructor(
+    private readonly _logger: PinoLogger,
     @Inject('IInvitationRepository')
     private readonly _invitationRepo: IInvitationRepository,
     @Inject('IWorkspaceRepository')
@@ -46,7 +46,7 @@ export class InvitationService implements IInvitationService {
     dto: InviteMemberDto,
     currentUserId: string,
   ): Promise<InvitationResponseDto> {
-    this._logger.log(
+    this._logger.info(
       `invite request by user ${currentUserId} for workspace ${workspaceId}`,
     );
     const workspace = await this._workspaceRepo.findById(workspaceId);
@@ -88,17 +88,17 @@ export class InvitationService implements IInvitationService {
       inviter.user,
       token,
     );
-    this._logger.log(invitationData);
+    this._logger.info(invitationData);
     await this._invitationRepo.create(invitationData);
     const frontendUrl = this._configService.get<string>('FRONTEND_URL');
     const inviteLink = `${frontendUrl}/invite/${token}`;
     console.log('inviteLink', inviteLink);
     await this.__mailService.sendInvitationMail(dto.email, inviteLink);
-    this._logger.log(`invitation email sent to ${dto.email}`);
+    this._logger.info(`invitation email sent to ${dto.email}`);
     return { message: INVITE_MESSAGE.SUCCESS };
   }
   async acceptInvitation(token: string): Promise<AcceptInvitationResponseDto> {
-    this._logger.log(`accept invitation with token: ${token}`);
+    this._logger.info(`accept invitation with token: ${token}`);
     const invitation = await this._invitationRepo.findByToken(token);
     if (!invitation) {
       throw new NotFoundException(INVITE_MESSAGE.INVALID);
@@ -159,7 +159,7 @@ export class InvitationService implements IInvitationService {
     token: string,
     dto: CompleteProfileDto,
   ): Promise<AcceptInvitationResponseDto> {
-    this._logger.log(`profile completion started`);
+    this._logger.info(`profile completion started`);
     const invitation = await this._invitationRepo.findByToken(token);
     if (!invitation) {
       throw new NotFoundException(INVITE_MESSAGE.INVALID);
@@ -176,7 +176,7 @@ export class InvitationService implements IInvitationService {
       lastName: dto.lastName,
       password: hashedPassword,
     });
-    this._logger.log(`New user created: ${newUser.email}`);
+    this._logger.info(`New user created: ${newUser.email}`);
     const workspace = await this._workspaceRepo.findById(
       invitation.workspaceId.toString(),
     );

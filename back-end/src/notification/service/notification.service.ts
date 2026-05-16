@@ -10,10 +10,12 @@ import { NotificationDocument } from '../Model/notification.schema';
 import { Types } from 'mongoose';
 
 import { NOTIFICATION_MESSAGES } from 'src/common/constants/messages.constant';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class NotificationService implements INotificationService {
   constructor(
+    private readonly _logger: PinoLogger,
     @Inject('INotificationRepository')
     private readonly _notificationRepository: INotificationRepository,
   ) {}
@@ -21,6 +23,9 @@ export class NotificationService implements INotificationService {
   async createNotification(
     notification: Partial<NotificationDocument>,
   ): Promise<NotificationDocument | null> {
+    this._logger.info(
+      `create notification for receiver ${notification.receiver?.toString()}`,
+    );
     if (notification.sender?.toString() === notification.receiver?.toString()) {
       return null;
     }
@@ -29,6 +34,7 @@ export class NotificationService implements INotificationService {
   }
 
   async getNotifications(receiverId: string): Promise<NotificationDocument[]> {
+    this._logger.info(`fetch notification ${receiverId}`);
     if (!Types.ObjectId.isValid(receiverId)) {
       throw new BadRequestException(NOTIFICATION_MESSAGES.INVALID_RECEIVER_ID);
     }

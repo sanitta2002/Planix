@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Inject,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { IPaymentService } from '../interface/IPaymentService';
@@ -20,13 +19,14 @@ import {
 } from 'src/subscription/Model/subscription.schema';
 import type { ISubscriptionPlanRepository } from 'src/subscription/interface/ISubscriptionPlanRepository';
 import { PaymentDto } from '../dto/PaymentDto';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class PaymentService implements IPaymentService {
-  private readonly _logger = new Logger(PaymentService.name);
   private stripe: Stripe;
   constructor(
-    private configService: ConfigService,
+    private readonly _logger: PinoLogger,
+    private _configService: ConfigService,
     @Inject('ISubscriptionService')
     private readonly subscriptionService: ISubscriptionService,
     @Inject('ISubscriptionRepository')
@@ -35,7 +35,7 @@ export class PaymentService implements IPaymentService {
     private readonly planRepo: ISubscriptionPlanRepository,
   ) {
     this.stripe = new Stripe(
-      this.configService.get<string>('STRIPE_SECRET_KEY')!,
+      this._configService.get<string>('STRIPE_SECRET_KEY')!,
       {},
     );
   }
@@ -44,7 +44,7 @@ export class PaymentService implements IPaymentService {
     subscriptionId: string,
     workspaceId: string,
   ): Promise<Stripe.Checkout.Session> {
-    this._logger.log(`create stripe checkout session: ${subscriptionId}`);
+    this._logger.info(`create stripe checkout session: ${subscriptionId}`);
     const session = await this.stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'subscription',
@@ -62,14 +62,14 @@ export class PaymentService implements IPaymentService {
         },
       ],
       metadata: { subscriptionId, workspaceId },
-      success_url: `${this.configService.get('FRONTEND_URL')}/payment-success`,
-      cancel_url: `${this.configService.get('FRONTEND_URL')}/payment-cancel`,
+      success_url: `${this._configService.get('FRONTEND_URL')}/payment-success`,
+      cancel_url: `${this._configService.get('FRONTEND_URL')}/payment-cancel`,
     });
-    this._logger.log(`stripe session create: ${session.id}`);
+    this._logger.info(`stripe session create: ${session.id}`);
     return session;
   }
   async confirmPayment(sessionId: string): Promise<void> {
-    this._logger.log(`confirming stripe: ${sessionId}`);
+    this._logger.info(`confirming stripe: ${sessionId}`);
     const sessions = await this.stripe.checkout.sessions.retrieve(sessionId);
     if (sessions.payment_status !== 'paid') {
       throw new Error(PAYMENT_MESSAGE.NOT_COMPLETED);
@@ -78,14 +78,14 @@ export class PaymentService implements IPaymentService {
     if (!subscriptionId) {
       throw new error(PAYMENT_MESSAGE.MISSING_DATA);
     }
-    this._logger.log(`payment confirmed: ${subscriptionId}`);
+    this._logger.info(`payment confirmed: ${subscriptionId}`);
   }
 
   async handleWebhook(
     req: Request,
     signature: string,
   ): Promise<{ received: boolean }> {
-    const endpointSecret = this.configService.get<string>(
+    const endpointSecret = this._configService.get<string>(
       'STRIPE_WEBHOOK_SECRET',
     );
     let event: Stripe.Event;
@@ -95,7 +95,7 @@ export class PaymentService implements IPaymentService {
         signature,
         endpointSecret!,
       );
-      this._logger.log(`stripe webhook receive: ${event.type}`);
+      this._logger.info(`stripe webhook receive: ${event.type}`);
     } catch (error) {
       console.log(error);
       return { received: false };
@@ -105,7 +105,7 @@ export class PaymentService implements IPaymentService {
 
       const session = event.data.object;
 
-      this._logger.log(`checkout completed: ${session.id}`);
+      this._logger.info(`checkout completed: ${session.id}`);
 
       const subscriptionId = session.metadata?.subscriptionId;
       console.log(subscriptionId + 'subscription id');
@@ -122,7 +122,7 @@ export class PaymentService implements IPaymentService {
     return { received: true };
   }
   async retryPayment(subscriptionId: string): Promise<{ url: string | null }> {
-    this._logger.log(`Retry payment for subscription: ${subscriptionId}`);
+    this._logger.info(`Retry payment for subscription: ${subscriptionId}`);
 
     const subscription = await this.subscriptionRepo.findById(subscriptionId);
 
@@ -160,8 +160,8 @@ export class PaymentService implements IPaymentService {
         },
       ],
 
-      success_url: `${this.configService.get('FRONTEND_URL')}/payment-success`,
-      cancel_url: `${this.configService.get('FRONTEND_URL')}/payment-cancel`,
+      success_url: `${this._configService.get('FRONTEND_URL')}/payment-success`,
+      cancel_url: `${this._configService.get('FRONTEND_URL')}/payment-cancel`,
 
       metadata: {
         subscriptionId: subscription._id.toString(),

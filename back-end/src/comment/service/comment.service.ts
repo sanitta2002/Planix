@@ -15,19 +15,22 @@ import { CommentMapper } from './Mapper/comment.mapper';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { IssueCommentedEvent } from 'src/notification/events/notification.events';
 import { NotificationType } from 'src/common/type/NotificationType';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class CommentService implements ICommentService {
   constructor(
+    private readonly _logger: PinoLogger,
     @Inject('ICommentRepository')
     private readonly _commentRepo: ICommentRepository,
     @Inject('IIssueRepository') private readonly _issueRepo: IIssueRepository,
-    private readonly eventEmitter: EventEmitter2,
+    private readonly _eventEmitter: EventEmitter2,
   ) {}
   async createComment(
     userId: string,
     dto: CreateCommentDTO,
   ): Promise<CommentResponseDTO> {
+    this._logger.info(`comment created by ${userId}`);
     const { issueId, content } = dto;
     if (!content.trim()) {
       throw new NotFoundException(COMMENT_MESSAGES.CONTENT_REQUIRED);
@@ -45,7 +48,6 @@ export class CommentService implements ICommentService {
     const createComment =
       await this._commentRepo.createCommentWithPopulate(newComment);
 
-    // Trigger Notification for the assignee or reporter
     const reporterId = issue.createdBy.toString();
     const assigneeId = issue.assigneeId?.toString();
 
@@ -58,7 +60,7 @@ export class CommentService implements ICommentService {
     }
 
     receivers.forEach((receiverId) => {
-      this.eventEmitter.emit(
+      this._eventEmitter.emit(
         NotificationType.ISSUE_COMMENTED,
         new IssueCommentedEvent(
           issue._id.toString(),
@@ -74,6 +76,7 @@ export class CommentService implements ICommentService {
   }
 
   async getCommentsByIssueId(issueId: string): Promise<CommentResponseDTO[]> {
+    this._logger.info(`${issueId}`);
     const issue = await this._issueRepo.findById(issueId);
     if (!issue) {
       throw new NotFoundException(COMMENT_MESSAGES.ISSUE_NOT_FOUND);
