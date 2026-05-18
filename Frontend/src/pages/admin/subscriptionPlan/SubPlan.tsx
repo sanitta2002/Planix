@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Check, Pencil, Plus, Trash2 } from "lucide-react";
 import { useDeletePlan, useGetPlans } from "../../../hooks/Admin/adminHook";
-import AddPlanModal, { type PlanData } from "./modal/AddPlanModal";
+import AddPlanModal from "./modal/AddPlanModal";
 import ConfirmationModal from "../../../components/modal/ConfirmationModal";
 import { Button } from "../../../components/ui/Button";
 
 interface Plan {
-  _id: string;
+  id: string;
   name: string;
   price: number;
   durationDays: number;
@@ -27,7 +27,7 @@ function SubPlan() {
 
   const [deleteModal, setDeleteModal] = useState<{
     isOpen: boolean;
-    plan: PlanData | null;
+    plan: Plan | null;
   }>({
     isOpen: false,
     plan: null,
@@ -55,7 +55,7 @@ function SubPlan() {
   const handleDeletePlan = () => {
     if (!deleteModal.plan) return;
 
-    deletePlanMutate(deleteModal.plan.id!, {
+    deletePlanMutate(deleteModal.plan.id, {
       onSuccess: () => {
         setDeleteModal({ isOpen: false, plan: null });
       },
@@ -90,7 +90,7 @@ function SubPlan() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
   {paginatedPlans.map((plan) => (
     <div
-      key={plan._id}
+      key={plan.id}
       className="rounded-2xl p-8 flex flex-col h-full text-center
       bg-[#0f1729] border-2 border-[#626FF6]
       shadow-[0_0_40px_rgba(98,111,246,0.12)] transition-all duration-300"

@@ -31,13 +31,55 @@ export const useGetUsers = (params: GetUsersPayload) => {
   });
 };
 
+export interface AdminUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  isBlocked: boolean;
+  isEmailVerified?: boolean;
+  avatarUrl?: string;
+}
+
+export interface GetUsersResponse {
+  users: AdminUser[];
+  total: number;
+}
+
+export interface Plan {
+  id: string;
+  name: string;
+  price: number;
+  durationDays: number;
+  features: string[];
+  isActive?: boolean;
+  description?: string;
+  isRecommended?: boolean;
+}
+
+export interface GetPlansResponse {
+  data: Plan[];
+}
+
 export const useBlockUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: blockUser,
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       toast.success("User blocked successfully");
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      queryClient.setQueriesData<GetUsersResponse>(
+        { queryKey: ["admin-users"] },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            users: oldData.users.map((user: AdminUser) =>
+              user.id === variables.userId ? { ...user, isBlocked: true } : user
+            ),
+          };
+        }
+      );
     },
     onError: () => {
       toast.error("Failed to block user");
@@ -49,9 +91,20 @@ export const useUnblockUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: unblockUser,
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       toast.success("User unblocked successfully");
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      queryClient.setQueriesData<GetUsersResponse>(
+        { queryKey: ["admin-users"] },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            users: oldData.users.map((user: AdminUser) =>
+              user.id === variables.userId ? { ...user, isBlocked: false } : user
+            ),
+          };
+        }
+      );
     },
     onError: () => {
       toast.error("Failed to unblock user");
@@ -83,9 +136,18 @@ export const useCreatePlan = () => {
 
   return useMutation({
     mutationFn: createPlan,
-    onSuccess: () => {
+    onSuccess: (res: { data: Plan }) => {
       toast.success("Plan created successfully");
-      queryClient.invalidateQueries({ queryKey: ["subscription-plans"] });
+      queryClient.setQueryData<GetPlansResponse>(
+        ["subscription-plans"],
+        (oldData) => {
+          if (!oldData) return { data: [res.data] };
+          return {
+            ...oldData,
+            data: [...oldData.data, res.data],
+          };
+        }
+      );
     },
     onError: () => {
       toast.error("Failed to create plan");
@@ -105,9 +167,20 @@ export const useUpdatePlan = () => {
       data: UpdatePlanPayload;
     }) => updatePlan(planId, data),
 
-    onSuccess: () => {
+    onSuccess: (res: { data: Plan }) => {
       toast.success("Plan updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["subscription-plans"] });
+      queryClient.setQueryData<GetPlansResponse>(
+        ["subscription-plans"],
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            data: oldData.data.map((plan: Plan) =>
+              plan.id === res.data.id ? res.data : plan
+            ),
+          };
+        }
+      );
     },
     onError: () => {
       toast.error("Failed to update plan");
@@ -120,9 +193,18 @@ export const useDeletePlan = () => {
 
   return useMutation({
     mutationFn: deletePlan,
-    onSuccess: () => {
+    onSuccess: (_, planId) => {
       toast.success("Plan deleted successfully");
-      queryClient.invalidateQueries({ queryKey: ["subscription-plans"] });
+      queryClient.setQueryData<GetPlansResponse>(
+        ["subscription-plans"],
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            data: oldData.data.filter((plan: Plan) => plan.id !== planId),
+          };
+        }
+      );
     },
     onError: () => {
       toast.error("Failed to delete plan");

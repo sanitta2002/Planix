@@ -128,7 +128,7 @@ export const NotificationDropdown: React.FC = () => {
                                     )}
                                 >
                                     <div className="flex-shrink-0 mt-1">
-                                        <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center overflow-hidden">
+                                        {/* <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center overflow-hidden">
                                             {notification.sender?.avatarKey ? (
                                                 <img src={notification.sender.avatarKey} alt="" className="w-full h-full object-cover" />
                                             ) : (
@@ -136,7 +136,7 @@ export const NotificationDropdown: React.FC = () => {
                                                     {notification.sender?.firstName?.[0]}{notification.sender?.lastName?.[0]}
                                                 </div>
                                             )}
-                                        </div>
+                                        </div> */}
 
                                     </div>
 

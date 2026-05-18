@@ -3,7 +3,8 @@ import {
   getNotifications, 
   getUnreadCount, 
   markAsRead, 
-  markAllAsRead 
+  markAllAsRead,
+  type NotificationResponse
 } from "../../Service/notification/notificationService";
 import { useDispatch } from "react-redux";
 import { 
@@ -42,10 +43,28 @@ export const useNotifications = () => {
 
   const markReadMutation = useMutation({
     mutationFn: markAsRead,
-    onSuccess: (data) => {
+    onSuccess: (data: NotificationResponse) => {
       dispatch(markNotificationAsRead(data._id));
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
-      queryClient.invalidateQueries({ queryKey: ["unreadCount"] });
+      
+      
+      queryClient.setQueryData<NotificationResponse[]>(
+        ["notifications"],
+        (oldNotifications) => {
+          if (!oldNotifications) return oldNotifications;
+          return oldNotifications.map((notif) =>
+            notif._id === data._id ? { ...notif, isRead: true } : notif
+          );
+        }
+      );
+
+      
+      queryClient.setQueryData<number>(
+        ["unreadCount"],
+        (oldCount) => {
+          if (oldCount === undefined) return 0;
+          return Math.max(0, oldCount - 1);
+        }
+      );
     },
   });
 
@@ -53,8 +72,18 @@ export const useNotifications = () => {
     mutationFn: markAllAsRead,
     onSuccess: () => {
       dispatch(markAllNotificationsAsRead());
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
-      queryClient.invalidateQueries({ queryKey: ["unreadCount"] });
+      queryClient.setQueryData<NotificationResponse[]>(
+        ["notifications"],
+        (oldNotifications) => {
+          if (!oldNotifications) return oldNotifications;
+          return oldNotifications.map((notif) => ({ ...notif, isRead: true }));
+        }
+      );
+
+      queryClient.setQueryData<number>(
+        ["unreadCount"],
+        () => 0
+      );
     },
   });
 

@@ -120,9 +120,10 @@ const AddPlanModal: React.FC<AddPlanModalProps> = ({
 
     setErrors({});
 
-    if (isEditMode && editPlan?.id) {
+    const planId = editPlan?.id 
+    if (isEditMode && planId) {
       updatePlanMutation.mutate(
-        { planId: editPlan.id, data: payload },
+        { planId, data: payload },
         {
           onSuccess: () => {
             onClose();
