@@ -1,12 +1,12 @@
-import { RegisterUserDto } from '../dto/RequestDTO/Register.dto';
-import { VerifyEmailDto } from '../dto/RequestDTO/verify-email.dto';
-import { Resendotp } from '../dto/RequestDTO/resend-otp.dto';
-import { LoginRequestDto } from '../dto/RequestDTO/Login.dto';
-import { LoginResponseDto } from '../dto/ResponseDTO/login.res.dto';
-import { ForgotPasswordDTO } from '../dto/RequestDTO/ForgotPassword.dto';
-import { ResetPasswordDto } from '../dto/RequestDTO/ResetPassword.dto';
-import { GoogleLoginDto } from '../dto/RequestDTO/google-login.dto';
-import { RefreshTokenResponseDto } from '../dto/ResponseDTO/RefreshTokenResponseDto';
+import { RegisterUserDto } from '@/auth/dto/RequestDTO/Register.dto';
+import { VerifyEmailDto } from '@/auth/dto/RequestDTO/verify-email.dto';
+import { Resendotp } from '@/auth/dto/RequestDTO/resend-otp.dto';
+import { LoginRequestDto } from '@/auth/dto/RequestDTO/Login.dto';
+import { LoginResponseDto } from '@/auth/dto/ResponseDTO/login.res.dto';
+import { ForgotPasswordDTO } from '@/auth/dto/RequestDTO/ForgotPassword.dto';
+import { ResetPasswordDto } from '@/auth/dto/RequestDTO/ResetPassword.dto';
+import { GoogleLoginDto } from '@/auth/dto/RequestDTO/google-login.dto';
+import { RefreshTokenResponseDto } from '@/auth/dto/ResponseDTO/RefreshTokenResponseDto';
 
 export interface IuserService {
   registerUser(dto: RegisterUserDto): Promise<void>;

@@ -10,8 +10,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { NextFunction, Request, Response } from 'express';
 
-import type { IJwtService } from '../jwt/interfaces/jwt.service.interface';
-import type { IUserRepository } from 'src/users/interfaces/user.repository.interface';
+import type { IJwtService } from '@/common/jwt/interfaces/jwt.service.interface';
+import type { IUserRepository } from '@/users/interfaces/user.repository.interface';
 
 @Injectable()
 export class JwtMiddleware implements NestMiddleware {

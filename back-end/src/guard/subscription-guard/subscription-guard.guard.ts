@@ -6,8 +6,8 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Request } from 'express';
-import type { ISubscriptionRepository } from 'src/subscription/interface/ISubscriptionRepository';
-import { SubscriptionStatus } from 'src/subscription/Model/subscription.schema';
+import type { ISubscriptionRepository } from '@/subscription/interface/ISubscriptionRepository';
+import { SubscriptionStatus } from '@/subscription/Model/subscription.schema';
 
 @Injectable()
 export class SubscriptionGuardGuard implements CanActivate {

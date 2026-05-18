@@ -9,22 +9,22 @@ import {
   Res,
   UnauthorizedException,
 } from '@nestjs/common';
-import { RegisterUserDto } from '../dto/RequestDTO/Register.dto';
-import { VerifyEmailDto } from '../dto/RequestDTO/verify-email.dto';
-import { Resendotp } from '../dto/RequestDTO/resend-otp.dto';
-import { LoginRequestDto } from '../dto/RequestDTO/Login.dto';
-import { ForgotPasswordDTO } from '../dto/RequestDTO/ForgotPassword.dto';
-import { ResetPasswordDto } from '../dto/RequestDTO/ResetPassword.dto';
-import { GoogleLoginDto } from '../dto/RequestDTO/google-login.dto';
+import { RegisterUserDto } from '@/auth/dto/RequestDTO/Register.dto';
+import { VerifyEmailDto } from '@/auth/dto/RequestDTO/verify-email.dto';
+import { Resendotp } from '@/auth/dto/RequestDTO/resend-otp.dto';
+import { LoginRequestDto } from '@/auth/dto/RequestDTO/Login.dto';
+import { ForgotPasswordDTO } from '@/auth/dto/RequestDTO/ForgotPassword.dto';
+import { ResetPasswordDto } from '@/auth/dto/RequestDTO/ResetPassword.dto';
+import { GoogleLoginDto } from '@/auth/dto/RequestDTO/google-login.dto';
 import type { Request, Response } from 'express';
-import type { IuserService } from '../interfaces/user.service.interface';
+import type { IuserService } from '@/auth/interfaces/user.service.interface';
 import { ConfigService } from '@nestjs/config';
-import { ApiResponse } from 'src/common/utils/api-response.util';
+import { ApiResponse } from '@/common/utils/api-response.util';
 import {
   AUTH_MESSAGES,
   OTP_MESSAGES,
   USER_MESSAGES,
-} from 'src/common/constants/messages.constant';
+} from '@/common/constants/messages.constant';
 
 interface RefreshTokenCookies {
   refreshToken?: string;

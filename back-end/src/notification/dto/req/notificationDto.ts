@@ -6,7 +6,7 @@ import {
   IsString,
 } from 'class-validator';
 
-import { NotificationType } from 'src/common/type/NotificationType';
+import { NotificationType } from '@/common/type/NotificationType';
 
 export class CreateNotificationDto {
   @IsMongoId()

@@ -1,4 +1,4 @@
-import { NotificationDocument } from '../Model/notification.schema';
+import { NotificationDocument } from '@/notification/Model/notification.schema';
 
 export interface INotificationService {
   createNotification(

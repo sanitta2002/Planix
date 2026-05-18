@@ -1,4 +1,4 @@
-import { PaymentDto } from 'src/payment/dto/PaymentDto';
+import { PaymentDto } from '@/payment/dto/PaymentDto';
 
 export class PaginatedPaymentsResponseDto {
   data!: PaymentDto[];

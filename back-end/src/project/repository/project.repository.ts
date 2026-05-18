@@ -1,6 +1,6 @@
-import { BaseRepository } from 'src/users/repository/BaseRepo/BaseRepo';
-import { Project, ProjectDocument } from '../Model/project.schema';
-import { IprojectRepository } from '../interfaces/IProjectRepository';
+import { BaseRepository } from '@/users/repository/BaseRepo/BaseRepo';
+import { Project, ProjectDocument } from '@/project/Model/project.schema';
+import { IprojectRepository } from '@/project/interfaces/IProjectRepository';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';

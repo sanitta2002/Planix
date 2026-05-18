@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
-import { CreateIssueDTO } from 'src/issue/dto/req/CreateIssueDTO';
-import { Issue, IssueDocument } from 'src/issue/Model/issue.schema';
+import { CreateIssueDTO } from '@/issue/dto/req/CreateIssueDTO';
+import { Issue, IssueDocument } from '@/issue/Model/issue.schema';
 
 export class IssueMapper {
   static toEntity(dto: CreateIssueDTO, userId: string): Partial<Issue> {

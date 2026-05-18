@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
-import { IPlan } from './IPlan';
+import { IPlan } from '@/payment/interface/IPlan';
 import { Request } from 'express';
-import { PaymentDto } from '../dto/PaymentDto';
+import { PaymentDto } from '@/payment/dto/PaymentDto';
 
 export interface IPaymentService {
   createCheckoutSession(

@@ -1,5 +1,5 @@
-import { User } from '../Models/user.schema';
-import { IBaseRepository } from './baseRepo.interface';
+import { User } from '@/users/Models/user.schema';
+import { IBaseRepository } from '@/users/interfaces/baseRepo.interface';
 
 export interface IUserRepository extends IBaseRepository<User> {
   findByEmail(email: string): Promise<User | null>;

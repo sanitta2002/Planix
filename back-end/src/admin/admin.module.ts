@@ -4,15 +4,15 @@ import {
   NestModule,
   RequestMethod,
 } from '@nestjs/common';
-import { AdminService } from './admin.service';
-import { AdminController } from './admin.controller';
-import { AppJwtModule } from 'src/common/jwt/jwt.module';
-import { UsersModule } from 'src/users/users.module';
-import { JwtMiddleware } from 'src/common/middleware/jwt.middleware';
-import { S3Service } from 'src/common/s3/s3.service';
-import { WorkspaceModule } from 'src/workspace/workspace.module';
-import { SubscriptionsModule } from 'src/subscription/subscriptions/subscriptions.module';
-import { PaymentModule } from 'src/payment/payment.module';
+import { AdminService } from '@/admin/admin.service';
+import { AdminController } from '@/admin/admin.controller';
+import { AppJwtModule } from '@/common/jwt/jwt.module';
+import { UsersModule } from '@/users/users.module';
+import { JwtMiddleware } from '@/common/middleware/jwt.middleware';
+import { S3Service } from '@/common/s3/s3.service';
+import { WorkspaceModule } from '@/workspace/workspace.module';
+import { SubscriptionsModule } from '@/subscription/subscriptions/subscriptions.module';
+import { PaymentModule } from '@/payment/payment.module';
 
 @Module({
   imports: [

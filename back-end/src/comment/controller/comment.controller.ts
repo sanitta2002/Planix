@@ -10,14 +10,14 @@ import {
   Patch,
   UseGuards,
 } from '@nestjs/common';
-import type { ICommentService } from '../Interface/ICommentService';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { GetUser } from 'src/common/decorators/getuser.decorator';
-import type { AuthUser } from 'src/common/decorators/getuser.decorator';
-import { CreateCommentDTO } from '../dto/req/CreateCommentDTO';
-import { ApiResponse } from 'src/common/utils/api-response.util';
-import { COMMENT_MESSAGES } from 'src/common/constants/messages.constant';
-import { UpdateCommentDTO } from '../dto/req/UpdateCommentDTO';
+import type { ICommentService } from '@/comment/Interface/ICommentService';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { GetUser } from '@/common/decorators/getuser.decorator';
+import type { AuthUser } from '@/common/decorators/getuser.decorator';
+import { CreateCommentDTO } from '@/comment/dto/req/CreateCommentDTO';
+import { ApiResponse } from '@/common/utils/api-response.util';
+import { COMMENT_MESSAGES } from '@/common/constants/messages.constant';
+import { UpdateCommentDTO } from '@/comment/dto/req/UpdateCommentDTO';
 
 @UseGuards(JwtAuthGuard)
 @Controller('comments')

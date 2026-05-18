@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { SubscriptionPlanService } from './service/subscription-plan.service';
+import { SubscriptionPlanService } from '@/subscription/subscription-plan/service/subscription-plan.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
   SubscriptionPlan,
   SubscriptionPlanSchema,
-} from '../Model/SubscriptionPlan.shema';
-import { SubscriptionPlanRepository } from './Repository/SubscriptionPlanRepository';
-import { SubPlanController } from './controller/sub-plan.controller';
+} from '@/subscription/Model/SubscriptionPlan.shema';
+import { SubscriptionPlanRepository } from '@/subscription/subscription-plan/Repository/SubscriptionPlanRepository';
+import { SubPlanController } from '@/subscription/subscription-plan/controller/sub-plan.controller';
 
 @Module({
   imports: [

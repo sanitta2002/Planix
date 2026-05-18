@@ -1,4 +1,4 @@
-import { JwtPayload } from '../payload/JwtPayload';
+import { JwtPayload } from '@/common/jwt/payload/JwtPayload';
 
 export interface IJwtService {
   signAccessToken(payload: JwtPayload): string;

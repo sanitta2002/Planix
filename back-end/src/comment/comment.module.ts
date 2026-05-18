@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { CommentService } from './service/comment.service';
-import { CommentController } from './controller/comment.controller';
+import { CommentService } from '@/comment/service/comment.service';
+import { CommentController } from '@/comment/controller/comment.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Comment, CommentSchema } from './Model/comment.schema';
-import { CommentRepository } from './repository/commentRepository';
-import { IssueModule } from 'src/issue/issue.module';
-import { ProjectModule } from 'src/project/project.module';
+import { Comment, CommentSchema } from '@/comment/Model/comment.schema';
+import { CommentRepository } from '@/comment/repository/commentRepository';
+import { IssueModule } from '@/issue/issue.module';
+import { ProjectModule } from '@/project/project.module';
 
 @Module({
   imports: [

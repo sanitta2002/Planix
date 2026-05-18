@@ -1,9 +1,9 @@
-import { BaseRepository } from 'src/users/repository/BaseRepo/BaseRepo';
-import { Issue, IssueDocument } from '../Model/issue.schema';
-import { IIssueRepository } from '../interface/IIssueRepository';
+import { BaseRepository } from '@/users/repository/BaseRepo/BaseRepo';
+import { Issue, IssueDocument } from '@/issue/Model/issue.schema';
+import { IIssueRepository } from '@/issue/interface/IIssueRepository';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { IssueStatus } from 'src/common/type/IssueStatus';
+import { IssueStatus } from '@/common/type/IssueStatus';
 
 export class IssueRepository
   extends BaseRepository<IssueDocument>

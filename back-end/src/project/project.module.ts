@@ -1,16 +1,16 @@
 import { Module } from '@nestjs/common';
-import { ProjectController } from './controller/project.controller';
-import { ProjectService } from './service/project.service';
+import { ProjectController } from '@/project/controller/project.controller';
+import { ProjectService } from '@/project/service/project.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Project, ProjectSchema } from './Model/project.schema';
-import { ProjectRepository } from './repository/project.repository';
-import { WorkspaceModule } from 'src/workspace/workspace.module';
+import { Project, ProjectSchema } from '@/project/Model/project.schema';
+import { ProjectRepository } from '@/project/repository/project.repository';
+import { WorkspaceModule } from '@/workspace/workspace.module';
 import {
   ProjectMember,
   ProjectMemberSchema,
-} from './Model/ProjectMember/projectMember.schema';
-import { RoleModule } from 'src/role/role.module';
-import { ProjectMemberRepository } from './repository/ProjectMember/ProjectMemberRepository';
+} from '@/project/Model/ProjectMember/projectMember.schema';
+import { RoleModule } from '@/role/role.module';
+import { ProjectMemberRepository } from '@/project/repository/ProjectMember/ProjectMemberRepository';
 
 @Module({
   imports: [

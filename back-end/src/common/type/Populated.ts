@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { ProjectMemberDocument } from 'src/project/Model/ProjectMember/projectMember.schema';
+import { ProjectMemberDocument } from '@/project/Model/ProjectMember/projectMember.schema';
 
 export type PopulatedUser = {
   _id: string;

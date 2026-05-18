@@ -1,8 +1,8 @@
 import { Types } from 'mongoose';
-import { SprintStatus } from 'src/common/type/SprintStatus';
-import { CreateSprintDto } from 'src/sprint/dto/req/CreateSprintDto';
-import { SprintResponse } from 'src/sprint/dto/res/SprintResponse';
-import { SprintDocument } from 'src/sprint/Model/sprint.schema';
+import { SprintStatus } from '@/common/type/SprintStatus';
+import { CreateSprintDto } from '@/sprint/dto/req/CreateSprintDto';
+import { SprintResponse } from '@/sprint/dto/res/SprintResponse';
+import { SprintDocument } from '@/sprint/Model/sprint.schema';
 
 export class SprintMapper {
   static toEntity(dto: CreateSprintDto, userId: string) {

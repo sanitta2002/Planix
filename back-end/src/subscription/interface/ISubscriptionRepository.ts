@@ -1,5 +1,5 @@
-import { IBaseRepository } from 'src/users/interfaces/baseRepo.interface';
-import { SubscriptionDocument } from '../Model/subscription.schema';
+import { IBaseRepository } from '@/users/interfaces/baseRepo.interface';
+import { SubscriptionDocument } from '@/subscription/Model/subscription.schema';
 
 export interface ISubscriptionRepository extends IBaseRepository<SubscriptionDocument> {
   findActiveByWorkspace(

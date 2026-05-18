@@ -7,15 +7,15 @@ import {
   Patch,
   UseGuards,
 } from '@nestjs/common';
-import type { INotificationService } from '../interface/INotificationService';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { GetUser } from 'src/common/decorators/getuser.decorator';
-import type { AuthUser } from 'src/common/decorators/getuser.decorator';
-import { ApiResponse } from 'src/common/utils/api-response.util';
-import { ApiResponseDto } from 'src/common/dto/api-response.dto';
-import { NotificationDocument } from '../Model/notification.schema';
+import type { INotificationService } from '@/notification/interface/INotificationService';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { GetUser } from '@/common/decorators/getuser.decorator';
+import type { AuthUser } from '@/common/decorators/getuser.decorator';
+import { ApiResponse } from '@/common/utils/api-response.util';
+import { ApiResponseDto } from '@/common/dto/api-response.dto';
+import { NotificationDocument } from '@/notification/Model/notification.schema';
 
-import { NOTIFICATION_MESSAGES } from 'src/common/constants/messages.constant';
+import { NOTIFICATION_MESSAGES } from '@/common/constants/messages.constant';
 
 @UseGuards(JwtAuthGuard)
 @Controller('notification')

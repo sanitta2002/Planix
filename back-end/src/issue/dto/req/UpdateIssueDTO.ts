@@ -1,6 +1,6 @@
 import { IsOptional, IsString, IsEnum, IsDateString } from 'class-validator';
-import { IssueType } from 'src/common/type/IssueType';
-import { IssueStatus } from 'src/common/type/IssueStatus';
+import { IssueType } from '@/common/type/IssueType';
+import { IssueStatus } from '@/common/type/IssueStatus';
 
 export class UpdateIssueDTO {
   @IsOptional()

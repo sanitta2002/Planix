@@ -1,9 +1,9 @@
-import { BaseRepository } from 'src/users/repository/BaseRepo/BaseRepo';
+import { BaseRepository } from '@/users/repository/BaseRepo/BaseRepo';
 import {
   Notification,
   NotificationDocument,
-} from '../Model/notification.schema';
-import { INotificationRepository } from '../interface/INotificationRepository';
+} from '@/notification/Model/notification.schema';
+import { INotificationRepository } from '@/notification/interface/INotificationRepository';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 

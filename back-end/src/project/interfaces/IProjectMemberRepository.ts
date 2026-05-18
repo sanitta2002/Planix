@@ -1,7 +1,7 @@
-import { IBaseRepository } from 'src/users/interfaces/baseRepo.interface';
-import { ProjectMemberDocument } from '../Model/ProjectMember/projectMember.schema';
-import { AddProjectMemberDto } from '../dto/req/AddProjectMemberDTO';
-import { PopulatedProjectMember } from 'src/common/type/Populated';
+import { IBaseRepository } from '@/users/interfaces/baseRepo.interface';
+import { ProjectMemberDocument } from '@/project/Model/ProjectMember/projectMember.schema';
+import { AddProjectMemberDto } from '@/project/dto/req/AddProjectMemberDTO';
+import { PopulatedProjectMember } from '@/common/type/Populated';
 
 export interface IProjectMemberRepository extends IBaseRepository<ProjectMemberDocument> {
   addMembersToProject(dto: AddProjectMemberDto): Promise<ProjectMemberDocument>;

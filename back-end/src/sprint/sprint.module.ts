@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 
-import { SprintController } from './controller/sprint.controller';
+import { SprintController } from '@/sprint/controller/sprint.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Sprint, SprintSchema } from './Model/sprint.schema';
-import { SprintService } from './service/sprint.service';
-import { SprintRepository } from './repository/sprintRepository';
-import { IssueModule } from 'src/issue/issue.module';
-import { ProjectModule } from 'src/project/project.module';
-import { RoleModule } from 'src/role/role.module';
+import { Sprint, SprintSchema } from '@/sprint/Model/sprint.schema';
+import { SprintService } from '@/sprint/service/sprint.service';
+import { SprintRepository } from '@/sprint/repository/sprintRepository';
+import { IssueModule } from '@/issue/issue.module';
+import { ProjectModule } from '@/project/project.module';
+import { RoleModule } from '@/role/role.module';
 
 @Module({
   imports: [

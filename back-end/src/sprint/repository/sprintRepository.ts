@@ -1,10 +1,10 @@
 import { InjectModel } from '@nestjs/mongoose';
-import { IsprintRepository } from '../interface/IsprintRepository';
-import { Sprint, SprintDocument } from '../Model/sprint.schema';
+import { IsprintRepository } from '@/sprint/interface/IsprintRepository';
+import { Sprint, SprintDocument } from '@/sprint/Model/sprint.schema';
 import { Model, Types } from 'mongoose';
-import { SprintStatus } from 'src/common/type/SprintStatus';
+import { SprintStatus } from '@/common/type/SprintStatus';
 import { Injectable } from '@nestjs/common';
-import { BaseRepository } from 'src/users/repository/BaseRepo/BaseRepo';
+import { BaseRepository } from '@/users/repository/BaseRepo/BaseRepo';
 
 @Injectable()
 export class SprintRepository

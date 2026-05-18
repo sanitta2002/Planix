@@ -6,7 +6,7 @@ import {
 } from '@nestjs/websockets';
 
 import { Server, Socket } from 'socket.io';
-import { NotificationDocument } from '../Model/notification.schema';
+import { NotificationDocument } from '@/notification/Model/notification.schema';
 import { Types } from 'mongoose';
 import { PinoLogger } from 'nestjs-pino';
 @WebSocketGateway({

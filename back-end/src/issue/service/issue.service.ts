@@ -5,30 +5,30 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { IIssueService } from '../interface/IIssueService';
-import type { IIssueRepository } from '../interface/IIssueRepository';
-import { CreateIssueDTO } from '../dto/req/CreateIssueDTO';
-import { IssueResponse } from '../dto/res/IssueResponse';
+import { IIssueService } from '@/issue/interface/IIssueService';
+import type { IIssueRepository } from '@/issue/interface/IIssueRepository';
+import { CreateIssueDTO } from '@/issue/dto/req/CreateIssueDTO';
+import { IssueResponse } from '@/issue/dto/res/IssueResponse';
 import {
   ISSUE_ERRORS,
   PROJECT_ERRORS,
-} from 'src/common/constants/messages.constant';
-import { IssueType } from 'src/common/type/IssueType';
-import type { IprojectRepository } from 'src/project/interfaces/IProjectRepository';
-import { IssueMapper } from './mapper/IssueMapper';
-import type { IProjectMemberRepository } from 'src/project/interfaces/IProjectMemberRepository';
+} from '@/common/constants/messages.constant';
+import { IssueType } from '@/common/type/IssueType';
+import type { IprojectRepository } from '@/project/interfaces/IProjectRepository';
+import { IssueMapper } from '@/issue/service/mapper/IssueMapper';
+import type { IProjectMemberRepository } from '@/project/interfaces/IProjectMemberRepository';
 import { Types } from 'mongoose';
-import { UpdateIssueDTO } from '../dto/req/UpdateIssueDTO';
-import { AddAttachmentDTO } from '../dto/req/AttachmentDTO';
-import type { IS3Service } from 'src/common/s3/interfaces/s3.service.interface';
+import { UpdateIssueDTO } from '@/issue/dto/req/UpdateIssueDTO';
+import { AddAttachmentDTO } from '@/issue/dto/req/AttachmentDTO';
+import type { IS3Service } from '@/common/s3/interfaces/s3.service.interface';
 
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   IssueAssignedEvent,
   IssueCreatedEvent,
   IssueStatusChangedEvent,
-} from 'src/notification/events/notification.events';
-import { NotificationType } from 'src/common/type/NotificationType';
+} from '@/notification/events/notification.events';
+import { NotificationType } from '@/common/type/NotificationType';
 import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()

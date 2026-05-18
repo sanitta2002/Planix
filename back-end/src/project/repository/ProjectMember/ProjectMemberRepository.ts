@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { PopulatedProjectMember } from 'src/common/type/Populated';
-import { AddProjectMemberDto } from 'src/project/dto/req/AddProjectMemberDTO';
-import { IProjectMemberRepository } from 'src/project/interfaces/IProjectMemberRepository';
+import { PopulatedProjectMember } from '@/common/type/Populated';
+import { AddProjectMemberDto } from '@/project/dto/req/AddProjectMemberDTO';
+import { IProjectMemberRepository } from '@/project/interfaces/IProjectMemberRepository';
 import {
   ProjectMember,
   ProjectMemberDocument,
-} from 'src/project/Model/ProjectMember/projectMember.schema';
-import { BaseRepository } from 'src/users/repository/BaseRepo/BaseRepo';
+} from '@/project/Model/ProjectMember/projectMember.schema';
+import { BaseRepository } from '@/users/repository/BaseRepo/BaseRepo';
 
 @Injectable()
 export class ProjectMemberRepository

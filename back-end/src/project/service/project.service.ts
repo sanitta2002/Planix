@@ -4,25 +4,25 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { IProjectService } from '../interfaces/IProjectService';
-import type { IprojectRepository } from '../interfaces/IProjectRepository';
-import { CreateProjectDto } from '../dto/req/CreateProjectDto';
+import { IProjectService } from '@/project/interfaces/IProjectService';
+import type { IprojectRepository } from '@/project/interfaces/IProjectRepository';
+import { CreateProjectDto } from '@/project/dto/req/CreateProjectDto';
 import {
   PROJECT_ERRORS,
   WORKSPACE_MESSAGE,
-} from 'src/common/constants/messages.constant';
-import type { IWorkspaceRepository } from 'src/workspace/interface/IWorkspaceRepository';
-import { ProjectResponseDto } from '../dto/res/ProjectResponseDto';
+} from '@/common/constants/messages.constant';
+import type { IWorkspaceRepository } from '@/workspace/interface/IWorkspaceRepository';
+import { ProjectResponseDto } from '@/project/dto/res/ProjectResponseDto';
 import { Types } from 'mongoose';
-import { ProjectMapper } from './mapper/ProjectMapper';
-import { ProjectListItemDto } from '../dto/res/ProjectListItemDto';
-import { UpdateProjectDto } from '../dto/req/UpdateProjectDto';
-import type { IRoleRepository } from 'src/role/interface/IRoleRepository';
-import type { IProjectMemberRepository } from '../interfaces/IProjectMemberRepository';
-import { AddProjectMemberDto } from '../dto/req/AddProjectMemberDTO';
-import { Permission, ProjectRole } from 'src/common/type/ProjectRole';
-import { GetAllProjectsDTO } from '../dto/req/GetAllProjectsDTO';
-import { GetAllProjectsResponseDTO } from '../dto/res/GetAllProjectsResponseDTO';
+import { ProjectMapper } from '@/project/service/mapper/ProjectMapper';
+import { ProjectListItemDto } from '@/project/dto/res/ProjectListItemDto';
+import { UpdateProjectDto } from '@/project/dto/req/UpdateProjectDto';
+import type { IRoleRepository } from '@/role/interface/IRoleRepository';
+import type { IProjectMemberRepository } from '@/project/interfaces/IProjectMemberRepository';
+import { AddProjectMemberDto } from '@/project/dto/req/AddProjectMemberDTO';
+import { Permission, ProjectRole } from '@/common/type/ProjectRole';
+import { GetAllProjectsDTO } from '@/project/dto/req/GetAllProjectsDTO';
+import { GetAllProjectsResponseDTO } from '@/project/dto/res/GetAllProjectsResponseDTO';
 import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()

@@ -1,5 +1,5 @@
-import { IBaseRepository } from 'src/users/interfaces/baseRepo.interface';
-import { NotificationDocument } from '../Model/notification.schema';
+import { IBaseRepository } from '@/users/interfaces/baseRepo.interface';
+import { NotificationDocument } from '@/notification/Model/notification.schema';
 
 export interface INotificationRepository extends IBaseRepository<NotificationDocument> {
   markAsRead(notificationId: string): Promise<NotificationDocument | null>;

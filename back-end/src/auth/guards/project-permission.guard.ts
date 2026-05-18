@@ -8,11 +8,11 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { PERMISSIONS_KEY } from '../../common/decorators/permissions.decorator';
-import type { IProjectMemberRepository } from 'src/project/interfaces/IProjectMemberRepository';
-import type { IRoleRepository } from 'src/role/interface/IRoleRepository';
-import type { IIssueRepository } from 'src/issue/interface/IIssueRepository';
-import type { IsprintRepository } from 'src/sprint/interface/IsprintRepository';
+import { PERMISSIONS_KEY } from '@/common/decorators/permissions.decorator';
+import type { IProjectMemberRepository } from '@/project/interfaces/IProjectMemberRepository';
+import type { IRoleRepository } from '@/role/interface/IRoleRepository';
+import type { IIssueRepository } from '@/issue/interface/IIssueRepository';
+import type { IsprintRepository } from '@/sprint/interface/IsprintRepository';
 
 export interface RequestUser {
   userId: string;

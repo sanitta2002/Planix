@@ -1,5 +1,5 @@
-import { IBaseRepository } from 'src/users/interfaces/baseRepo.interface';
-import { InvitationDocument } from '../model/invitation.schema';
+import { IBaseRepository } from '@/users/interfaces/baseRepo.interface';
+import { InvitationDocument } from '@/invitation/model/invitation.schema';
 
 export interface IInvitationRepository extends IBaseRepository<InvitationDocument> {
   findByToken(token: string): Promise<InvitationDocument | null>;

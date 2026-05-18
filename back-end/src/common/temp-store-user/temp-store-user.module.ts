@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { RedisProvider } from '../redis/redis.provider';
-import { TempStoreUserService } from './temp-store-user.service';
+import { RedisProvider } from '@/common/redis/redis.provider';
+import { TempStoreUserService } from '@/common/temp-store-user/temp-store-user.service';
 
 @Module({
   providers: [

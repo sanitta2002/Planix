@@ -13,20 +13,20 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import type { IIssueService } from '../interface/IIssueService';
-import { CreateIssueDTO } from '../dto/req/CreateIssueDTO';
-import { IssueResponse } from '../dto/res/IssueResponse';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { ProjectPermissionGuard } from 'src/auth/guards/project-permission.guard';
-import { Permissions } from 'src/common/decorators/permissions.decorator';
-import { GetUser } from 'src/common/decorators/getuser.decorator';
-import type { AuthUser } from 'src/common/decorators/getuser.decorator';
-import { ApiResponse } from 'src/common/utils/api-response.util';
-import { ISSUE_SUCCESS } from 'src/common/constants/messages.constant';
-import { ApiResponseDto } from 'src/common/dto/api-response.dto';
-import { UpdateIssueDTO } from '../dto/req/UpdateIssueDTO';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { AddAttachmentDTO } from '../dto/req/AttachmentDTO';
+import type { IIssueService } from '@/issue/interface/IIssueService';
+import { CreateIssueDTO } from '@/issue/dto/req/CreateIssueDTO';
+import { IssueResponse } from '@/issue/dto/res/IssueResponse';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { ProjectPermissionGuard } from '@/auth/guards/project-permission.guard';
+import { Permissions } from '@/common/decorators/permissions.decorator';
+import { GetUser } from '@/common/decorators/getuser.decorator';
+import type { AuthUser } from '@/common/decorators/getuser.decorator';
+import { ApiResponse } from '@/common/utils/api-response.util';
+import { ISSUE_SUCCESS } from '@/common/constants/messages.constant';
+import { ApiResponseDto } from '@/common/dto/api-response.dto';
+import { UpdateIssueDTO } from '@/issue/dto/req/UpdateIssueDTO';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { AddAttachmentDTO } from '@/issue/dto/req/AttachmentDTO';
 
 @UseGuards(JwtAuthGuard, ProjectPermissionGuard)
 @Controller('issues')

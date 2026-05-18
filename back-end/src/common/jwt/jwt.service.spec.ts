@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppJwtService } from './jwt.service';
+import { AppJwtService } from '@/common/jwt/jwt.service';
 
 describe('JwtService', () => {
   let service: AppJwtService;

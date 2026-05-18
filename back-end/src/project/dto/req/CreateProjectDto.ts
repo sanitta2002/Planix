@@ -1,5 +1,5 @@
 import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
-import { AddProjectMemberDto } from './AddProjectMemberDTO';
+import { AddProjectMemberDto } from '@/project/dto/req/AddProjectMemberDTO';
 import { Type } from 'class-transformer';
 
 export class CreateProjectDto {

@@ -4,21 +4,21 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { IPaymentService } from '../interface/IPaymentService';
+import { IPaymentService } from '@/payment/interface/IPaymentService';
 import Stripe from 'stripe';
 import { ConfigService } from '@nestjs/config';
-import { IPlan } from '../interface/IPlan';
-import { PAYMENT_MESSAGE } from 'src/common/constants/messages.constant';
+import { IPlan } from '@/payment/interface/IPlan';
+import { PAYMENT_MESSAGE } from '@/common/constants/messages.constant';
 import { error } from 'console';
-import type { ISubscriptionService } from 'src/subscription/interface/ISubscriptionService';
+import type { ISubscriptionService } from '@/subscription/interface/ISubscriptionService';
 import { Request } from 'express';
-import type { ISubscriptionRepository } from 'src/subscription/interface/ISubscriptionRepository';
+import type { ISubscriptionRepository } from '@/subscription/interface/ISubscriptionRepository';
 import {
   SubscriptionDocument,
   SubscriptionStatus,
-} from 'src/subscription/Model/subscription.schema';
-import type { ISubscriptionPlanRepository } from 'src/subscription/interface/ISubscriptionPlanRepository';
-import { PaymentDto } from '../dto/PaymentDto';
+} from '@/subscription/Model/subscription.schema';
+import type { ISubscriptionPlanRepository } from '@/subscription/interface/ISubscriptionPlanRepository';
+import { PaymentDto } from '@/payment/dto/PaymentDto';
 import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()

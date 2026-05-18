@@ -4,12 +4,12 @@ import {
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { INotificationService } from '../interface/INotificationService';
-import type { INotificationRepository } from '../interface/INotificationRepository';
-import { NotificationDocument } from '../Model/notification.schema';
+import { INotificationService } from '@/notification/interface/INotificationService';
+import type { INotificationRepository } from '@/notification/interface/INotificationRepository';
+import { NotificationDocument } from '@/notification/Model/notification.schema';
 import { Types } from 'mongoose';
 
-import { NOTIFICATION_MESSAGES } from 'src/common/constants/messages.constant';
+import { NOTIFICATION_MESSAGES } from '@/common/constants/messages.constant';
 import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()

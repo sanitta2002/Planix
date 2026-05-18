@@ -1,5 +1,5 @@
-import { CreateCommentDTO } from '../dto/req/CreateCommentDTO';
-import { CommentResponseDTO } from '../dto/res/CommentResponseDTO';
+import { CreateCommentDTO } from '@/comment/dto/req/CreateCommentDTO';
+import { CommentResponseDTO } from '@/comment/dto/res/CommentResponseDTO';
 
 export interface ICommentService {
   createComment(

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TempStoreUserService } from './temp-store-user.service';
+import { TempStoreUserService } from '@/common/temp-store-user/temp-store-user.service';
 
 describe('TempStoreUserService', () => {
   let service: TempStoreUserService;

@@ -1,9 +1,9 @@
-import { CreateWorkspaceDto } from '../dto/req/CreateWorkspaceDto';
-import { UpdateWorkspaceDto } from '../dto/req/UpdateWorkspaceDto';
-import { WorkspaceLogoUploadResponseDto } from '../dto/res/WorkspaceLogoResDto';
-import { WorkspaceMembersResponseDto } from '../dto/res/WorkspaceMembersResponseDto';
-import { WorkspacePaymentResponseDto } from '../dto/res/WorkspacePaymentResponseDto';
-import { WorkspaceResponseDto } from '../dto/res/WorkspaceResponseDto';
+import { CreateWorkspaceDto } from '@/workspace/dto/req/CreateWorkspaceDto';
+import { UpdateWorkspaceDto } from '@/workspace/dto/req/UpdateWorkspaceDto';
+import { WorkspaceLogoUploadResponseDto } from '@/workspace/dto/res/WorkspaceLogoResDto';
+import { WorkspaceMembersResponseDto } from '@/workspace/dto/res/WorkspaceMembersResponseDto';
+import { WorkspacePaymentResponseDto } from '@/workspace/dto/res/WorkspacePaymentResponseDto';
+import { WorkspaceResponseDto } from '@/workspace/dto/res/WorkspaceResponseDto';
 
 export interface IWorkspaceService {
   createWorkspace(

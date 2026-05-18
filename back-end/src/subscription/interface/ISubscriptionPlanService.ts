@@ -1,6 +1,6 @@
-import { CreatePlanDto } from '../subscription-plan/dto/req/createplan.dto';
-import { UpdatePlanDto } from '../subscription-plan/dto/req/UpdatePlanDto';
-import { PlanResponseDto } from '../subscription-plan/dto/res/PlanResponseDTO';
+import { CreatePlanDto } from '@/subscription/subscription-plan/dto/req/createplan.dto';
+import { UpdatePlanDto } from '@/subscription/subscription-plan/dto/req/UpdatePlanDto';
+import { PlanResponseDto } from '@/subscription/subscription-plan/dto/res/PlanResponseDTO';
 
 export interface ISubscriptionPlanService {
   createPlan(data: CreatePlanDto): Promise<PlanResponseDto>;

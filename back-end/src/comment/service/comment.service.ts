@@ -4,18 +4,18 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ICommentService } from '../Interface/ICommentService';
-import type { ICommentRepository } from '../Interface/ICommentRepository';
-import { CreateCommentDTO } from '../dto/req/CreateCommentDTO';
-import { CommentResponseDTO } from '../dto/res/CommentResponseDTO';
-import { COMMENT_MESSAGES } from 'src/common/constants/messages.constant';
-import type { IIssueRepository } from 'src/issue/interface/IIssueRepository';
+import { ICommentService } from '@/comment/Interface/ICommentService';
+import { CreateCommentDTO } from '@/comment/dto/req/CreateCommentDTO';
+import { CommentResponseDTO } from '@/comment/dto/res/CommentResponseDTO';
+import { COMMENT_MESSAGES } from '@/common/constants/messages.constant';
+import type { IIssueRepository } from '@/issue/interface/IIssueRepository';
 import { Types } from 'mongoose';
-import { CommentMapper } from './Mapper/comment.mapper';
+import { CommentMapper } from '@/comment/service/Mapper/comment.mapper';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { IssueCommentedEvent } from 'src/notification/events/notification.events';
-import { NotificationType } from 'src/common/type/NotificationType';
+import { IssueCommentedEvent } from '@/notification/events/notification.events';
+import { NotificationType } from '@/common/type/NotificationType';
 import { PinoLogger } from 'nestjs-pino';
+import type { ICommentRepository } from '@/comment/Interface/ICommentRepository';
 
 @Injectable()
 export class CommentService implements ICommentService {

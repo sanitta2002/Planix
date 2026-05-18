@@ -1,4 +1,4 @@
-import { PaymentDto } from 'src/payment/dto/PaymentDto';
+import { PaymentDto } from '@/payment/dto/PaymentDto';
 
 export const generateInvoiceHTML = (payments: PaymentDto[]) => {
   const total = payments.reduce((sum, p) => sum + p.amount, 0);

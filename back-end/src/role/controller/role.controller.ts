@@ -11,13 +11,13 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import type { IRoleService } from '../interface/IRoleService';
-import { CreateRoleDTO } from '../dto/CreateRoleDTO';
-import { ApiResponse } from 'src/common/utils/api-response.util';
-import { ROLE_MESSAGE } from 'src/common/constants/messages.constant';
-import { UpdateRoleDTO } from '../dto/UpdateRoleDTO';
+import type { IRoleService } from '@/role/interface/IRoleService';
+import { CreateRoleDTO } from '@/role/dto/CreateRoleDTO';
+import { ApiResponse } from '@/common/utils/api-response.util';
+import { ROLE_MESSAGE } from '@/common/constants/messages.constant';
+import { UpdateRoleDTO } from '@/role/dto/UpdateRoleDTO';
 import { Request } from 'express';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 interface AuthRequest extends Request {
   user: {
     id: string;

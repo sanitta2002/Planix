@@ -8,15 +8,15 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import type { IInvitationService } from '../interface/IInvitationService';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { InviteMemberDto } from '../dto/req/InviteMemberDto';
-import { InvitationResponseDto } from '../dto/res/InvitationResponseDto';
-import { ApiResponse } from 'src/common/utils/api-response.util';
-import { INVITE_MESSAGE } from 'src/common/constants/messages.constant';
+import type { IInvitationService } from '@/invitation/interface/IInvitationService';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { InviteMemberDto } from '@/invitation/dto/req/InviteMemberDto';
+import { InvitationResponseDto } from '@/invitation/dto/res/InvitationResponseDto';
+import { ApiResponse } from '@/common/utils/api-response.util';
+import { INVITE_MESSAGE } from '@/common/constants/messages.constant';
 import type { Request } from 'express';
-import { CompleteProfileDto } from '../dto/req/CompleteProfileDto';
-import { SubscriptionGuardGuard } from 'src/guard/subscription-guard/subscription-guard.guard';
+import { CompleteProfileDto } from '@/invitation/dto/req/CompleteProfileDto';
+import { SubscriptionGuardGuard } from '@/guard/subscription-guard/subscription-guard.guard';
 interface AuthRequest extends Request {
   user: {
     userId: string;

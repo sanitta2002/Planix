@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SubPlanController } from './sub-plan.controller';
+import { SubPlanController } from '@/subscription/subscription-plan/controller/sub-plan.controller';
 
 describe('SubPlanController', () => {
   let controller: SubPlanController;

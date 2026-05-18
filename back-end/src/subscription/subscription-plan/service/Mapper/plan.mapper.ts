@@ -1,5 +1,5 @@
-import { SubscriptionPlanDocument } from 'src/subscription/Model/SubscriptionPlan.shema';
-import { PlanResponseDto } from '../../dto/res/PlanResponseDTO';
+import { SubscriptionPlanDocument } from '@/subscription/Model/SubscriptionPlan.shema';
+import { PlanResponseDto } from '@/subscription/subscription-plan/dto/res/PlanResponseDTO';
 
 export class planMapper {
   static toResponse(plan: SubscriptionPlanDocument): PlanResponseDto {

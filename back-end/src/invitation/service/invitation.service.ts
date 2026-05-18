@@ -6,24 +6,24 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { IInvitationService } from '../interface/IInvitationService';
-import type { IInvitationRepository } from '../interface/IInvitationRepository';
-import type { IWorkspaceRepository } from 'src/workspace/interface/IWorkspaceRepository';
-import { InvitationResponseDto } from '../dto/res/InvitationResponseDto';
-import { InviteMemberDto } from '../dto/req/InviteMemberDto';
+import { IInvitationService } from '@/invitation/interface/IInvitationService';
+import type { IInvitationRepository } from '@/invitation/interface/IInvitationRepository';
+import type { IWorkspaceRepository } from '@/workspace/interface/IWorkspaceRepository';
+import { InvitationResponseDto } from '@/invitation/dto/res/InvitationResponseDto';
+import { InviteMemberDto } from '@/invitation/dto/req/InviteMemberDto';
 import {
   INVITE_MESSAGE,
   WORKSPACE_MESSAGE,
-} from 'src/common/constants/messages.constant';
+} from '@/common/constants/messages.constant';
 import { randomBytes } from 'crypto';
-import { InvitationMapper } from './mapper/InvitationMapper';
-import type { IMailService } from 'src/common/mail/interfaces/mail.interface';
+import { InvitationMapper } from '@/invitation/service/mapper/InvitationMapper';
+import type { IMailService } from '@/common/mail/interfaces/mail.interface';
 import { ConfigService } from '@nestjs/config';
-import type { IUserRepository } from 'src/users/interfaces/user.repository.interface';
-import type { IJwtService } from 'src/common/jwt/interfaces/jwt.service.interface';
-import { AcceptInvitationResponseDto } from '../dto/res/AcceptInvitationResponseDto';
-import { CompleteProfileDto } from '../dto/req/CompleteProfileDto';
-import type { IHashingService } from 'src/common/hashing/interface/hashing.service.interface';
+import type { IUserRepository } from '@/users/interfaces/user.repository.interface';
+import type { IJwtService } from '@/common/jwt/interfaces/jwt.service.interface';
+import { AcceptInvitationResponseDto } from '@/invitation/dto/res/AcceptInvitationResponseDto';
+import { CompleteProfileDto } from '@/invitation/dto/req/CompleteProfileDto';
+import type { IHashingService } from '@/common/hashing/interface/hashing.service.interface';
 import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()

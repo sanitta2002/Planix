@@ -1,5 +1,5 @@
 import { Model } from 'mongoose';
-import { IBaseRepository } from 'src/users/interfaces/baseRepo.interface';
+import { IBaseRepository } from '@/users/interfaces/baseRepo.interface';
 
 export abstract class BaseRepository<T> implements IBaseRepository<T> {
   protected constructor(protected readonly _model: Model<T>) {}

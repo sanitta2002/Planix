@@ -12,26 +12,26 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { AdminLoginDto } from './dto/admin-login.dto';
+import { AdminLoginDto } from '@/admin/dto/admin-login.dto';
 import type { Response } from 'express';
-import { GetUsersRequestDto } from './dto/get-users.request.dto';
-import { PaginatedUsersResponseDto } from './dto/paginated-users.response.dto';
-import { UserStatusResponseDto } from './dto/UserStatusResponseDto';
-import type { IAdminService } from './interface/admin.service.interface';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Role } from 'src/common/decorators/roles.decorator';
+import { GetUsersRequestDto } from '@/admin/dto/get-users.request.dto';
+import { PaginatedUsersResponseDto } from '@/admin/dto/paginated-users.response.dto';
+import { UserStatusResponseDto } from '@/admin/dto/UserStatusResponseDto';
+import type { IAdminService } from '@/admin/interface/admin.service.interface';
+import { RolesGuard } from '@/auth/guards/roles.guard';
+import { Role } from '@/common/decorators/roles.decorator';
 import { ConfigService } from '@nestjs/config';
 import {
   ADMIN_MESSAGES,
   PAYMENT_MESSAGE,
   USER_MESSAGES,
-} from 'src/common/constants/messages.constant';
-import { ApiResponse } from 'src/common/utils/api-response.util';
-import { ApiResponseDto } from 'src/common/dto/api-response.dto';
-import { GetWorkspacesRequestDto } from './dto/GetWorkspacesRequestDto ';
-import { PaginatedWorkspaceResponseDto } from './dto/PaginatedWorkspaceResponseDto ';
-import { GetPaymentsRequestDto } from './dto/get-payments-request.dto';
-import { generateInvoiceHTML } from 'src/common/utils/pdf.util';
+} from '@/common/constants/messages.constant';
+import { ApiResponse } from '@/common/utils/api-response.util';
+import { ApiResponseDto } from '@/common/dto/api-response.dto';
+import { GetWorkspacesRequestDto } from '@/admin/dto/GetWorkspacesRequestDto ';
+import { PaginatedWorkspaceResponseDto } from '@/admin/dto/PaginatedWorkspaceResponseDto ';
+import { GetPaymentsRequestDto } from '@/admin/dto/get-payments-request.dto';
+import { generateInvoiceHTML } from '@/common/utils/pdf.util';
 import puppeteer from 'puppeteer';
 
 @Controller('admin')

@@ -10,13 +10,13 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import type { ISubscriptionPlanService } from 'src/subscription/interface/ISubscriptionPlanService';
-import { CreatePlanDto } from '../dto/req/createplan.dto';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Role } from 'src/common/decorators/roles.decorator';
-import { ApiResponse } from 'src/common/utils/api-response.util';
-import { SUBSCRIPTION_MESSAGE } from 'src/common/constants/messages.constant';
-import { UpdatePlanDto } from '../dto/req/UpdatePlanDto';
+import type { ISubscriptionPlanService } from '@/subscription/interface/ISubscriptionPlanService';
+import { CreatePlanDto } from '@/subscription/subscription-plan/dto/req/createplan.dto';
+import { RolesGuard } from '@/auth/guards/roles.guard';
+import { Role } from '@/common/decorators/roles.decorator';
+import { ApiResponse } from '@/common/utils/api-response.util';
+import { SUBSCRIPTION_MESSAGE } from '@/common/constants/messages.constant';
+import { UpdatePlanDto } from '@/subscription/subscription-plan/dto/req/UpdatePlanDto';
 
 @UseGuards(RolesGuard)
 @Role('admin')

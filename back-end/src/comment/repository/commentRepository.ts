@@ -1,6 +1,6 @@
-import { BaseRepository } from 'src/users/repository/BaseRepo/BaseRepo';
-import { Comment, CommentDocument } from '../Model/comment.schema';
-import { ICommentRepository } from '../Interface/ICommentRepository';
+import { BaseRepository } from '@/users/repository/BaseRepo/BaseRepo';
+import { Comment, CommentDocument } from '@/comment/Model/comment.schema';
+import { ICommentRepository } from '@/comment/Interface/ICommentRepository';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 

@@ -4,16 +4,16 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import type { ISubscriptionPlanRepository } from 'src/subscription/interface/ISubscriptionPlanRepository';
-import type { ISubscriptionRepository } from 'src/subscription/interface/ISubscriptionRepository';
-import { ISubscriptionService } from 'src/subscription/interface/ISubscriptionService';
-import { CreateSubscriptionDto } from '../dto/CreateSubscriptionDto';
-import { SubscriptionResponseDto } from '../dto/SubscriptionResponseDto';
-import { SUBSCRIPTION_MESSAGE } from 'src/common/constants/messages.constant';
-import { SubscriptionMapper } from './mapper/SubscriptionMapper';
+import type { ISubscriptionPlanRepository } from '@/subscription/interface/ISubscriptionPlanRepository';
+import type { ISubscriptionRepository } from '@/subscription/interface/ISubscriptionRepository';
+import { ISubscriptionService } from '@/subscription/interface/ISubscriptionService';
+import { CreateSubscriptionDto } from '@/subscription/subscriptions/dto/CreateSubscriptionDto';
+import { SubscriptionResponseDto } from '@/subscription/subscriptions/dto/SubscriptionResponseDto';
+import { SUBSCRIPTION_MESSAGE } from '@/common/constants/messages.constant';
+import { SubscriptionMapper } from '@/subscription/subscriptions/service/mapper/SubscriptionMapper';
 import { Types } from 'mongoose';
-import { SubscriptionStatus } from 'src/subscription/Model/subscription.schema';
-import type { IWorkspaceRepository } from 'src/workspace/interface/IWorkspaceRepository';
+import { SubscriptionStatus } from '@/subscription/Model/subscription.schema';
+import type { IWorkspaceRepository } from '@/workspace/interface/IWorkspaceRepository';
 import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()

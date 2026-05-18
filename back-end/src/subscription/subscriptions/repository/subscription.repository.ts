@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { ISubscriptionRepository } from 'src/subscription/interface/ISubscriptionRepository';
+import { ISubscriptionRepository } from '@/subscription/interface/ISubscriptionRepository';
 import {
   Subscription,
   SubscriptionDocument,
   SubscriptionStatus,
-} from 'src/subscription/Model/subscription.schema';
-import { BaseRepository } from 'src/users/repository/BaseRepo/BaseRepo';
+} from '@/subscription/Model/subscription.schema';
+import { BaseRepository } from '@/users/repository/BaseRepo/BaseRepo';
 
 @Injectable()
 export class subscriptionRepository

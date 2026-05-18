@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ISubscriptionPlanRepository } from 'src/subscription/interface/ISubscriptionPlanRepository';
+import { ISubscriptionPlanRepository } from '@/subscription/interface/ISubscriptionPlanRepository';
 import {
   SubscriptionPlan,
   SubscriptionPlanDocument,
-} from 'src/subscription/Model/SubscriptionPlan.shema';
-import { BaseRepository } from 'src/users/repository/BaseRepo/BaseRepo';
+} from '@/subscription/Model/SubscriptionPlan.shema';
+import { BaseRepository } from '@/users/repository/BaseRepo/BaseRepo';
 
 @Injectable()
 export class SubscriptionPlanRepository

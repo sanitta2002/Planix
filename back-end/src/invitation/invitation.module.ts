@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { InvitationService } from './service/invitation.service';
-import { InvitationController } from './controller/invitation.controller';
+import { InvitationService } from '@/invitation/service/invitation.service';
+import { InvitationController } from '@/invitation/controller/invitation.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Invitation, InvitationSchema } from './model/invitation.schema';
-import { InvitationRepository } from './repository/invitation.repository';
-import { WorkspaceModule } from 'src/workspace/workspace.module';
-import { MailModule } from 'src/common/mail/mail.module';
-import { HashingModule } from 'src/common/hashing/hashing.module';
-import { UsersModule } from 'src/users/users.module';
-import { AppJwtModule } from 'src/common/jwt/jwt.module';
-import { SubscriptionsModule } from 'src/subscription/subscriptions/subscriptions.module';
+import { Invitation, InvitationSchema } from '@/invitation/model/invitation.schema';
+import { InvitationRepository } from '@/invitation/repository/invitation.repository';
+import { WorkspaceModule } from '@/workspace/workspace.module';
+import { MailModule } from '@/common/mail/mail.module';
+import { HashingModule } from '@/common/hashing/hashing.module';
+import { UsersModule } from '@/users/users.module';
+import { AppJwtModule } from '@/common/jwt/jwt.module';
+import { SubscriptionsModule } from '@/subscription/subscriptions/subscriptions.module';
 
 @Module({
   imports: [

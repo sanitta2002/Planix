@@ -1,6 +1,6 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { IOtpService } from './interfaces/otp.service.interface';
-import { generateOTP } from './otp.util';
+import { IOtpService } from '@/common/otp/interfaces/otp.service.interface';
+import { generateOTP } from '@/common/otp/otp.util';
 import Redis from 'ioredis';
 
 @Injectable()

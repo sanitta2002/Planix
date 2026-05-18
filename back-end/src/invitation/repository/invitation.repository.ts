@@ -1,6 +1,6 @@
-import { BaseRepository } from 'src/users/repository/BaseRepo/BaseRepo';
-import { Invitation, InvitationDocument } from '../model/invitation.schema';
-import { IInvitationRepository } from '../interface/IInvitationRepository';
+import { BaseRepository } from '@/users/repository/BaseRepo/BaseRepo';
+import { Invitation, InvitationDocument } from '@/invitation/model/invitation.schema';
+import { IInvitationRepository } from '@/invitation/interface/IInvitationRepository';
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';

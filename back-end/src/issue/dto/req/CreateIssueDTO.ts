@@ -5,8 +5,8 @@ import {
   IsEnum,
   IsDateString,
 } from 'class-validator';
-import { IssueStatus } from 'src/common/type/IssueStatus';
-import { IssueType } from 'src/common/type/IssueType';
+import { IssueStatus } from '@/common/type/IssueStatus';
+import { IssueType } from '@/common/type/IssueType';
 
 export interface IAttachment {
   key: string;

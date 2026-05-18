@@ -1,5 +1,5 @@
-import { CreateSubscriptionDto } from '../subscriptions/dto/CreateSubscriptionDto';
-import { SubscriptionResponseDto } from '../subscriptions/dto/SubscriptionResponseDto';
+import { CreateSubscriptionDto } from '@/subscription/subscriptions/dto/CreateSubscriptionDto';
+import { SubscriptionResponseDto } from '@/subscription/subscriptions/dto/SubscriptionResponseDto';
 
 export interface ISubscriptionService {
   createSubscription(

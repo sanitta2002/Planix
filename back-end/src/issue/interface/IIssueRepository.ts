@@ -1,5 +1,5 @@
-import { IBaseRepository } from 'src/users/interfaces/baseRepo.interface';
-import { IssueDocument } from '../Model/issue.schema';
+import { IBaseRepository } from '@/users/interfaces/baseRepo.interface';
+import { IssueDocument } from '@/issue/Model/issue.schema';
 
 export interface IIssueRepository extends IBaseRepository<IssueDocument> {
   findByProject(projectId: string): Promise<IssueDocument[]>;

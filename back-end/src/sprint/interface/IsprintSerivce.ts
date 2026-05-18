@@ -1,6 +1,6 @@
-import { CreateSprintDto } from '../dto/req/CreateSprintDto';
-import { UpdateSprintDto } from '../dto/req/UpdateSprintDto ';
-import { SprintResponse } from '../dto/res/SprintResponse';
+import { CreateSprintDto } from '@/sprint/dto/req/CreateSprintDto';
+import { UpdateSprintDto } from '@/sprint/dto/req/UpdateSprintDto ';
+import { SprintResponse } from '@/sprint/dto/res/SprintResponse';
 
 export interface ISprintservice {
   createSprint(dto: CreateSprintDto, userId: string): Promise<SprintResponse>;

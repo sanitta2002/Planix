@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { INotificationService } from '../interface/INotificationService';
+import type { INotificationService } from '@/notification/interface/INotificationService';
 import { OnEvent } from '@nestjs/event-emitter';
-import { NotificationType } from 'src/common/type/NotificationType';
+import { NotificationType } from '@/common/type/NotificationType';
 import {
   IssueAssignedEvent,
   IssueCommentedEvent,
@@ -9,11 +9,11 @@ import {
   IssueStatusChangedEvent,
   ProjectMemberEvent,
   SprintStartedEvent,
-} from '../events/notification.events';
+} from '@/notification/events/notification.events';
 import { Types } from 'mongoose';
-import { NOTIFICATION_TEMPLATES } from 'src/common/constants/messages.constant';
+import { NOTIFICATION_TEMPLATES } from '@/common/constants/messages.constant';
 
-import { NotificationGateway } from '../gateway/notification.gateway';
+import { NotificationGateway } from '@/notification/gateway/notification.gateway';
 
 @Injectable()
 export class NotificationListener {

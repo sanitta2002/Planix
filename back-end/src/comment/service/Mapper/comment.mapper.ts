@@ -1,6 +1,6 @@
-import { CommentResponseDTO } from 'src/comment/dto/res/CommentResponseDTO';
-import { CommentDocument } from 'src/comment/Model/comment.schema';
-import { UserDocument } from 'src/users/Models/user.schema';
+import { CommentResponseDTO } from '@/comment/dto/res/CommentResponseDTO';
+import { CommentDocument } from '@/comment/Model/comment.schema';
+import { UserDocument } from '@/users/Models/user.schema';
 
 export class CommentMapper {
   static toResponse(comment: CommentDocument): CommentResponseDTO {

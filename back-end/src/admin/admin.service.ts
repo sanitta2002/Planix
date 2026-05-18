@@ -4,28 +4,28 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { IAdminService } from './interface/admin.service.interface';
-import { AdminLoginDto } from './dto/admin-login.dto';
-import { AdminResponseDto } from './dto/Admin.login.res.dto';
-import type { IJwtService } from 'src/common/jwt/interfaces/jwt.service.interface';
-import { GetUsersRequestDto } from './dto/get-users.request.dto';
-import { PaginatedUsersResponseDto } from './dto/paginated-users.response.dto';
-import { BlockUserDto } from './dto/block-user.dto';
-import { UserStatusResponseDto } from './dto/UserStatusResponseDto';
+import { IAdminService } from '@/admin/interface/admin.service.interface';
+import { AdminLoginDto } from '@/admin/dto/admin-login.dto';
+import { AdminResponseDto } from '@/admin/dto/Admin.login.res.dto';
+import type { IJwtService } from '@/common/jwt/interfaces/jwt.service.interface';
+import { GetUsersRequestDto } from '@/admin/dto/get-users.request.dto';
+import { PaginatedUsersResponseDto } from '@/admin/dto/paginated-users.response.dto';
+import { BlockUserDto } from '@/admin/dto/block-user.dto';
+import { UserStatusResponseDto } from '@/admin/dto/UserStatusResponseDto';
 import {
   ADMIN_MESSAGES,
   OTP_MESSAGES,
-} from 'src/common/constants/messages.constant';
-import { AdminMapper } from './mapper/admin.mapper';
-import type { IS3Service } from 'src/common/s3/interfaces/s3.service.interface';
-import type { IWorkspaceRepository } from 'src/workspace/interface/IWorkspaceRepository';
-import { PaginatedWorkspaceResponseDto } from './dto/PaginatedWorkspaceResponseDto ';
-import { GetWorkspacesRequestDto } from './dto/GetWorkspacesRequestDto ';
-import { GetPaymentsRequestDto } from './dto/get-payments-request.dto';
-import { PaginatedPaymentsResponseDto } from './dto/paginated-payments.response.dto';
-import type { IPaymentService } from 'src/payment/interface/IPaymentService';
-import { PaymentDto } from 'src/payment/dto/PaymentDto';
-import type { IUserRepository } from 'src/users/interfaces/user.repository.interface';
+} from '@/common/constants/messages.constant';
+import { AdminMapper } from '@/admin/mapper/admin.mapper';
+import type { IS3Service } from '@/common/s3/interfaces/s3.service.interface';
+import type { IWorkspaceRepository } from '@/workspace/interface/IWorkspaceRepository';
+import { PaginatedWorkspaceResponseDto } from '@/admin/dto/PaginatedWorkspaceResponseDto ';
+import { GetWorkspacesRequestDto } from '@/admin/dto/GetWorkspacesRequestDto ';
+import { GetPaymentsRequestDto } from '@/admin/dto/get-payments-request.dto';
+import { PaginatedPaymentsResponseDto } from '@/admin/dto/paginated-payments.response.dto';
+import type { IPaymentService } from '@/payment/interface/IPaymentService';
+import { PaymentDto } from '@/payment/dto/PaymentDto';
+import type { IUserRepository } from '@/users/interfaces/user.repository.interface';
 import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()

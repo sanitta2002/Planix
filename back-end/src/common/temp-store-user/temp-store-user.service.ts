@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ITempStoreService } from './interface/temp-store.interface';
+import { ITempStoreService } from '@/common/temp-store-user/interface/temp-store.interface';
 import Redis from 'ioredis';
 
 @Injectable()

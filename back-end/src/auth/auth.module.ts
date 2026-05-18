@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './Service/auth.service';
-import { AuthController } from './Controller/auth.controller';
-import { HashingModule } from 'src/common/hashing/hashing.module';
-import { OtpModule } from 'src/common/otp/otp.module';
-import { MailModule } from 'src/common/mail/mail.module';
-import { AppJwtModule } from 'src/common/jwt/jwt.module';
-import { TempStoreUserModule } from 'src/common/temp-store-user/temp-store-user.module';
+import { AuthService } from '@/auth/Service/auth.service';
+import { AuthController } from '@/auth/Controller/auth.controller';
+import { HashingModule } from '@/common/hashing/hashing.module';
+import { OtpModule } from '@/common/otp/otp.module';
+import { MailModule } from '@/common/mail/mail.module';
+import { AppJwtModule } from '@/common/jwt/jwt.module';
+import { TempStoreUserModule } from '@/common/temp-store-user/temp-store-user.module';
 import { PassportModule } from '@nestjs/passport';
-import { UsersModule } from 'src/users/users.module';
-import { JwtStrategy } from './strategies/jwt.strategy';
+import { UsersModule } from '@/users/users.module';
+import { JwtStrategy } from '@/auth/strategies/jwt.strategy';
 
 @Module({
   imports: [
