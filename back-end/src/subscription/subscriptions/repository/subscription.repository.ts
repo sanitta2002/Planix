@@ -102,7 +102,7 @@ export class subscriptionRepository
   ): Promise<SubscriptionDocument[]> {
     return await this._subscriptionModel
       .find({ workspaceId: new Types.ObjectId(workspaceId) })
-      .populate('planId', 'name price durationDays')
+      .populate('planId', 'name price durationDays maxMembers maxProjects')
       .sort({ createdAt: -1 });
   }
 }

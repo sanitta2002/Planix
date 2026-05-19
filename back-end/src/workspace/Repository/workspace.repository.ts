@@ -1,6 +1,9 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { BaseRepository } from '@/users/repository/BaseRepo/BaseRepo';
-import { Workspace, WorkspaceDocument } from '@/workspace/Model/workspace.schema';
+import {
+  Workspace,
+  WorkspaceDocument,
+} from '@/workspace/Model/workspace.schema';
 import { IWorkspaceRepository } from '@/workspace/interface/IWorkspaceRepository';
 import { Injectable } from '@nestjs/common';
 import { Model, Types } from 'mongoose';

@@ -141,6 +141,7 @@ export const PROJECT = {
 };
 
 export const PROJECT_ERRORS = {
+  PROJECT_LIMIT: 'Workspace project limit reached',
   PROJECT_NOT_FOUND: 'Project not found !',
   PROJECT_CREATION_FAILED: 'Project creation failed',
   PROJECT_INVALIDATION: 'Error while validating project !',

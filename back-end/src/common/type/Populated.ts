@@ -12,6 +12,8 @@ export type PopulatedPlan = {
   name: string;
   price: number;
   durationDays: number;
+  maxMembers?: number;
+  maxProjects?: number;
 };
 
 export type PopulatedRole = {

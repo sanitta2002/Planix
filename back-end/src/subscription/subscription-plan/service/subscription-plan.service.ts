@@ -45,7 +45,13 @@ export class SubscriptionPlanService implements ISubscriptionPlanService {
 
   async deletePlan(planId: string): Promise<void> {
     this._logger.info(`delete plan : ${planId}`);
-    await this._subscriptionPlanRepository.deleteById(planId);
+    const updated = await this._subscriptionPlanRepository.updateById(planId, {
+      isDeleted: true,
+      isActive: false,
+    });
+    if (!updated) {
+      throw new NotFoundException(SUBSCRIPTION_MESSAGE.NOT_FOUND);
+    }
   }
   async getActivePlans(): Promise<PlanResponseDto[]> {
     this._logger.info(`fetch active subscription plans`);

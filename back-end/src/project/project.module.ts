@@ -11,6 +11,7 @@ import {
 } from '@/project/Model/ProjectMember/projectMember.schema';
 import { RoleModule } from '@/role/role.module';
 import { ProjectMemberRepository } from '@/project/repository/ProjectMember/ProjectMemberRepository';
+import { SubscriptionsModule } from '@/subscription/subscriptions/subscriptions.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ProjectMemberRepository } from '@/project/repository/ProjectMember/Proj
     ]),
     WorkspaceModule,
     RoleModule,
+    SubscriptionsModule,
   ],
   providers: [
     {

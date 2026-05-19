@@ -30,6 +30,9 @@ export class SubscriptionPlan {
 
   @Prop({ default: true })
   isActive: boolean;
+
+  @Prop({ default: false })
+  isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

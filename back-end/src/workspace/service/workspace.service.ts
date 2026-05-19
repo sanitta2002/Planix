@@ -226,6 +226,10 @@ export class WorkspaceService implements IWorkspaceService {
         startDate: sub.startDate ?? null,
         endDate: sub.endDate,
         duration: plan?.durationDays ?? null,
+        maxMembers: plan?.maxMembers ?? null,
+        maxProjects: plan?.maxProjects ?? null,
+        stripeSubscriptionId: sub.stripeSubscriptionId ?? null,
+        latestInvoiceId: sub.latestInvoiceId ?? null,
       };
     });
   }

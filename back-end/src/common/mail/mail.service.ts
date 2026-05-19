@@ -1,4 +1,4 @@
-                                                                        import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IMailService } from '@/common/mail/interfaces/mail.interface';
 import nodemailer, { Transporter } from 'nodemailer';
 import { OtpTemplate } from '@/common/mail/emailOtpTemplate';

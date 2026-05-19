@@ -23,7 +23,9 @@ import type { IUserRepository } from '@/users/interfaces/user.repository.interfa
 import type { IJwtService } from '@/common/jwt/interfaces/jwt.service.interface';
 import { AcceptInvitationResponseDto } from '@/invitation/dto/res/AcceptInvitationResponseDto';
 import { CompleteProfileDto } from '@/invitation/dto/req/CompleteProfileDto';
+import type { ISubscriptionRepository } from '@/subscription/interface/ISubscriptionRepository';
 import type { IHashingService } from '@/common/hashing/interface/hashing.service.interface';
+import { PopulatedPlan } from '@/common/type/Populated';
 import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
@@ -40,6 +42,8 @@ export class InvitationService implements IInvitationService {
     @Inject('IJwtService') private readonly _jwtService: IJwtService,
     @Inject('IHashingService')
     private readonly _hashingService: IHashingService,
+    @Inject('ISubscriptionRepository')
+    private readonly _subscriptionRepo: ISubscriptionRepository,
   ) {}
   async inviteMember(
     workspaceId: string,
@@ -63,7 +67,17 @@ export class InvitationService implements IInvitationService {
       }
     }
 
-    if (workspace.members.length >= 6) {
+    const activeSub = await this._subscriptionRepo.findActiveByWorkspace(workspaceId);
+    let memberLimit = 0;
+    
+    if (activeSub && activeSub.planId) {
+      const plan = activeSub.planId as unknown as PopulatedPlan;
+      if (plan.maxMembers !== undefined && plan.maxMembers !== null) {
+        memberLimit = plan.maxMembers;
+      }
+    }
+
+    if (workspace.members.length >= memberLimit) {
       throw new ConflictException(WORKSPACE_MESSAGE.MEMBER_LIMIT);
     }
     const inviter = workspace.members.find(

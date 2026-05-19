@@ -2,7 +2,10 @@ import { Module } from '@nestjs/common';
 import { InvitationService } from '@/invitation/service/invitation.service';
 import { InvitationController } from '@/invitation/controller/invitation.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Invitation, InvitationSchema } from '@/invitation/model/invitation.schema';
+import {
+  Invitation,
+  InvitationSchema,
+} from '@/invitation/model/invitation.schema';
 import { InvitationRepository } from '@/invitation/repository/invitation.repository';
 import { WorkspaceModule } from '@/workspace/workspace.module';
 import { MailModule } from '@/common/mail/mail.module';

@@ -25,7 +25,7 @@ import { ApiResponse } from '@/common/utils/api-response.util';
 import { ISSUE_SUCCESS } from '@/common/constants/messages.constant';
 import { ApiResponseDto } from '@/common/dto/api-response.dto';
 import { UpdateIssueDTO } from '@/issue/dto/req/UpdateIssueDTO';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { AddAttachmentDTO } from '@/issue/dto/req/AttachmentDTO';
 
 @UseGuards(JwtAuthGuard, ProjectPermissionGuard)

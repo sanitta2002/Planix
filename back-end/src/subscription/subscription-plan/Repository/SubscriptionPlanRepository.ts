@@ -21,11 +21,11 @@ export class SubscriptionPlanRepository
   }
 
   async findAll(): Promise<SubscriptionPlanDocument[]> {
-    return await this._subscriptionPlanModel.find();
+    return await this._subscriptionPlanModel.find({ isDeleted: { $ne: true } });
   }
 
   async findActivePlans(): Promise<SubscriptionPlanDocument[]> {
-    return await this._subscriptionPlanModel.find({ isActive: true });
+    return await this._subscriptionPlanModel.find({ isActive: true, isDeleted: { $ne: true } });
   }
 
   async findByStripePriceId(
