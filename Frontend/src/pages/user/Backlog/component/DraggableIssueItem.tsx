@@ -71,6 +71,7 @@ function DraggableIssueItem({ issue, onClick }: DraggableIssueItemProps) {
         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border shrink-0 ${
           issue.status === 'DONE' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
           issue.status === 'IN_PROGRESS' || issue.status === 'IN PROGRESS' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+          issue.status === 'BLOCKED' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
           'bg-slate-800 text-slate-400 border-slate-700'
         }`}>
           {issue.status?.replace('_', ' ').toUpperCase() || 'TODO'}

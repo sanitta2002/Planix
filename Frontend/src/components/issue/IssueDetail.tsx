@@ -516,6 +516,7 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
                                             </span>
                                             <span className={`px-3 py-1 rounded-full text-[10px] font-bold tracking-wide shrink-0 border ${task.status === 'DONE' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
                                                 task.status === 'IN_PROGRESS' || task.status === 'IN PROGRESS' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
+                                                    task.status === 'BLOCKED' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
                                                     'bg-zinc-800 text-zinc-400 border-zinc-700'
                                                 }`}>
                                                 {task.status?.replace('_', ' ').toUpperCase() || 'TODO'}
@@ -574,6 +575,7 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
                                         >
                                             <option value="TODO">TODO</option>
                                             <option value="IN_PROGRESS">IN PROGRESS</option>
+                                            <option value="BLOCKED">BLOCKED</option>
                                             <option value="DONE">DONE</option>
                                         </select>
                                         <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">

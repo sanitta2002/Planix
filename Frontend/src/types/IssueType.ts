@@ -10,6 +10,7 @@ export type IssueType = (typeof IssueType)[keyof typeof IssueType];
 export const IssueStatus = {
   TODO: "TODO",
   IN_PROGRESS: "IN_PROGRESS",
+  BLOCKED: "BLOCKED",
   DONE: "DONE",
 } as const;
 export type IssueStatus = (typeof IssueStatus)[keyof typeof IssueStatus];
