@@ -1,6 +1,6 @@
 import { X, Folder } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useCreateProject, useUpdateProject } from "../../hooks/project/projectHook";
+import { useCreateProject, useUpdateProject, useGetAllProjects } from "../../hooks/project/projectHook";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../store/Store";
 import { AxiosError } from "axios";
@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import type { WorkspaceMember } from "../../types/workspaceMember";
 import type { Role } from "../../types/role";
 import type { ProjectMember } from "../../types/ProjectMember";
-import { useGetRoles, useWorkspaceMembers } from "../../hooks/user/userHook";
+import { useGetRoles, useWorkspaceMembers, useWorkspacePaymentDetails } from "../../hooks/user/userHook";
 import type { Project } from "../../types/project";
 import { setCurrentProject } from "../../store/projectSlice";
 
@@ -28,6 +28,18 @@ const ProjectModal = ({ isOpen, onClose, project }: ProjectModalProps) => {
     const currentWorkspace = useSelector((state: RootState) => state.workspace.currentWorkspace)
     const createProjectMutation = useCreateProject();
     const workspaceId = currentWorkspace?.id
+
+    const { data: projectsData } = useGetAllProjects({
+        workspaceId: currentWorkspace?.id || "",
+        limit: 50,
+        page: 1,
+    });
+    const { data: paymentData } = useWorkspacePaymentDetails(currentWorkspace?.id || "");
+
+    const subscription = paymentData?.data?.[0] || null;
+    const currentProjectsCount = projectsData?.data?.length || 0;
+    const maxProjectsLimit = subscription?.maxProjects ?? 0;
+    const isProjectLimitReached = !project && currentProjectsCount >= maxProjectsLimit;
 
     const [workspaceMembers, setWorkspaceMembers] = useState<WorkspaceMember[]>([]);
     const [roles, setRoles] = useState<Role[]>([]);
@@ -207,6 +219,12 @@ const ProjectModal = ({ isOpen, onClose, project }: ProjectModalProps) => {
                 {/* Body */}
                 <div className="p-6 space-y-8 max-h-[70vh] overflow-y-auto">
 
+                    {isProjectLimitReached && (
+                        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm">
+                            ⚠️ Workspace project limit reached (Current: {currentProjectsCount} / Max: {maxProjectsLimit}). Please upgrade your subscription plan to create more projects.
+                        </div>
+                    )}
+
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
                             <h3 className="text-lg font-bold text-white flex items-center gap-2">
@@ -218,8 +236,13 @@ const ProjectModal = ({ isOpen, onClose, project }: ProjectModalProps) => {
                         <div className="space-y-4">
                             {/* Project Name */}
                             <div>
-                                <h3 className="text-sm font-semibold text-slate-300 mb-3">
-                                    Project Name <span className="text-blue-500">*</span>
+                                <h3 className="text-sm font-semibold text-slate-300 mb-3 flex justify-between items-center">
+                                    <span>Project Name <span className="text-blue-500">*</span></span>
+                                    {subscription && subscription.status === "active" && (
+                                        <span className="text-xs font-normal text-slate-400">
+                                            Active Plan: <span className="text-[#6366F1] font-semibold">{subscription.plan}</span> (Max Projects: <span className="text-white font-semibold">{maxProjectsLimit}</span>)
+                                        </span>
+                                    )}
                                 </h3>
                                 <input
                                     type="text"
@@ -227,8 +250,9 @@ const ProjectModal = ({ isOpen, onClose, project }: ProjectModalProps) => {
                                     onChange={(e) =>
                                         setProjectName(e.target.value)
                                     }
+                                    disabled={isProjectLimitReached}
                                     placeholder="Try a project name"
-                                    className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-4 py-3 text-sm text-slate-200 mb-2 focus:outline-none focus:border-[#5558dd] transition-colors"
+                                    className={`w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-4 py-3 text-sm text-slate-200 mb-2 focus:outline-none focus:border-[#5558dd] transition-colors ${isProjectLimitReached ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 />
                             </div>
 
@@ -243,9 +267,9 @@ const ProjectModal = ({ isOpen, onClose, project }: ProjectModalProps) => {
                                     onChange={(e) =>
                                         setProjectKey(e.target.value.toUpperCase())
                                     }
-                                    disabled={!!project}
+                                    disabled={!!project || isProjectLimitReached}
                                     placeholder="PRJ"
-                                    className={`w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-4 py-3 text-sm text-slate-200 mb-2 focus:outline-none focus:border-[#5558dd] transition-colors uppercase ${project ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    className={`w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-4 py-3 text-sm text-slate-200 mb-2 focus:outline-none focus:border-[#5558dd] transition-colors uppercase ${project || isProjectLimitReached ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 />
                             </div>
 
@@ -260,8 +284,9 @@ const ProjectModal = ({ isOpen, onClose, project }: ProjectModalProps) => {
                                     onChange={(e) =>
                                         setDescription(e.target.value)
                                     }
+                                    disabled={isProjectLimitReached}
                                     placeholder="Try a project goal, team name, milestone..."
-                                    className="w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-[#5558dd] transition-colors resize-none"
+                                    className={`w-full bg-[#0F172A] border border-[#1E293B] rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-[#5558dd] transition-colors resize-none ${isProjectLimitReached ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 />
                             </div>
                         </div>
@@ -409,8 +434,8 @@ const ProjectModal = ({ isOpen, onClose, project }: ProjectModalProps) => {
 
                     <button
                         onClick={handleSubmit}
-                        disabled={createProjectMutation.isPending || updateProjectMutation.isPending}
-                        className="px-6 py-2.5 bg-[#6366F1] hover:bg-[#5558DD] text-white rounded-lg disabled:opacity-50"
+                        disabled={isProjectLimitReached || createProjectMutation.isPending || updateProjectMutation.isPending}
+                        className={`px-6 py-2.5 bg-[#6366F1] hover:bg-[#5558DD] text-white rounded-lg disabled:opacity-50 ${isProjectLimitReached ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                     >
                         {createProjectMutation.isPending || updateProjectMutation.isPending
                             ? (project ? "Updating..." : "Creating...")

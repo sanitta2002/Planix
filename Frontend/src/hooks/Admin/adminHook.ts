@@ -167,8 +167,16 @@ export const useUpdatePlan = () => {
       data: UpdatePlanPayload;
     }) => updatePlan(planId, data),
 
-    onSuccess: (res: { data: Plan }) => {
-      toast.success("Plan updated successfully");
+    onSuccess: (res: { data: Plan }, variables) => {
+      if (variables.data.isActive !== undefined) {
+        toast.success(
+          variables.data.isActive
+            ? "Plan listed successfully"
+            : "Plan unlisted successfully"
+        );
+      } else {
+        toast.success("Plan updated successfully");
+      }
       queryClient.setQueryData<GetPlansResponse>(
         ["subscription-plans"],
         (oldData) => {
@@ -182,8 +190,16 @@ export const useUpdatePlan = () => {
         }
       );
     },
-    onError: () => {
-      toast.error("Failed to update plan");
+    onError: (_, variables) => {
+      if (variables?.data?.isActive !== undefined) {
+        toast.error(
+          variables.data.isActive
+            ? "Failed to list plan"
+            : "Failed to unlist plan"
+        );
+      } else {
+        toast.error("Failed to update plan");
+      }
     },
   });
 };

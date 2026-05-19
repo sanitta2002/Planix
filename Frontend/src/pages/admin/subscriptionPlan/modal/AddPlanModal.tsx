@@ -230,44 +230,75 @@ const AddPlanModal: React.FC<AddPlanModalProps> = ({
 
           {/* Members + Projects + Storage */}
           <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="block text-xs text-slate-300 mb-1.5">
+                Max Members
+              </label>
+              <input
+                type="number"
+                name="maxMembers"
+                value={formData.maxMembers}
+                onChange={handleChange}
+                placeholder="Max Members"
+                className="w-full px-4 py-2.5 rounded-lg bg-[#0c1221] border border-gray-700 text-white"
+              />
+              {errors.maxMembers && (
+                <p className="text-red-500 text-xs mt-1">{errors.maxMembers}</p>
+              )}
+            </div>
 
-            <input
-              type="number"
-              name="maxMembers"
-              value={formData.maxMembers}
-              onChange={handleChange}
-              placeholder="Max Members"
-              className="px-4 py-2.5 rounded-lg bg-[#0c1221] border border-gray-700 text-white"
-            />
+            <div>
+              <label className="block text-xs text-slate-300 mb-1.5">
+                Max Projects
+              </label>
+              <input
+                type="number"
+                name="maxProjects"
+                value={formData.maxProjects}
+                onChange={handleChange}
+                placeholder="Max Projects"
+                className="w-full px-4 py-2.5 rounded-lg bg-[#0c1221] border border-gray-700 text-white"
+              />
+              {errors.maxProjects && (
+                <p className="text-red-500 text-xs mt-1">{errors.maxProjects}</p>
+              )}
+            </div>
 
-            <input
-              type="number"
-              name="maxProjects"
-              value={formData.maxProjects}
-              onChange={handleChange}
-              placeholder="Max Projects"
-              className="px-4 py-2.5 rounded-lg bg-[#0c1221] border border-gray-700 text-white"
-            />
-
-            <input
-              type="number"
-              name="storage"
-              value={formData.storage}
-              onChange={handleChange}
-              placeholder="Storage GB"
-              className="px-4 py-2.5 rounded-lg bg-[#0c1221] border border-gray-700 text-white"
-            />
+            <div>
+              <label className="block text-xs text-slate-300 mb-1.5">
+                Storage (GB)
+              </label>
+              <input
+                type="number"
+                name="storage"
+                value={formData.storage}
+                onChange={handleChange}
+                placeholder="Storage GB"
+                className="w-full px-4 py-2.5 rounded-lg bg-[#0c1221] border border-gray-700 text-white"
+              />
+              {errors.storage && (
+                <p className="text-red-500 text-xs mt-1">{errors.storage}</p>
+              )}
+            </div>
           </div>
 
           {/* Features */}
-          <textarea
-            name="features"
-            value={formData.features}
-            onChange={handleChange}
-            placeholder="Enter features, one per line"
-            rows={4}
-            className="w-full px-4 py-3 rounded-lg bg-[#0c1221] border border-gray-700 text-white"
-          />
+          <div>
+            <label className="block text-xs text-slate-300 mb-1.5">
+              Features (one per line)
+            </label>
+            <textarea
+              name="features"
+              value={formData.features}
+              onChange={handleChange}
+              placeholder="Enter features, one per line"
+              rows={4}
+              className="w-full px-4 py-3 rounded-lg bg-[#0c1221] border border-gray-700 text-white"
+            />
+            {errors.features && (
+              <p className="text-red-500 text-xs mt-1">{errors.features}</p>
+            )}
+          </div>
 
           {/* Active Checkbox */}
           <label className="flex items-center gap-2 text-sm text-slate-300">

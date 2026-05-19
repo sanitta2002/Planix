@@ -10,7 +10,7 @@ interface ConfirmationModalProps {
     message: string;
     confirmText?: string;
     cancelText?: string;
-    type?: 'danger' | 'success' | 'info';
+    type?: 'danger' | 'success' | 'info' | 'warning';
     isLoading?: boolean;
 }
 
@@ -33,6 +33,8 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                 return <AlertTriangle className="w-6 h-6 text-red-500" />;
             case 'success':
                 return <CheckCircle className="w-6 h-6 text-emerald-500" />;
+            case 'warning':
+                return <AlertTriangle className="w-6 h-6 text-amber-500" />;
             default:
                 return <Info className="w-6 h-6 text-blue-500" />;
         }
@@ -44,6 +46,8 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                 return "bg-red-500 hover:bg-red-600 text-white border-none";
             case 'success':
                 return "bg-emerald-500 hover:bg-emerald-600 text-white border-none";
+            case 'warning':
+                return "bg-amber-500 hover:bg-amber-600 text-black border-none font-semibold";
             default:
                 return "bg-blue-500 hover:bg-blue-600 text-white border-none";
         }
@@ -59,7 +63,8 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                 <div className="flex items-center justify-between p-4 border-b border-gray-800/50">
                     <div className="flex items-center gap-3">
                         <div className={`p-2 rounded-full bg-opacity-10 ${type === 'danger' ? 'bg-red-500' :
-                                type === 'success' ? 'bg-emerald-500' : 'bg-blue-500'
+                                type === 'success' ? 'bg-emerald-500' :
+                                type === 'warning' ? 'bg-amber-500' : 'bg-blue-500'
                             }`}>
                             {getIcon()}
                         </div>

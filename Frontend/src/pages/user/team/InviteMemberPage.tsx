@@ -3,7 +3,7 @@ import { Calendar, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../store/Store";
-import { useInviteMember, useRemoveWorkspaceMember, useWorkspaceMembers } from "../../../hooks/user/userHook";
+import { useInviteMember, useRemoveWorkspaceMember, useWorkspaceMembers, useWorkspacePaymentDetails } from "../../../hooks/user/userHook";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import ConfirmationModal from "../../../components/modal/ConfirmationModal";
@@ -28,9 +28,13 @@ export default function InviteMemberPage() {
     const isOwner = currentWorkspace?.ownerId?.id === user?.id;
     const { mutate: inviteMember } = useInviteMember()
     const { data, isLoading } = useWorkspaceMembers(currentWorkspace?.id || "")
+    const { data: paymentData } = useWorkspacePaymentDetails(currentWorkspace?.id || "")
     const { mutate: removeMember } = useRemoveWorkspaceMember()
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [memberToDelete, setMemberToDelete] = useState<string | null>(null);
+
+    const subscription = paymentData?.data?.[0] || null;
+    const isLimitReached = data?.data?.members?.length >= (subscription?.maxMembers ?? 5);
 
     const handleInvite = () => {
         if (!email) {
@@ -101,8 +105,20 @@ export default function InviteMemberPage() {
                     Invite Members
                 </h2>
                 <p className="text-sm text-gray-400 mb-5">
-                    Add up to 6 members to your team.
+                    {subscription && subscription.status === "active" ? (
+                        <span>
+                            This plan allows you to add up to <span className="font-semibold text-white">{subscription.maxMembers}</span> members to your team.
+                        </span>
+                    ) : (
+                        <span>Add up to 5 members to your team.</span>
+                    )}
                 </p>
+
+                {isLimitReached && (
+                    <div className="mb-5 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm">
+                        ⚠️ Workspace member limit reached. Please upgrade your subscription plan to invite more members.
+                    </div>
+                )}
 
                 {/* Invite Rows */}
                 <div className="space-y-3">
@@ -110,30 +126,28 @@ export default function InviteMemberPage() {
                     <div className="flex items-end gap-3">
                         {/* Email */}
                         <div className="flex-1">
-
                             <input
                                 type="email"
                                 placeholder="member@company.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-
-                                className="w-full h-11 px-4 rounded-xl bg-[#1a2340] border border-gray-700/50 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-[#606cf6] focus:ring-1 focus:ring-[#606cf6] transition-all duration-200"
+                                disabled={isLimitReached}
+                                className={`w-full h-11 px-4 rounded-xl bg-[#1a2340] border border-gray-700/50 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-[#606cf6] focus:ring-1 focus:ring-[#606cf6] transition-all duration-200 ${isLimitReached ? 'opacity-50 cursor-not-allowed' : ''}`}
                             />
                         </div>
 
                         {/* Full Name */}
                         <div className="flex-1">
-
                             <label className="block text-xs font-medium text-gray-400 mb-1.5">
                                 Full Name
                             </label>
-
                             <input
                                 type="text"
                                 placeholder="John Doe"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="w-full h-11 px-4 rounded-xl bg-[#1a2340] border border-gray-700/50 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-[#606cf6] focus:ring-1 focus:ring-[#606cf6] transition-all duration-200"
+                                disabled={isLimitReached}
+                                className={`w-full h-11 px-4 rounded-xl bg-[#1a2340] border border-gray-700/50 text-white text-sm placeholder-gray-500 focus:outline-none focus:border-[#606cf6] focus:ring-1 focus:ring-[#606cf6] transition-all duration-200 ${isLimitReached ? 'opacity-50 cursor-not-allowed' : ''}`}
                             />
                         </div>
                     </div>
@@ -142,11 +156,10 @@ export default function InviteMemberPage() {
 
                 {/* Action Buttons */}
                 <div className="flex items-center gap-3 mt-5">
-
                     <button
-                        disabled={!currentWorkspace}
+                        disabled={!currentWorkspace || isLimitReached}
                         onClick={handleInvite}
-                        className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#606cf6] to-[#606cf6] text-white text-sm font-semibold hover:from-[#606cf6] hover:to-[#606cf6] shadow-lg shadow-[#272f80] hover:shadow-[#272f80] transition-all duration-200"
+                        className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#606cf6] to-[#606cf6] text-white text-sm font-semibold hover:from-[#606cf6] hover:to-[#606cf6] shadow-lg shadow-[#272f80] hover:shadow-[#272f80] transition-all duration-200 ${isLimitReached ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                     >
                         Send Invitation
                     </button>
