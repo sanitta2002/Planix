@@ -62,6 +62,9 @@ export class Issue {
   @Prop({ type: String, default: null })
   assigneeId?: string | null;
 
+  @Prop({ type: Number, default: 0 })
+  estimatedHours?: number;
+
   @Prop({ default: null })
   startDate?: Date;
 

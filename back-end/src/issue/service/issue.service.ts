@@ -165,6 +165,9 @@ export class IssueService implements IIssueService {
     if (dto.description) updateData.description = dto.description;
     if (dto.status) updateData.status = dto.status;
     if (dto.issueType) updateData.issueType = dto.issueType;
+    if (dto.estimatedHours !== undefined) {
+      updateData.estimatedHours = dto.estimatedHours;
+    }
     if (dto.parentId) {
       const parent = await this._IissueRepo.findById(dto.parentId);
       if (!parent) {

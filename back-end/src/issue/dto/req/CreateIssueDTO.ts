@@ -4,6 +4,7 @@ import {
   IsString,
   IsEnum,
   IsDateString,
+  IsNumber,
 } from 'class-validator';
 import { IssueStatus } from '@/common/type/IssueStatus';
 import { IssueType } from '@/common/type/IssueType';
@@ -52,6 +53,10 @@ export class CreateIssueDTO {
   @IsOptional()
   @IsString()
   assigneeId?: string | null;
+
+  @IsOptional()
+  @IsNumber()
+  estimatedHours?: number;
 
   @IsOptional()
   @IsDateString()

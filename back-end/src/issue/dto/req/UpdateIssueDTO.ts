@@ -1,4 +1,10 @@
-import { IsOptional, IsString, IsEnum, IsDateString } from 'class-validator';
+import {
+  IsOptional,
+  IsString,
+  IsEnum,
+  IsDateString,
+  IsNumber,
+} from 'class-validator';
 import { IssueType } from '@/common/type/IssueType';
 import { IssueStatus } from '@/common/type/IssueStatus';
 
@@ -27,6 +33,10 @@ export class UpdateIssueDTO {
 
   @IsOptional()
   assigneeId?: string;
+
+  @IsOptional()
+  @IsNumber()
+  estimatedHours?: number;
 
   @IsOptional()
   @IsDateString()

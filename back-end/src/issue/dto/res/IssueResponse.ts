@@ -10,6 +10,7 @@ export interface IssueResponse {
   issueType: string;
   key: string;
   assigneeId?: string | null;
+  estimatedHours?: number;
   sprintId?: string | null;
   createdAt: Date;
   startDate?: Date | null;
