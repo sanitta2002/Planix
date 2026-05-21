@@ -25,6 +25,7 @@ export interface IssueData {
   endDate?: string | null;
   attachments?: any[];
   projectId?: string;
+  estimatedHours?: number;
 }
 
 export interface GetIssuesResponse {

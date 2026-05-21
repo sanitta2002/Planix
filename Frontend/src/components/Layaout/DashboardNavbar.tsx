@@ -114,7 +114,7 @@ export const DashboardNavbar = ({ onMenuClick }: DashboardNavbarProps) => {
 
     return (
 
-        <header className="h-16 px-6 border-b border-border bg-background flex items-center justify-between sticky top-0 z-10">
+        <header className="h-16 px-6 border-b border-border bg-background flex items-center justify-between sticky top-0 z-50">
 
             {/* LEFT */}
             <div className="flex items-center gap-6">

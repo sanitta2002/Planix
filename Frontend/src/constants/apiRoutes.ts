@@ -92,5 +92,8 @@ export const API_ROUTES = {
     GET_UNREAD_COUNT: "/notification/unread-count",
     MARK_AS_READ: "/notification/:id/read",
     MARK_ALL_AS_READ: "/notification/read-all",
+  },
+  DASHBOARD: {
+    GET_USER_DASHBOARD: "/user-dashboard/project/:projectId",
   }
 };

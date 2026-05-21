@@ -13,6 +13,8 @@ export interface IssueData {
   startDate?: string | null;
   endDate?: string | null;
   attachments?: any[];
+  estimatedHours?: number;
+  loggedHours?: number;
 }
 
 export interface ExtendedIssue extends IssueData {

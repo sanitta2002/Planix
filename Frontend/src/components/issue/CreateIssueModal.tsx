@@ -27,6 +27,7 @@ export interface IssueFormData {
     endDate: string;
     attachments: IAttachement[];
     assigneeId?: string | null;
+    estimatedHours?: number;
 }
 
 export const CreateIssueModal = ({ 
@@ -60,6 +61,7 @@ export const CreateIssueModal = ({
     const [endDate, setEndDate] = useState("");
     const [assigneeId, setAssigneeId] = useState("");
     const [attachments, setAttachments] = useState<IAttachement[]>([]);
+    const [estimatedHours, setEstimatedHours] = useState<number | "">("");
 
 
     // Reset when modal opens
@@ -95,7 +97,8 @@ export const CreateIssueModal = ({
             startDate, 
             endDate, 
             attachments, 
-            assigneeId: assigneeId || null 
+            assigneeId: assigneeId || null,
+            estimatedHours: estimatedHours === "" ? undefined : Number(estimatedHours),
         });
         handleClose();
     };
@@ -107,6 +110,7 @@ export const CreateIssueModal = ({
         setEndDate("");
         setAssigneeId("");
         setAttachments([]);
+        setEstimatedHours("");
         onClose();
     };
 
@@ -263,6 +267,7 @@ export const CreateIssueModal = ({
                         </div>
 
                         {/* Created By Row */}
+                        {/* Created By & Estimated Hours Row */}
                         <div className="grid grid-cols-2 gap-8">
                             <div className="space-y-2">
                                 <label className="text-sm text-zinc-300">Created By</label>
@@ -278,6 +283,19 @@ export const CreateIssueModal = ({
                                         <span className="text-xs font-medium text-white">{user?.firstName}</span>
                                     </div>
                                 </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm text-zinc-300">
+                                    Estimated Hours
+                                </label>
+                                <input
+                                    type="number"
+                                    min={0}
+                                    value={estimatedHours}
+                                    onChange={(e) => setEstimatedHours(e.target.value === "" ? "" : Number(e.target.value))}
+                                    placeholder="0"
+                                    className="w-full bg-[#0F172A] border border-[#1E293B] rounded-lg px-4 py-3 text-sm text-slate-200 placeholder:text-zinc-500 focus:outline-none focus:border-[#6366F1] transition-colors"
+                                />
                             </div>
                         </div>
                     </div>
