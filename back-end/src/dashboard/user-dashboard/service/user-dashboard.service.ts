@@ -8,9 +8,11 @@ import type { IS3Service } from '@/common/s3/interfaces/s3.service.interface';
 import { IssueStatus } from '@/common/type/IssueStatus';
 import { IssueType } from '@/common/type/IssueType';
 import { SprintStatus } from '@/common/type/SprintStatus';
+import { IUserDashboardService } from '@/dashboard/user-dashboard/interface/IUserDashboardService';
+import { IUserDashboardResponse } from '../dto/UserDashboardResponse';
 
 @Injectable()
-export class UserDashboardService {
+export class UserDashboardService implements IUserDashboardService {
   constructor(
     @Inject('IprojectRepository')
     private readonly _projectRepository: IprojectRepository,
@@ -31,7 +33,10 @@ export class UserDashboardService {
     private readonly _S3Service: IS3Service,
   ) {}
 
-  async getDashboardData(projectId: string, loggedInUserId: string) {
+  async getDashboardData(
+    projectId: string,
+    loggedInUserId: string,
+  ): Promise<IUserDashboardResponse> {
     const project = await this._projectRepository.findById(projectId);
     if (!project) {
       throw new NotFoundException('Project not found');
