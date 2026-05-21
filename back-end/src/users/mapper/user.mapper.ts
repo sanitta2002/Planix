@@ -1,7 +1,7 @@
-import { USER_MESSAGES } from 'src/common/constants/messages.constant';
-import { UpdateProfileResponseDTO } from 'src/users/dto/ResDto/UpdateProfileResponseDTO';
-import { UploadAvatarResDto } from 'src/users/dto/ResDto/UploadAvatarResDto';
-import { User } from 'src/users/Models/user.schema';
+import { USER_MESSAGES } from '@/common/constants/messages.constant';
+import { UpdateProfileResponseDTO } from '@/users/dto/ResDto/UpdateProfileResponseDTO';
+import { UploadAvatarResDto } from '@/users/dto/ResDto/UploadAvatarResDto';
+import { User } from '@/users/Models/user.schema';
 
 export class UserMapper {
   static toUpdateProfileResponse(

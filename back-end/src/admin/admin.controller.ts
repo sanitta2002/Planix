@@ -12,45 +12,40 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { AdminLoginDto } from './dto/admin-login.dto';
+import { AdminLoginDto } from '@/admin/dto/admin-login.dto';
 import type { Response } from 'express';
-import { GetUsersRequestDto } from './dto/get-users.request.dto';
-import { PaginatedUsersResponseDto } from './dto/paginated-users.response.dto';
-import { UserStatusResponseDto } from './dto/UserStatusResponseDto';
-import type { IAdminService } from './interface/admin.service.interface';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Role } from 'src/common/decorators/roles.decorator';
+import { GetUsersRequestDto } from '@/admin/dto/get-users.request.dto';
+import { PaginatedUsersResponseDto } from '@/admin/dto/paginated-users.response.dto';
+import { UserStatusResponseDto } from '@/admin/dto/UserStatusResponseDto';
+import type { IAdminService } from '@/admin/interface/admin.service.interface';
+import { RolesGuard } from '@/auth/guards/roles.guard';
+import { Role } from '@/common/decorators/roles.decorator';
 import { ConfigService } from '@nestjs/config';
 import {
   ADMIN_MESSAGES,
   PAYMENT_MESSAGE,
   USER_MESSAGES,
-} from 'src/common/constants/messages.constant';
-import { ApiResponse } from 'src/common/utils/api-response.util';
-import { ApiResponseDto } from 'src/common/dto/api-response.dto';
-import { GetWorkspacesRequestDto } from './dto/GetWorkspacesRequestDto ';
-import { PaginatedWorkspaceResponseDto } from './dto/PaginatedWorkspaceResponseDto ';
-import type { ISubscriptionService } from 'src/subscription/interface/ISubscriptionService';
-import type { IPaymentService } from 'src/payment/interface/IPaymentService';
-import { generateInvoiceHTML } from 'src/common/utils/pdf.util';
+} from '@/common/constants/messages.constant';
+import { ApiResponse } from '@/common/utils/api-response.util';
+import { ApiResponseDto } from '@/common/dto/api-response.dto';
+import { GetWorkspacesRequestDto } from '@/admin/dto/GetWorkspacesRequestDto ';
+import { PaginatedWorkspaceResponseDto } from '@/admin/dto/PaginatedWorkspaceResponseDto ';
+import { GetPaymentsRequestDto } from '@/admin/dto/get-payments-request.dto';
+import { generateInvoiceHTML } from '@/common/utils/pdf.util';
 import puppeteer from 'puppeteer';
 
 @Controller('admin')
 export class AdminController {
   constructor(
-    @Inject('IAdminService') private readonly adminService: IAdminService,
-    @Inject('ISubscriptionService')
-    private readonly _subscriptionService: ISubscriptionService,
-    @Inject('IPaymentService')
-    private readonly _paymentService: IPaymentService,
-    private readonly configService: ConfigService,
+    @Inject('IAdminService') private readonly _adminService: IAdminService,
+    private readonly _configService: ConfigService,
   ) {}
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
   login(@Body() dto: AdminLoginDto, @Res({ passthrough: true }) res: Response) {
-    const { accessToken, refreshToken, admin } = this.adminService.login(dto);
-    const maxAge = Number(this.configService.get<string>('Max_Age'));
+    const { accessToken, refreshToken, admin } = this._adminService.login(dto);
+    const maxAge = Number(this._configService.get<string>('Max_Age'));
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       sameSite: 'strict',
@@ -81,7 +76,7 @@ export class AdminController {
   async getUsers(
     @Query() query: GetUsersRequestDto,
   ): Promise<PaginatedUsersResponseDto> {
-    return await this.adminService.getUsers(query);
+    return await this._adminService.getUsers(query);
   }
 
   @Patch(':id/block')
@@ -91,7 +86,7 @@ export class AdminController {
   async blockUser(
     @Param('id') id: string,
   ): Promise<ApiResponseDto<UserStatusResponseDto>> {
-    const result = await this.adminService.blockUser({ userId: id });
+    const result = await this._adminService.blockUser({ userId: id });
     return ApiResponse.success(HttpStatus.OK, USER_MESSAGES.BLOCKED, result);
   }
 
@@ -102,7 +97,7 @@ export class AdminController {
   async unblockUser(
     @Param('id') id: string,
   ): Promise<ApiResponseDto<UserStatusResponseDto>> {
-    const result = await this.adminService.unblockUser({ userId: id });
+    const result = await this._adminService.unblockUser({ userId: id });
     return ApiResponse.success(HttpStatus.OK, USER_MESSAGES.UNBLOCKED, result);
   }
   @Get('workspaces')
@@ -111,11 +106,11 @@ export class AdminController {
   async getWorkspaces(
     @Query() query: GetWorkspacesRequestDto,
   ): Promise<PaginatedWorkspaceResponseDto> {
-    return await this.adminService.getAllWorkspaces(query);
+    return await this._adminService.getAllWorkspaces(query);
   }
   @Get('paymets')
-  async getAllPayments() {
-    const data = await this._paymentService.getAllPayments();
+  async getAllPayments(@Query() query: GetPaymentsRequestDto) {
+    const data = await this._adminService.getAllPayments(query);
     return ApiResponse.success(
       HttpStatus.OK,
       PAYMENT_MESSAGE.PAYMENT_FETCH,
@@ -123,10 +118,13 @@ export class AdminController {
     );
   }
   @Get('report')
-  async downloadReport(@Res() res: Response) {
-    const payments = await this._paymentService.getAllPayments();
+  async downloadReport(
+    @Res() res: Response,
+    @Query() query: GetPaymentsRequestDto,
+  ) {
+    const payments = await this._adminService.getAllPayments(query);
 
-    const html = generateInvoiceHTML(payments);
+    const html = generateInvoiceHTML(payments.data);
 
     const browser = await puppeteer.launch();
     const page = await browser.newPage();

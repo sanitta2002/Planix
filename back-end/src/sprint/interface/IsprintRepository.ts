@@ -1,5 +1,5 @@
-import { IBaseRepository } from 'src/users/interfaces/baseRepo.interface';
-import { SprintDocument } from '../Model/sprint.schema';
+import { IBaseRepository } from '@/users/interfaces/baseRepo.interface';
+import { SprintDocument } from '@/sprint/Model/sprint.schema';
 
 export interface IsprintRepository extends IBaseRepository<SprintDocument> {
   findByProject(projectId: string): Promise<SprintDocument[]>;

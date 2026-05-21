@@ -3,4 +3,5 @@ export enum IssueStatus {
   IN_PROGRESS = 'IN_PROGRESS',
   DONE = 'DONE',
   HOLD = 'HOLD',
+  BLOCKED = 'BLOCKED',
 }

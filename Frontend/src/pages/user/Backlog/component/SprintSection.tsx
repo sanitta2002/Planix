@@ -24,6 +24,7 @@ function SprintSection({ sprint, issues = [], onIssueClick, onStartSprint, onCom
 
     const todoIssues = issues.filter(i => i.status === "TODO"); 
     const inProgressIssues = issues.filter(i => i.status === "IN_PROGRESS"); 
+    const blockedIssues = issues.filter(i => i.status === "BLOCKED"); 
     const doneIssues = issues.filter(i => i.status === "DONE"); 
 
     return (
@@ -55,6 +56,10 @@ function SprintSection({ sprint, issues = [], onIssueClick, onStartSprint, onCom
                         <div className="flex items-center gap-1">
                             <div className="w-2.5 h-2.5 rounded-full bg-[#4facfe] border border-black/10"></div>
                             <span className="text-[11px] text-slate-400">{inProgressIssues.length}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <div className="w-2.5 h-2.5 rounded-full bg-red-500 border border-black/10"></div>
+                            <span className="text-[11px] text-slate-400">{blockedIssues.length}</span>
                         </div>
                         <div className="flex items-center gap-1">
                             <div className="w-2.5 h-2.5 rounded-full bg-[#00FF94] border border-black/10"></div>

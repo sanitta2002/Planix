@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
-import { CreateIssueDTO } from 'src/issue/dto/req/CreateIssueDTO';
-import { Issue, IssueDocument } from 'src/issue/Model/issue.schema';
+import { CreateIssueDTO } from '@/issue/dto/req/CreateIssueDTO';
+import { Issue, IssueDocument } from '@/issue/Model/issue.schema';
 
 export class IssueMapper {
   static toEntity(dto: CreateIssueDTO, userId: string): Partial<Issue> {
@@ -18,6 +18,7 @@ export class IssueMapper {
       sprintId: dto.sprintId ? new Types.ObjectId(dto.sprintId) : null,
 
       assigneeId: dto.assigneeId ?? null,
+      estimatedHours: dto.estimatedHours ?? 0,
       attachments: dto.attachments || [],
       startDate: dto.startDate,
       endDate: dto.endDate,
@@ -38,6 +39,7 @@ export class IssueMapper {
       issueType: issue.issueType,
       key: issue.key,
       assigneeId: issue.assigneeId,
+      estimatedHours: issue.estimatedHours ?? 0,
       sprintId: issue.sprintId ? issue.sprintId.toString() : null,
       createdAt: issue.createdAt,
       parentId: issue.parentId ? issue.parentId.toString() : null,

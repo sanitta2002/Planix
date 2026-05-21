@@ -1,8 +1,8 @@
-import { WorkspaceResponseDto } from '../../workspace/dto/res/WorkspaceResponseDto';
+import { WorkspaceResponseDto } from '@/workspace/dto/res/WorkspaceResponseDto';
 
 export class PaginatedWorkspaceResponseDto {
-  data: WorkspaceResponseDto[];
-  total: number;
-  page: number;
-  totalPages: number;
+  data!: WorkspaceResponseDto[];
+  total!: number;
+  page!: number;
+  totalPages!: number;
 }

@@ -2,33 +2,35 @@ import {
   ConflictException,
   Inject,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { IProjectService } from '../interfaces/IProjectService';
-import type { IprojectRepository } from '../interfaces/IProjectRepository';
-import { CreateProjectDto } from '../dto/req/CreateProjectDto';
+import { IProjectService } from '@/project/interfaces/IProjectService';
+import type { IprojectRepository } from '@/project/interfaces/IProjectRepository';
+import { CreateProjectDto } from '@/project/dto/req/CreateProjectDto';
 import {
   PROJECT_ERRORS,
   WORKSPACE_MESSAGE,
-} from 'src/common/constants/messages.constant';
-import type { IWorkspaceRepository } from 'src/workspace/interface/IWorkspaceRepository';
-import { ProjectResponseDto } from '../dto/res/ProjectResponseDto';
+} from '@/common/constants/messages.constant';
+import type { IWorkspaceRepository } from '@/workspace/interface/IWorkspaceRepository';
+import { ProjectResponseDto } from '@/project/dto/res/ProjectResponseDto';
 import { Types } from 'mongoose';
-import { ProjectMapper } from './mapper/ProjectMapper';
-import { ProjectListItemDto } from '../dto/res/ProjectListItemDto';
-import { UpdateProjectDto } from '../dto/req/UpdateProjectDto';
-import type { IRoleRepository } from 'src/role/interface/IRoleRepository';
-import type { IProjectMemberRepository } from '../interfaces/IProjectMemberRepository';
-import { AddProjectMemberDto } from '../dto/req/AddProjectMemberDTO';
-import { Permission, ProjectRole } from 'src/common/type/ProjectRole';
-import { GetAllProjectsDTO } from '../dto/req/GetAllProjectsDTO';
-import { GetAllProjectsResponseDTO } from '../dto/res/GetAllProjectsResponseDTO';
+import { ProjectMapper } from '@/project/service/mapper/ProjectMapper';
+import { ProjectListItemDto } from '@/project/dto/res/ProjectListItemDto';
+import { UpdateProjectDto } from '@/project/dto/req/UpdateProjectDto';
+import type { IRoleRepository } from '@/role/interface/IRoleRepository';
+import type { IProjectMemberRepository } from '@/project/interfaces/IProjectMemberRepository';
+import { AddProjectMemberDto } from '@/project/dto/req/AddProjectMemberDTO';
+import { Permission, ProjectRole } from '@/common/type/ProjectRole';
+import { GetAllProjectsDTO } from '@/project/dto/req/GetAllProjectsDTO';
+import { GetAllProjectsResponseDTO } from '@/project/dto/res/GetAllProjectsResponseDTO';
+import type { ISubscriptionRepository } from '@/subscription/interface/ISubscriptionRepository';
+import { PopulatedPlan } from '@/common/type/Populated';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class ProjectService implements IProjectService {
-  private readonly _logger = new Logger(ProjectService.name);
   constructor(
+    private readonly _logger: PinoLogger,
     @Inject('IprojectRepository')
     private readonly _projectRepository: IprojectRepository,
     @Inject('IWorkspaceRepository')
@@ -37,13 +39,15 @@ export class ProjectService implements IProjectService {
     private readonly _roleRepository: IRoleRepository,
     @Inject('IProjectMemberRepository')
     private readonly _projectMemberRepo: IProjectMemberRepository,
+    @Inject('ISubscriptionRepository')
+    private readonly _subscriptionRepo: ISubscriptionRepository,
   ) {}
   async createProject(
     project: CreateProjectDto,
     workspaceId: string,
     userId: string,
   ): Promise<ProjectResponseDto> {
-    this._logger.log('workspaceId :', workspaceId);
+    this._logger.info('workspaceId :', workspaceId);
     const workspace = await this._workspaceRepository.findById(workspaceId);
     if (!workspace) {
       throw new NotFoundException(WORKSPACE_MESSAGE.NOT_FOUND);
@@ -54,6 +58,21 @@ export class ProjectService implements IProjectService {
     );
     if (existingProject) {
       throw new ConflictException(PROJECT_ERRORS.PROJECT_ALREADY_EXISTS);
+    }
+
+    const activeSub = await this._subscriptionRepo.findActiveByWorkspace(workspaceId);
+    let projectLimit = 0; 
+    
+    if (activeSub && activeSub.planId) {
+      const plan = activeSub.planId as unknown as PopulatedPlan;
+      if (plan.maxProjects !== undefined && plan.maxProjects !== null) {
+        projectLimit = plan.maxProjects;
+      }
+    }
+
+    const currentProjects = await this._projectRepository.getProjectsByWorkspace(workspaceId);
+    if (currentProjects.length >= projectLimit) {
+      throw new ConflictException(PROJECT_ERRORS.PROJECT_LIMIT);
     }
     const createProject = await this._projectRepository.create({
       projectName: project.projectName,

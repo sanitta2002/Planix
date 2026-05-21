@@ -104,6 +104,7 @@ const BoardPage: React.FC = () => {
     return {
       TODO: filteredIssues.filter((i: IssueData) => i.status === IssueStatus.TODO),
       IN_PROGRESS: filteredIssues.filter((i: IssueData) => i.status === IssueStatus.IN_PROGRESS),
+      BLOCKED: filteredIssues.filter((i: IssueData) => i.status === IssueStatus.BLOCKED),
       DONE: filteredIssues.filter((i: IssueData) => i.status === IssueStatus.DONE),
     };
   }, [filteredIssues]);
@@ -186,7 +187,7 @@ const BoardPage: React.FC = () => {
             </p>
           </div>
 
-          {activeSprint && (
+          {activeSprint && activeSprint.status === SprintStatus.ACTIVE && (
             <button 
               onClick={() => setIsCompleteModalOpen(true)}
               className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-emerald-900/20"
@@ -252,7 +253,9 @@ const BoardPage: React.FC = () => {
                 {member.user.avatarUrl ? (
                   <img src={member.user.avatarUrl} alt={member.user.firstName} className="w-full h-full object-cover" />
                 ) : (
-                  <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${member.user.firstName}`} alt={member.user.firstName} className="w-full h-full object-cover" />
+                  <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs uppercase">
+                    {member.user.firstName?.charAt(0) || '?'}
+                  </div>
                 )}
               </div>
             ))}
@@ -288,7 +291,7 @@ const BoardPage: React.FC = () => {
             </button>
           </div>
         ) : (
-          <div className="h-fit flex gap-6 overflow-x-auto pb-6 scrollbar-hide">
+          <div className="grid grid-cols-4 gap-4 pb-6 min-h-[60vh]" style={{ gridTemplateColumns: 'repeat(4, minmax(0, 1fr))' }}>
             <BoardColumn
               title="TO DO"
               status={IssueStatus.TODO}
@@ -297,7 +300,7 @@ const BoardPage: React.FC = () => {
               issues={issuesByStatus.TODO}
             >
               {issuesByStatus.TODO.map((issue) => (
-                <BoardCard key={issue.id || issue._id} issue={issue} />
+                <BoardCard key={issue.id || issue._id} issue={issue} members={currentProject?.members} />
               ))}
             </BoardColumn>
 
@@ -309,7 +312,19 @@ const BoardPage: React.FC = () => {
               issues={issuesByStatus.IN_PROGRESS}
             >
               {issuesByStatus.IN_PROGRESS.map((issue) => (
-                <BoardCard key={issue.id || issue._id} issue={issue} />
+                <BoardCard key={issue.id || issue._id} issue={issue} members={currentProject?.members} />
+              ))}
+            </BoardColumn>
+
+            <BoardColumn
+              title="BLOCKED"
+              status={IssueStatus.BLOCKED}
+              count={issuesByStatus.BLOCKED.length}
+              color="bg-red-500"
+              issues={issuesByStatus.BLOCKED}
+            >
+              {issuesByStatus.BLOCKED.map((issue) => (
+                <BoardCard key={issue.id || issue._id} issue={issue} members={currentProject?.members} />
               ))}
             </BoardColumn>
 
@@ -321,7 +336,7 @@ const BoardPage: React.FC = () => {
               issues={issuesByStatus.DONE}
             >
               {issuesByStatus.DONE.map((issue) => (
-                <BoardCard key={issue.id || issue._id} issue={issue} />
+                <BoardCard key={issue.id || issue._id} issue={issue} members={currentProject?.members} />
               ))}
             </BoardColumn>
           </div>
@@ -329,7 +344,7 @@ const BoardPage: React.FC = () => {
         <DragOverlay>
           {activeIssue ? (
             <div className="rotate-3 scale-105 opacity-90 shadow-2xl">
-              <BoardCard issue={activeIssue} />
+              <BoardCard issue={activeIssue} members={currentProject?.members} />
             </div>
           ) : null}
         </DragOverlay>

@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AdminService } from './admin.service';
+import { AdminService } from '@/admin/admin.service';
+import { beforeEach, describe, it } from 'node:test';
 
 describe('AdminService', () => {
   let service: AdminService;

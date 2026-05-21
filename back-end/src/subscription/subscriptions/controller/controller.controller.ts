@@ -9,12 +9,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import type { Request } from 'express';
-import type { ISubscriptionService } from 'src/subscription/interface/ISubscriptionService';
-import { CreateSubscriptionDto } from '../dto/CreateSubscriptionDto';
-import { ApiResponse } from 'src/common/utils/api-response.util';
-import { SUBSCRIPTION_MESSAGE } from 'src/common/constants/messages.constant';
-import type { ISubscriptionPlanService } from 'src/subscription/interface/ISubscriptionPlanService';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import type { ISubscriptionService } from '@/subscription/interface/ISubscriptionService';
+import { CreateSubscriptionDto } from '@/subscription/subscriptions/dto/CreateSubscriptionDto';
+import { ApiResponse } from '@/common/utils/api-response.util';
+import { SUBSCRIPTION_MESSAGE } from '@/common/constants/messages.constant';
+import type { ISubscriptionPlanService } from '@/subscription/interface/ISubscriptionPlanService';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 
 interface AuthRequest extends Request {
   user: {

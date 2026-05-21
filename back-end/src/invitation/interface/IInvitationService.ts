@@ -1,7 +1,7 @@
-import { InvitationResponseDto } from '../dto/res/InvitationResponseDto';
-import { InviteMemberDto } from '../dto/req/InviteMemberDto';
-import { AcceptInvitationResponseDto } from '../dto/res/AcceptInvitationResponseDto';
-import { CompleteProfileDto } from '../dto/req/CompleteProfileDto';
+import { InvitationResponseDto } from '@/invitation/dto/res/InvitationResponseDto';
+import { InviteMemberDto } from '@/invitation/dto/req/InviteMemberDto';
+import { AcceptInvitationResponseDto } from '@/invitation/dto/res/AcceptInvitationResponseDto';
+import { CompleteProfileDto } from '@/invitation/dto/req/CompleteProfileDto';
 
 export interface IInvitationService {
   inviteMember(

@@ -1,4 +1,4 @@
-import { ApiResponseDto } from '../dto/api-response.dto';
+import { ApiResponseDto } from '@/common/dto/api-response.dto';
 
 export class ApiResponse {
   static success<T>(

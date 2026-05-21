@@ -4,32 +4,34 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { IInvitationService } from '../interface/IInvitationService';
-import type { IInvitationRepository } from '../interface/IInvitationRepository';
-import type { IWorkspaceRepository } from 'src/workspace/interface/IWorkspaceRepository';
-import { InvitationResponseDto } from '../dto/res/InvitationResponseDto';
-import { InviteMemberDto } from '../dto/req/InviteMemberDto';
+import { IInvitationService } from '@/invitation/interface/IInvitationService';
+import type { IInvitationRepository } from '@/invitation/interface/IInvitationRepository';
+import type { IWorkspaceRepository } from '@/workspace/interface/IWorkspaceRepository';
+import { InvitationResponseDto } from '@/invitation/dto/res/InvitationResponseDto';
+import { InviteMemberDto } from '@/invitation/dto/req/InviteMemberDto';
 import {
   INVITE_MESSAGE,
   WORKSPACE_MESSAGE,
-} from 'src/common/constants/messages.constant';
+} from '@/common/constants/messages.constant';
 import { randomBytes } from 'crypto';
-import { InvitationMapper } from './mapper/InvitationMapper';
-import type { IMailService } from 'src/common/mail/interfaces/mail.interface';
+import { InvitationMapper } from '@/invitation/service/mapper/InvitationMapper';
+import type { IMailService } from '@/common/mail/interfaces/mail.interface';
 import { ConfigService } from '@nestjs/config';
-import type { IUserRepository } from 'src/users/interfaces/user.repository.interface';
-import type { IJwtService } from 'src/common/jwt/interfaces/jwt.service.interface';
-import { AcceptInvitationResponseDto } from '../dto/res/AcceptInvitationResponseDto';
-import { CompleteProfileDto } from '../dto/req/CompleteProfileDto';
-import type { IHashingService } from 'src/common/hashing/interface/hashing.service.interface';
+import type { IUserRepository } from '@/users/interfaces/user.repository.interface';
+import type { IJwtService } from '@/common/jwt/interfaces/jwt.service.interface';
+import { AcceptInvitationResponseDto } from '@/invitation/dto/res/AcceptInvitationResponseDto';
+import { CompleteProfileDto } from '@/invitation/dto/req/CompleteProfileDto';
+import type { ISubscriptionRepository } from '@/subscription/interface/ISubscriptionRepository';
+import type { IHashingService } from '@/common/hashing/interface/hashing.service.interface';
+import { PopulatedPlan } from '@/common/type/Populated';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class InvitationService implements IInvitationService {
-  private readonly _logger = new Logger(InvitationService.name);
   constructor(
+    private readonly _logger: PinoLogger,
     @Inject('IInvitationRepository')
     private readonly _invitationRepo: IInvitationRepository,
     @Inject('IWorkspaceRepository')
@@ -40,13 +42,15 @@ export class InvitationService implements IInvitationService {
     @Inject('IJwtService') private readonly _jwtService: IJwtService,
     @Inject('IHashingService')
     private readonly _hashingService: IHashingService,
+    @Inject('ISubscriptionRepository')
+    private readonly _subscriptionRepo: ISubscriptionRepository,
   ) {}
   async inviteMember(
     workspaceId: string,
     dto: InviteMemberDto,
     currentUserId: string,
   ): Promise<InvitationResponseDto> {
-    this._logger.log(
+    this._logger.info(
       `invite request by user ${currentUserId} for workspace ${workspaceId}`,
     );
     const workspace = await this._workspaceRepo.findById(workspaceId);
@@ -63,7 +67,17 @@ export class InvitationService implements IInvitationService {
       }
     }
 
-    if (workspace.members.length >= 6) {
+    const activeSub = await this._subscriptionRepo.findActiveByWorkspace(workspaceId);
+    let memberLimit = 0;
+    
+    if (activeSub && activeSub.planId) {
+      const plan = activeSub.planId as unknown as PopulatedPlan;
+      if (plan.maxMembers !== undefined && plan.maxMembers !== null) {
+        memberLimit = plan.maxMembers;
+      }
+    }
+
+    if (workspace.members.length >= memberLimit) {
       throw new ConflictException(WORKSPACE_MESSAGE.MEMBER_LIMIT);
     }
     const inviter = workspace.members.find(
@@ -88,17 +102,17 @@ export class InvitationService implements IInvitationService {
       inviter.user,
       token,
     );
-    this._logger.log(invitationData);
+    this._logger.info(invitationData);
     await this._invitationRepo.create(invitationData);
     const frontendUrl = this._configService.get<string>('FRONTEND_URL');
     const inviteLink = `${frontendUrl}/invite/${token}`;
     console.log('inviteLink', inviteLink);
     await this.__mailService.sendInvitationMail(dto.email, inviteLink);
-    this._logger.log(`invitation email sent to ${dto.email}`);
+    this._logger.info(`invitation email sent to ${dto.email}`);
     return { message: INVITE_MESSAGE.SUCCESS };
   }
   async acceptInvitation(token: string): Promise<AcceptInvitationResponseDto> {
-    this._logger.log(`accept invitation with token: ${token}`);
+    this._logger.info(`accept invitation with token: ${token}`);
     const invitation = await this._invitationRepo.findByToken(token);
     if (!invitation) {
       throw new NotFoundException(INVITE_MESSAGE.INVALID);
@@ -159,7 +173,7 @@ export class InvitationService implements IInvitationService {
     token: string,
     dto: CompleteProfileDto,
   ): Promise<AcceptInvitationResponseDto> {
-    this._logger.log(`profile completion started`);
+    this._logger.info(`profile completion started`);
     const invitation = await this._invitationRepo.findByToken(token);
     if (!invitation) {
       throw new NotFoundException(INVITE_MESSAGE.INVALID);
@@ -176,7 +190,7 @@ export class InvitationService implements IInvitationService {
       lastName: dto.lastName,
       password: hashedPassword,
     });
-    this._logger.log(`New user created: ${newUser.email}`);
+    this._logger.info(`New user created: ${newUser.email}`);
     const workspace = await this._workspaceRepo.findById(
       invitation.workspaceId.toString(),
     );

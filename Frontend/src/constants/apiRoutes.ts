@@ -80,5 +80,20 @@ export const API_ROUTES = {
     GET_BY_PROJECT: "/sprint/project/:projectId",
     START_SPRINT: "/sprint/:id/start",
     COMPLETE_SPRINT: "/sprint/:id/complete"
+  },
+  COMMENT: {
+    CREATE_COMMENT: "/comments/:issueId",
+    GET_COMMENTS: "/comments/:issueId",
+    DELETE_COMMENT: "/comments/:commentId",
+    UPDATE_COMMENT: "/comments/:commentId",
+  },
+  NOTIFICATION: {
+    GET_ALL: "/notification",
+    GET_UNREAD_COUNT: "/notification/unread-count",
+    MARK_AS_READ: "/notification/:id/read",
+    MARK_ALL_AS_READ: "/notification/read-all",
+  },
+  DASHBOARD: {
+    GET_USER_DASHBOARD: "/user-dashboard/project/:projectId",
   }
 };

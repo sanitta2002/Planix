@@ -10,18 +10,18 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { CreateSprintDto } from '../dto/req/CreateSprintDto';
-import { GetUser } from 'src/common/decorators/getuser.decorator';
-import type { AuthUser } from 'src/common/decorators/getuser.decorator';
-import { ApiResponseDto } from 'src/common/dto/api-response.dto';
-import { SprintResponse } from '../dto/res/SprintResponse';
-import { ApiResponse } from 'src/common/utils/api-response.util';
-import { SPRINT_MESSAGES } from 'src/common/constants/messages.constant';
-import type { ISprintservice } from '../interface/IsprintSerivce';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { ProjectPermissionGuard } from 'src/auth/guards/project-permission.guard';
-import { Permissions } from 'src/common/decorators/permissions.decorator';
-import { UpdateSprintDto } from '../dto/req/UpdateSprintDto ';
+import { CreateSprintDto } from '@/sprint/dto/req/CreateSprintDto';
+import { GetUser } from '@/common/decorators/getuser.decorator';
+import type { AuthUser } from '@/common/decorators/getuser.decorator';
+import { ApiResponseDto } from '@/common/dto/api-response.dto';
+import { SprintResponse } from '@/sprint/dto/res/SprintResponse';
+import { ApiResponse } from '@/common/utils/api-response.util';
+import { SPRINT_MESSAGES } from '@/common/constants/messages.constant';
+import type { ISprintservice } from '@/sprint/interface/IsprintSerivce';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { ProjectPermissionGuard } from '@/auth/guards/project-permission.guard';
+import { Permissions } from '@/common/decorators/permissions.decorator';
+import { UpdateSprintDto } from '@/sprint/dto/req/UpdateSprintDto ';
 @UseGuards(JwtAuthGuard, ProjectPermissionGuard)
 @Controller('sprint')
 export class SprintController {
@@ -54,8 +54,13 @@ export class SprintController {
   async startSprint(
     @Param('sprintId') sprintId: string,
     @Body() dto: UpdateSprintDto,
+    @GetUser() user: AuthUser,
   ): Promise<ApiResponseDto<SprintResponse>> {
-    const sprint = await this._sprintService.startSprint(dto, sprintId);
+    const sprint = await this._sprintService.startSprint(
+      dto,
+      sprintId,
+      user.userId,
+    );
 
     return ApiResponse.success(HttpStatus.OK, SPRINT_MESSAGES.STARTED, sprint);
   }
@@ -65,8 +70,13 @@ export class SprintController {
   async completeSprint(
     @Param('sprintId') sprintId: string,
     @Body() dto: UpdateSprintDto,
+    @GetUser() user: AuthUser,
   ): Promise<ApiResponseDto<SprintResponse>> {
-    const sprint = await this._sprintService.completeSprint(dto, sprintId);
+    const sprint = await this._sprintService.completeSprint(
+      dto,
+      sprintId,
+      user.userId,
+    );
 
     return ApiResponse.success(HttpStatus.OK, SPRINT_MESSAGES.UPDATED, sprint);
   }

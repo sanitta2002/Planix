@@ -11,15 +11,15 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import type { Request } from 'express';
-import { UpdateProfileReqDto } from './dto/ReqDto/UpdateProfileReqDto';
-import { ChangePasswordDto } from './dto/ReqDto/ChangePasswordDto';
+import { UpdateProfileReqDto } from '@/users/dto/ReqDto/UpdateProfileReqDto';
+import { ChangePasswordDto } from '@/users/dto/ReqDto/ChangePasswordDto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UploadAvatarReqDto } from './dto/ReqDto/UploadAvatarReqDto';
-import { ApiResponse } from 'src/common/utils/api-response.util';
-import { USER_MESSAGES } from 'src/common/constants/messages.constant';
-import type { IUserServicePRO } from './interfaces/user/IUserService';
+import { UploadAvatarReqDto } from '@/users/dto/ReqDto/UploadAvatarReqDto';
+import { ApiResponse } from '@/common/utils/api-response.util';
+import { USER_MESSAGES } from '@/common/constants/messages.constant';
+import type { IUserServicePRO } from '@/users/interfaces/user/IUserService';
 
 interface AuthRequest extends Request {
   user: {

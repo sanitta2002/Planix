@@ -6,20 +6,20 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { IUserServicePRO } from './interfaces/user/IUserService';
-import type { IUserRepository } from './interfaces/user.repository.interface';
-import { UpdateProfileReqDto } from './dto/ReqDto/UpdateProfileReqDto';
-import { UpdateProfileResponseDTO } from './dto/ResDto/UpdateProfileResponseDTO';
-import { ChangePasswordDto } from './dto/ReqDto/ChangePasswordDto';
-import type { IHashingService } from 'src/common/hashing/interface/hashing.service.interface';
-import type { IS3Service } from 'src/common/s3/interfaces/s3.service.interface';
-import { UploadAvatarReqDto } from './dto/ReqDto/UploadAvatarReqDto';
-import { UploadAvatarResDto } from './dto/ResDto/UploadAvatarResDto';
+import { IUserServicePRO } from '@/users/interfaces/user/IUserService';
+import type { IUserRepository } from '@/users/interfaces/user.repository.interface';
+import { UpdateProfileReqDto } from '@/users/dto/ReqDto/UpdateProfileReqDto';
+import { UpdateProfileResponseDTO } from '@/users/dto/ResDto/UpdateProfileResponseDTO';
+import { ChangePasswordDto } from '@/users/dto/ReqDto/ChangePasswordDto';
+import type { IHashingService } from '@/common/hashing/interface/hashing.service.interface';
+import type { IS3Service } from '@/common/s3/interfaces/s3.service.interface';
+import { UploadAvatarReqDto } from '@/users/dto/ReqDto/UploadAvatarReqDto';
+import { UploadAvatarResDto } from '@/users/dto/ResDto/UploadAvatarResDto';
 import {
   GENERAL_MESSAGES,
   USER_MESSAGES,
-} from 'src/common/constants/messages.constant';
-import { UserMapper } from 'src/users/mapper/user.mapper';
+} from '@/common/constants/messages.constant';
+import { UserMapper } from '@/users/mapper/user.mapper';
 
 @Injectable()
 export class UsersService implements IUserServicePRO {

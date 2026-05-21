@@ -1,12 +1,12 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { WorkspaceService } from './service/workspace.service';
-import { WorkspaceController } from './controller/workspace.controller';
+import { WorkspaceService } from '@/workspace/service/workspace.service';
+import { WorkspaceController } from '@/workspace/controller/workspace.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Workspace, WorkspaceSchema } from './Model/workspace.schema';
-import { WorkspaceRepository } from './Repository/workspace.repository';
-import { S3Module } from 'src/common/s3/s3.module';
-import { SubscriptionsModule } from 'src/subscription/subscriptions/subscriptions.module';
-import { SubscriptionPlanModule } from 'src/subscription/subscription-plan/subscription-plan.module';
+import { Workspace, WorkspaceSchema } from '@/workspace/Model/workspace.schema';
+import { WorkspaceRepository } from '@/workspace/Repository/workspace.repository';
+import { S3Module } from '@/common/s3/s3.module';
+import { SubscriptionsModule } from '@/subscription/subscriptions/subscriptions.module';
+import { SubscriptionPlanModule } from '@/subscription/subscription-plan/subscription-plan.module';
 
 @Module({
   imports: [

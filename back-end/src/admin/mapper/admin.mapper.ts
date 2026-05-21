@@ -1,9 +1,9 @@
-import { PaginatedUsersResponseDto } from '../dto/paginated-users.response.dto';
-import { UserStatusResponseDto } from '../dto/UserStatusResponseDto';
-import { AdminResponseDto } from '../dto/Admin.login.res.dto';
-import { User, UserDocument } from 'src/users/Models/user.schema';
-import { PaginatedWorkspaceResponseDto } from '../dto/PaginatedWorkspaceResponseDto ';
-import { WorkspaceDocument } from 'src/workspace/Model/workspace.schema';
+import { PaginatedUsersResponseDto } from '@/admin/dto/paginated-users.response.dto';
+import { UserStatusResponseDto } from '@/admin/dto/UserStatusResponseDto';
+import { AdminResponseDto } from '@/admin/dto/Admin.login.res.dto';
+import { User, UserDocument } from '@/users/Models/user.schema';
+import { PaginatedWorkspaceResponseDto } from '@/admin/dto/PaginatedWorkspaceResponseDto ';
+import { WorkspaceDocument } from '@/workspace/Model/workspace.schema';
 
 type Owner = {
   _id: string;

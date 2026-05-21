@@ -1,6 +1,6 @@
-import { BaseRepository } from 'src/users/repository/BaseRepo/BaseRepo';
-import { Role, RoleDocument } from '../Model/role.schema';
-import { IRoleRepository } from '../interface/IRoleRepository';
+import { BaseRepository } from '@/users/repository/BaseRepo/BaseRepo';
+import { Role, RoleDocument } from '@/role/Model/role.schema';
+import { IRoleRepository } from '@/role/interface/IRoleRepository';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';

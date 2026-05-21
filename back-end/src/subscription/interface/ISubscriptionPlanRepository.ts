@@ -1,5 +1,5 @@
-import { IBaseRepository } from 'src/users/interfaces/baseRepo.interface';
-import { SubscriptionPlanDocument } from '../Model/SubscriptionPlan.shema';
+import { IBaseRepository } from '@/users/interfaces/baseRepo.interface';
+import { SubscriptionPlanDocument } from '@/subscription/Model/SubscriptionPlan.shema';
 
 export interface ISubscriptionPlanRepository extends IBaseRepository<SubscriptionPlanDocument> {
   findAll(): Promise<SubscriptionPlanDocument[]>;

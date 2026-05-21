@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
-import { IssueService } from './service/issue.service';
-import { IssueController } from './controller/issue.controller';
+import { IssueService } from '@/issue/service/issue.service';
+import { IssueController } from '@/issue/controller/issue.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Issue, IssueSchema } from './Model/issue.schema';
-import { IssueRepository } from './repository/IssueRepository';
-import { ProjectModule } from 'src/project/project.module';
-import { RoleModule } from 'src/role/role.module';
-import { S3Module } from 'src/common/s3/s3.module';
+import { Issue, IssueSchema } from '@/issue/Model/issue.schema';
+import { IssueRepository } from '@/issue/repository/IssueRepository';
+import { ProjectModule } from '@/project/project.module';
+import { RoleModule } from '@/role/role.module';
+import { S3Module } from '@/common/s3/s3.module';
 
 @Module({
   imports: [

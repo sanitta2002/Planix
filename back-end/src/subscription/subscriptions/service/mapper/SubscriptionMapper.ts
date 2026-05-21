@@ -1,5 +1,5 @@
-import { SubscriptionDocument } from 'src/subscription/Model/subscription.schema';
-import { SubscriptionResponseDto } from '../../dto/SubscriptionResponseDto';
+import { SubscriptionDocument } from '@/subscription/Model/subscription.schema';
+import { SubscriptionResponseDto } from '@/subscription/subscriptions/dto/SubscriptionResponseDto';
 
 export class SubscriptionMapper {
   static toResponseDto(

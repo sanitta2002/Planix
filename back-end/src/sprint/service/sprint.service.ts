@@ -4,17 +4,22 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import type { IsprintRepository } from '../interface/IsprintRepository';
-import { CreateSprintDto } from '../dto/req/CreateSprintDto';
+import type { IsprintRepository } from '@/sprint/interface/IsprintRepository';
+import { CreateSprintDto } from '@/sprint/dto/req/CreateSprintDto';
 
-import { SPRINT_MESSAGES } from 'src/common/constants/messages.constant';
-import { SprintMapper } from './mapper/sprintMapper';
-import { SprintResponse } from '../dto/res/SprintResponse';
-import { ISprintservice } from '../interface/IsprintSerivce';
-import { SprintStatus } from 'src/common/type/SprintStatus';
-import { UpdateSprintDto } from '../dto/req/UpdateSprintDto ';
-import type { IIssueRepository } from 'src/issue/interface/IIssueRepository';
+import { SPRINT_MESSAGES } from '@/common/constants/messages.constant';
+import { SprintMapper } from '@/sprint/service/mapper/sprintMapper';
+import { SprintResponse } from '@/sprint/dto/res/SprintResponse';
+import { ISprintservice } from '@/sprint/interface/IsprintSerivce';
+import { SprintStatus } from '@/common/type/SprintStatus';
+import { UpdateSprintDto } from '@/sprint/dto/req/UpdateSprintDto ';
+import type { IIssueRepository } from '@/issue/interface/IIssueRepository';
 import { PinoLogger } from 'nestjs-pino';
+
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { SprintStartedEvent } from '@/notification/events/notification.events';
+import { NotificationType } from '@/common/type/NotificationType';
+import type { IProjectMemberRepository } from '@/project/interfaces/IProjectMemberRepository';
 
 @Injectable()
 export class SprintService implements ISprintservice {
@@ -24,6 +29,9 @@ export class SprintService implements ISprintservice {
     private readonly _sprintRepo: IsprintRepository,
     @Inject('IIssueRepository')
     private readonly _issueRepo: IIssueRepository,
+    @Inject('IProjectMemberRepository')
+    private readonly _projectMemberRepo: IProjectMemberRepository,
+    private readonly _eventEmitter: EventEmitter2,
   ) {}
   async createSprint(
     dto: CreateSprintDto,
@@ -57,6 +65,7 @@ export class SprintService implements ISprintservice {
   async startSprint(
     dto: UpdateSprintDto,
     sprintId: string,
+    userId: string,
   ): Promise<SprintResponse> {
     this._logger.info(`Starting sprint: ${sprintId}`);
 
@@ -116,12 +125,28 @@ export class SprintService implements ISprintservice {
 
     this._logger.info(`Sprint started successfully: ${sprintId}`);
 
+    const members = await this._projectMemberRepo.getProjectMembers(
+      updatedSprint.projectId.toString(),
+    );
+    const memberIds = members.map((m) => m.userId._id.toString());
+
+    this._eventEmitter.emit(
+      NotificationType.SPRINT_STARTED,
+      new SprintStartedEvent(
+        updatedSprint._id.toString(),
+        updatedSprint.name,
+        memberIds,
+        userId,
+      ),
+    );
+
     return SprintMapper.toResponse(updatedSprint);
   }
 
   async completeSprint(
     dto: UpdateSprintDto,
     sprintId: string,
+    userId: string,
   ): Promise<SprintResponse> {
     this._logger.info(`Completing sprint: ${sprintId}`);
 
@@ -159,6 +184,21 @@ export class SprintService implements ISprintservice {
     }
 
     this._logger.info(`Sprint completed successfully: ${sprintId}`);
+
+    const members = await this._projectMemberRepo.getProjectMembers(
+      updatedSprint.projectId.toString(),
+    );
+    const memberIds = members.map((m) => m.userId._id.toString());
+
+    this._eventEmitter.emit(
+      NotificationType.SPRINT_COMPLETED,
+      new SprintStartedEvent(
+        updatedSprint._id.toString(),
+        updatedSprint.name,
+        memberIds,
+        userId,
+      ),
+    );
 
     return SprintMapper.toResponse(updatedSprint);
   }

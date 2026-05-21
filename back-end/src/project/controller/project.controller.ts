@@ -12,13 +12,13 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import type { IProjectService } from '../interfaces/IProjectService';
-import { CreateProjectDto } from '../dto/req/CreateProjectDto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { ApiResponse } from 'src/common/utils/api-response.util';
-import { PROJECT } from 'src/common/constants/messages.constant';
-import { UpdateProjectDto } from '../dto/req/UpdateProjectDto';
-import { GetAllProjectsDTO } from '../dto/req/GetAllProjectsDTO';
+import type { IProjectService } from '@/project/interfaces/IProjectService';
+import { CreateProjectDto } from '@/project/dto/req/CreateProjectDto';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { ApiResponse } from '@/common/utils/api-response.util';
+import { PROJECT } from '@/common/constants/messages.constant';
+import { UpdateProjectDto } from '@/project/dto/req/UpdateProjectDto';
+import { GetAllProjectsDTO } from '@/project/dto/req/GetAllProjectsDTO';
 
 interface AuthRequest extends Request {
   user: { userId: string };

@@ -8,26 +8,26 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { IWorkspaceService } from '../interface/IWorkspaceService';
-import type { IWorkspaceRepository } from '../interface/IWorkspaceRepository';
-import { CreateWorkspaceDto } from '../dto/req/CreateWorkspaceDto';
-import { WorkspaceResponseDto } from '../dto/res/WorkspaceResponseDto';
+import { IWorkspaceService } from '@/workspace/interface/IWorkspaceService';
+import type { IWorkspaceRepository } from '@/workspace/interface/IWorkspaceRepository';
+import { CreateWorkspaceDto } from '@/workspace/dto/req/CreateWorkspaceDto';
+import { WorkspaceResponseDto } from '@/workspace/dto/res/WorkspaceResponseDto';
 import { Types } from 'mongoose';
-import { WorkspaceMapper } from './Mapper/workspace.mapper';
+import { WorkspaceMapper } from '@/workspace/service/Mapper/workspace.mapper';
 import {
   GENERAL_MESSAGES,
   OWNER_MESSAGE,
   WORKSPACE_MESSAGE,
-} from 'src/common/constants/messages.constant';
-import { WorkspaceMembersResponseDto } from '../dto/res/WorkspaceMembersResponseDto';
-import { PopulatedWorkspaceMember } from 'src/common/type/MemberType';
-import { UpdateWorkspaceDto } from '../dto/req/UpdateWorkspaceDto';
-import { WorkspaceLogoUploadResponseDto } from '../dto/res/WorkspaceLogoResDto';
-import type { IS3Service } from 'src/common/s3/interfaces/s3.service.interface';
-import { WorkspacePaymentResponseDto } from '../dto/res/WorkspacePaymentResponseDto';
-import type { ISubscriptionRepository } from 'src/subscription/interface/ISubscriptionRepository';
-import type { ISubscriptionPlanRepository } from 'src/subscription/interface/ISubscriptionPlanRepository';
-import { PopulatedPlan } from 'src/common/type/Populated';
+} from '@/common/constants/messages.constant';
+import { WorkspaceMembersResponseDto } from '@/workspace/dto/res/WorkspaceMembersResponseDto';
+import { PopulatedWorkspaceMember } from '@/common/type/MemberType';
+import { UpdateWorkspaceDto } from '@/workspace/dto/req/UpdateWorkspaceDto';
+import { WorkspaceLogoUploadResponseDto } from '@/workspace/dto/res/WorkspaceLogoResDto';
+import type { IS3Service } from '@/common/s3/interfaces/s3.service.interface';
+import { WorkspacePaymentResponseDto } from '@/workspace/dto/res/WorkspacePaymentResponseDto';
+import type { ISubscriptionRepository } from '@/subscription/interface/ISubscriptionRepository';
+import type { ISubscriptionPlanRepository } from '@/subscription/interface/ISubscriptionPlanRepository';
+import { PopulatedPlan } from '@/common/type/Populated';
 
 @Injectable()
 export class WorkspaceService implements IWorkspaceService {
@@ -226,6 +226,10 @@ export class WorkspaceService implements IWorkspaceService {
         startDate: sub.startDate ?? null,
         endDate: sub.endDate,
         duration: plan?.durationDays ?? null,
+        maxMembers: plan?.maxMembers ?? null,
+        maxProjects: plan?.maxProjects ?? null,
+        stripeSubscriptionId: sub.stripeSubscriptionId ?? null,
+        latestInvoiceId: sub.latestInvoiceId ?? null,
       };
     });
   }

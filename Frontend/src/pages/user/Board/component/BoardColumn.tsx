@@ -22,40 +22,48 @@ const BoardColumn: React.FC<BoardColumnProps> = ({ title, status, count, color, 
   return (
     <div 
       ref={setNodeRef}
-      className={`flex flex-col min-w-[320px] max-w-[380px] w-full h-full bg-secondary/10 rounded-2xl border transition-colors duration-200 backdrop-blur-sm overflow-hidden ${isOver ? 'border-primary/50 bg-primary/5' : 'border-border/40'}`}
+      className={`flex flex-col flex-1 min-w-0 rounded-2xl border transition-all duration-300 overflow-hidden bg-[#0f1729] ${
+        isOver 
+          ? 'border-primary/40 shadow-[0_0_30px_rgba(99,102,241,0.08)]' 
+          : 'border-white/[0.06]'
+      }`}
     >
       {/* Column Header */}
-      <div className="p-5 flex flex-col gap-3">
-        <div className="flex items-center gap-3">
-          <h2 className="text-xs font-bold tracking-wider text-muted-foreground uppercase">
-            {title}
-          </h2>
-          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-secondary/50 text-[10px] font-bold text-muted-foreground border border-border/50">
+      <div className="p-4 pb-3 flex flex-col gap-2.5 shrink-0">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className={`w-2 h-2 rounded-full ${color} shadow-[0_0_8px_currentColor]`} />
+            <h2 className="text-[11px] font-bold tracking-[0.15em] text-slate-400 uppercase">
+              {title}
+            </h2>
+          </div>
+          <span className="flex items-center justify-center min-w-[22px] h-[22px] px-1.5 rounded-md bg-white/[0.05] text-[10px] font-bold text-slate-500 border border-white/[0.06]">
             {count}
           </span>
         </div>
         
-        {/* Accent Underline */}
-        <div className={`h-0.5 w-full rounded-full opacity-60 ${color}`} />
+        {/* Accent Line */}
+        <div className="h-[2px] w-full rounded-full bg-gradient-to-r from-transparent via-white/[0.06] to-transparent overflow-hidden">
+          <div className={`h-full rounded-full opacity-70 ${color}`} style={{ width: `${Math.min(count * 20, 100)}%` }} />
+        </div>
       </div>
 
       {/* Column Content */}
-      <div className="flex-1 px-3 pb-4 overflow-y-auto scrollbar-hide">
+      <div className="flex-1 px-2.5 pb-3 overflow-y-auto scrollbar-hide">
         <SortableContext items={issues.map(i => (i.id || i._id)!)} strategy={verticalListSortingStrategy}>
           {isEmpty ? (
-            <div className="flex flex-col items-center justify-center h-full py-12 text-center">
-              {/* Custom Dashed Box Icon */}
-              <div className="relative w-16 h-16 mb-4">
-                <div className="absolute inset-0 border-2 border-dashed border-muted-foreground/30 rounded-xl" />
-                <div className="absolute inset-4 border-2 border-dashed border-muted-foreground/20 rounded-lg opacity-50" />
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="relative w-12 h-12 mb-3 opacity-30">
+                <div className="absolute inset-0 border-2 border-dashed border-slate-600 rounded-xl" />
+                <div className="absolute inset-3 border border-dashed border-slate-700 rounded-lg" />
               </div>
-              <h3 className="text-sm font-medium text-muted-foreground">No issues</h3>
-              <p className="text-[11px] text-muted-foreground/60 mt-1 max-w-[160px]">
-                Drag issues here or create a new one.
+              <h3 className="text-xs font-semibold text-slate-500">No issues</h3>
+              <p className="text-[10px] text-slate-600 mt-1 max-w-[140px] leading-relaxed">
+                Drag issues here or create new ones
               </p>
             </div>
           ) : (
-            <div className="flex flex-col min-h-[150px]">
+            <div className="flex flex-col gap-2 min-h-[120px]">
               {children}
             </div>
           )}
@@ -66,4 +74,3 @@ const BoardColumn: React.FC<BoardColumnProps> = ({ title, status, count, color, 
 };
 
 export default BoardColumn;
-

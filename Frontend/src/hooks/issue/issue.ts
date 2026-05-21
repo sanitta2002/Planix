@@ -9,15 +9,44 @@ import {
   type UpdateIssueProps,
 } from "../../Service/issue/issue";
 
+export interface IssueData {
+  id: string;
+  _id?: string;
+  title: string;
+  status: string;
+  type?: string;
+  issueType?: string;
+  key: string;
+  assigneeId?: string | null;
+  sprintId?: string | null;
+  createdAt: string;
+  parentId?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  attachments?: any[];
+  projectId?: string;
+  estimatedHours?: number;
+}
+
+export interface GetIssuesResponse {
+  data: IssueData[];
+}
+
 export const useCreateIssue = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: CreateIssueProps) => createIssue(data),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ["issues", variables.projectId],
-      });
-      queryClient.invalidateQueries({ queryKey: ["issues"] });
+    onSuccess: (response, variables) => {
+      queryClient.setQueryData<GetIssuesResponse>(
+        ["issues", variables.projectId],
+        (oldData) => {
+          if (!oldData) return { data: [response.data] };
+          return {
+            ...oldData,
+            data: [...oldData.data, response.data],
+          };
+        }
+      );
     },
   });
 };
@@ -28,9 +57,22 @@ export const useUpdateIssue = () => {
     mutationFn: ({ id, data }: { id: string; data: UpdateIssueProps }) =>
       updateIssue(id, data),
     onSuccess: (response) => {
-      const projectId = response?.data?.projectId;
-      queryClient.invalidateQueries({ queryKey: ["issues", projectId] });
-      queryClient.invalidateQueries({ queryKey: ["issues"] });
+      const updatedIssue = response.data;
+      const projectId = updatedIssue?.projectId;
+      if (projectId) {
+        queryClient.setQueryData<GetIssuesResponse>(
+          ["issues", projectId],
+          (oldData) => {
+            if (!oldData) return oldData;
+            return {
+              ...oldData,
+              data: oldData.data.map((issue: IssueData) =>
+                issue.id === updatedIssue.id ? updatedIssue : issue
+              ),
+            };
+          }
+        );
+      }
     },
   });
 };
@@ -57,10 +99,22 @@ export const useAddAttachments = () => {
     }) => uploadAttachments(issueId, files, link),
 
     onSuccess: (response) => {
-      const projectId = response?.data?.projectId;
-
-      queryClient.invalidateQueries({ queryKey: ["issues", projectId] });
-      queryClient.invalidateQueries({ queryKey: ["issues"] });
+      const updatedIssue = response.data;
+      const projectId = updatedIssue?.projectId;
+      if (projectId) {
+        queryClient.setQueryData<GetIssuesResponse>(
+          ["issues", projectId],
+          (oldData) => {
+            if (!oldData) return oldData;
+            return {
+              ...oldData,
+              data: oldData.data.map((issue: IssueData) =>
+                issue.id === updatedIssue.id ? updatedIssue : issue
+              ),
+            };
+          }
+        );
+      }
     },
   });
 };
@@ -77,10 +131,22 @@ export const useDeleteAttachment = () => {
     }) => deleteAttachment(issueId, attachmentKey),
 
     onSuccess: (response) => {
-      const projectId = response?.data?.projectId;
-
-      queryClient.invalidateQueries({ queryKey: ["issues", projectId] });
-      queryClient.invalidateQueries({ queryKey: ["issues"] });
+      const updatedIssue = response.data;
+      const projectId = updatedIssue?.projectId;
+      if (projectId) {
+        queryClient.setQueryData<GetIssuesResponse>(
+          ["issues", projectId],
+          (oldData) => {
+            if (!oldData) return oldData;
+            return {
+              ...oldData,
+              data: oldData.data.map((issue: IssueData) =>
+                issue.id === updatedIssue.id ? updatedIssue : issue
+              ),
+            };
+          }
+        );
+      }
     },
   });
 };

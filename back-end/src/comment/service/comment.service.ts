@@ -1,0 +1,122 @@
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { ICommentService } from '@/comment/Interface/ICommentService';
+import { CreateCommentDTO } from '@/comment/dto/req/CreateCommentDTO';
+import { CommentResponseDTO } from '@/comment/dto/res/CommentResponseDTO';
+import { COMMENT_MESSAGES } from '@/common/constants/messages.constant';
+import type { IIssueRepository } from '@/issue/interface/IIssueRepository';
+import { Types } from 'mongoose';
+import { CommentMapper } from '@/comment/service/Mapper/comment.mapper';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { IssueCommentedEvent } from '@/notification/events/notification.events';
+import { NotificationType } from '@/common/type/NotificationType';
+import { PinoLogger } from 'nestjs-pino';
+import type { ICommentRepository } from '@/comment/Interface/ICommentRepository';
+
+@Injectable()
+export class CommentService implements ICommentService {
+  constructor(
+    private readonly _logger: PinoLogger,
+    @Inject('ICommentRepository')
+    private readonly _commentRepo: ICommentRepository,
+    @Inject('IIssueRepository') private readonly _issueRepo: IIssueRepository,
+    private readonly _eventEmitter: EventEmitter2,
+  ) {}
+  async createComment(
+    userId: string,
+    dto: CreateCommentDTO,
+  ): Promise<CommentResponseDTO> {
+    this._logger.info(`comment created by ${userId}`);
+    const { issueId, content } = dto;
+    if (!content.trim()) {
+      throw new NotFoundException(COMMENT_MESSAGES.CONTENT_REQUIRED);
+    }
+    const issue = await this._issueRepo.findById(issueId);
+    if (!issue) {
+      throw new NotFoundException(COMMENT_MESSAGES.ISSUE_NOT_FOUND);
+    }
+    const newComment = {
+      issueId: new Types.ObjectId(issueId),
+      content: content,
+      createdBy: new Types.ObjectId(userId),
+      mentions: [],
+    };
+    const createComment =
+      await this._commentRepo.createCommentWithPopulate(newComment);
+
+    const reporterId = issue.createdBy.toString();
+    const assigneeId = issue.assigneeId?.toString();
+
+    const receivers = new Set<string>();
+    if (reporterId && reporterId !== userId) {
+      receivers.add(reporterId);
+    }
+    if (assigneeId && assigneeId !== userId) {
+      receivers.add(assigneeId);
+    }
+
+    receivers.forEach((receiverId) => {
+      this._eventEmitter.emit(
+        NotificationType.ISSUE_COMMENTED,
+        new IssueCommentedEvent(
+          issue._id.toString(),
+          issue.title,
+          content,
+          receiverId,
+          userId,
+        ),
+      );
+    });
+
+    return CommentMapper.toResponse(createComment);
+  }
+
+  async getCommentsByIssueId(issueId: string): Promise<CommentResponseDTO[]> {
+    this._logger.info(`${issueId}`);
+    const issue = await this._issueRepo.findById(issueId);
+    if (!issue) {
+      throw new NotFoundException(COMMENT_MESSAGES.ISSUE_NOT_FOUND);
+    }
+    const comments = await this._commentRepo.getCommentsByIssueId(issueId);
+    return CommentMapper.toResponseList(comments);
+  }
+
+  async deleteComment(userId: string, commentId: string): Promise<void> {
+    const comment = await this._commentRepo.findById(commentId);
+    if (!comment) {
+      throw new NotFoundException(COMMENT_MESSAGES.NOT_FOUND);
+    }
+    if (comment.createdBy.toString() === userId) {
+      await this._commentRepo.deleteById(commentId);
+      return;
+    }
+    throw new ForbiddenException(COMMENT_MESSAGES.FORBIDDEN_DELETE);
+  }
+
+  async updateComment(
+    userId: string,
+    commentId: string,
+    content: string,
+  ): Promise<CommentResponseDTO> {
+    const comment = await this._commentRepo.findById(commentId);
+    if (!comment) {
+      throw new NotFoundException(COMMENT_MESSAGES.NOT_FOUND);
+    }
+
+    if (comment.createdBy.toString() !== userId) {
+      throw new ForbiddenException(COMMENT_MESSAGES.FORBIDDEN_UPDATE);
+    }
+
+    const updatedComment = await this._commentRepo.updateById(commentId, {
+      content,
+    });
+    if (!updatedComment) {
+      throw new NotFoundException(COMMENT_MESSAGES.NOT_FOUND);
+    }
+    return CommentMapper.toResponse(updatedComment);
+  }
+}

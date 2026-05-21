@@ -4,17 +4,19 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { IRoleService } from '../interface/IRoleService';
-import type { IRoleRepository } from '../interface/IRoleRepository';
-import { CreateRoleDTO } from '../dto/CreateRoleDTO';
-import { RoleDocument } from '../Model/role.schema';
-import { ROLE_MESSAGE } from 'src/common/constants/messages.constant';
-import { UpdateRoleDTO } from '../dto/UpdateRoleDTO';
+import { IRoleService } from '@/role/interface/IRoleService';
+import type { IRoleRepository } from '@/role/interface/IRoleRepository';
+import { CreateRoleDTO } from '@/role/dto/CreateRoleDTO';
+import { RoleDocument } from '@/role/Model/role.schema';
+import { ROLE_MESSAGE } from '@/common/constants/messages.constant';
+import { UpdateRoleDTO } from '@/role/dto/UpdateRoleDTO';
 import { Types } from 'mongoose';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class RoleService implements IRoleService {
   constructor(
+    private readonly _logger: PinoLogger,
     @Inject('IRoleRepository')
     private readonly _roleRepository: IRoleRepository,
   ) {}

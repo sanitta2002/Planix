@@ -1,13 +1,13 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from './Models/user.schema';
-import { UserRepository } from './repository/user.Repository';
-import { UsersService } from './users.service';
-import { UsersController } from './users.controller';
-import { HashingService } from 'src/common/hashing/Service/hashing.service';
-import { S3Module } from 'src/common/s3/s3.module';
-import { JwtMiddleware } from 'src/common/middleware/jwt.middleware';
-import { AppJwtModule } from 'src/common/jwt/jwt.module';
+import { User, UserSchema } from '@/users/Models/user.schema';
+import { UserRepository } from '@/users/repository/user.Repository';
+import { UsersService } from '@/users/users.service';
+import { UsersController } from '@/users/users.controller';
+import { HashingService } from '@/common/hashing/Service/hashing.service';
+import { S3Module } from '@/common/s3/s3.module';
+import { JwtMiddleware } from '@/common/middleware/jwt.middleware';
+import { AppJwtModule } from '@/common/jwt/jwt.module';
 
 @Module({
   imports: [

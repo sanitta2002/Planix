@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
-import { IPlan } from './IPlan';
+import { IPlan } from '@/payment/interface/IPlan';
 import { Request } from 'express';
-import { PaymentDto } from '../dto/PaymentDto';
+import { PaymentDto } from '@/payment/dto/PaymentDto';
 
 export interface IPaymentService {
   createCheckoutSession(
@@ -15,5 +15,12 @@ export interface IPaymentService {
     signature: string,
   ): Promise<{ received: boolean }>;
   retryPayment(subscriptionId: string): Promise<{ url: string | null }>;
-  getAllPayments(): Promise<PaymentDto[]>;
+  getAllPayments(
+    planId?: string,
+    startDate?: string,
+    endDate?: string,
+    status?: string,
+    page?: number,
+    limit?: number,
+  ): Promise<{ payments: PaymentDto[]; total: number }>;
 }

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { SprintController } from './controller/sprint.controller';
+import { SprintController } from '@/sprint/controller/sprint.controller';
 
 describe('SprintController', () => {
   let controller: SprintController;

@@ -1,7 +1,7 @@
-import { User } from 'src/users/Models/user.schema';
-import { LoginResponseDto } from '../dto/ResponseDTO/login.res.dto';
-import { RefreshTokenResponseDto } from '../dto/ResponseDTO/RefreshTokenResponseDto';
-import { RegisterUserDto } from '../dto/RequestDTO/Register.dto';
+import { User } from '@/users/Models/user.schema';
+import { LoginResponseDto } from '@/auth/dto/ResponseDTO/login.res.dto';
+import { RefreshTokenResponseDto } from '@/auth/dto/ResponseDTO/RefreshTokenResponseDto';
+import { RegisterUserDto } from '@/auth/dto/RequestDTO/Register.dto';
 
 export interface TempUser {
   firstName: string;

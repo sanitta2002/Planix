@@ -1,5 +1,5 @@
-import { IBaseRepository } from 'src/users/interfaces/baseRepo.interface';
-import { SubscriptionDocument } from '../Model/subscription.schema';
+import { IBaseRepository } from '@/users/interfaces/baseRepo.interface';
+import { SubscriptionDocument } from '@/subscription/Model/subscription.schema';
 
 export interface ISubscriptionRepository extends IBaseRepository<SubscriptionDocument> {
   findActiveByWorkspace(
@@ -9,6 +9,13 @@ export interface ISubscriptionRepository extends IBaseRepository<SubscriptionDoc
   findByStripeSubscriptionId(
     stripeSubscriptionId: string,
   ): Promise<SubscriptionDocument | null>;
-  findAllPayments(): Promise<SubscriptionDocument[]>;
+  findAllPayments(
+    planId?: string,
+    startDate?: string,
+    endDate?: string,
+    status?: string,
+    page?: number,
+    limit?: number,
+  ): Promise<{ payments: SubscriptionDocument[]; total: number }>;
   findAllByWorkspace(workspaceId: string): Promise<SubscriptionDocument[]>;
 }

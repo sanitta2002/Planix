@@ -105,13 +105,23 @@ export const getWorkspaces = async (params: GetWorkspacePayload) => {
   return response;
 };
 
-export const getAllPayments = async () => {
-  const response = await AxiosInstance.get(API_ROUTES.Admin.paymets);
+export const getAllPayments = async (params?: {
+  planId?: string;
+  startDate?: string;
+  endDate?: string;
+  status?: string;
+  page?: number;
+  limit?: number;
+}) => {
+  const response = await AxiosInstance.get(API_ROUTES.Admin.paymets, {
+    params,
+  });
   return response.data;
 };
-export const downloadReport = async () => {
+export const downloadReport = async (params?: { planId?: string; startDate?: string; endDate?: string }) => {
   const response = await AxiosInstance.get(API_ROUTES.Admin.REPORT, {
+    params,
     responseType: "blob",
   });
-  return response.data
+  return response.data;
 };

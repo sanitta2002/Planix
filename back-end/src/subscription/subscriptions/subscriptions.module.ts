@@ -1,11 +1,14 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { SubscriptionsService } from './service/subscriptions.service';
-import { SubscriptionController } from './controller/controller.controller';
+import { SubscriptionsService } from '@/subscription/subscriptions/service/subscriptions.service';
+import { SubscriptionController } from '@/subscription/subscriptions/controller/controller.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { SubcriptionSchema, Subscription } from '../Model/subscription.schema';
-import { subscriptionRepository } from './repository/subscription.repository';
-import { SubscriptionPlanModule } from '../subscription-plan/subscription-plan.module';
-import { WorkspaceModule } from 'src/workspace/workspace.module';
+import {
+  SubcriptionSchema,
+  Subscription,
+} from '@/subscription/Model/subscription.schema';
+import { subscriptionRepository } from '@/subscription/subscriptions/repository/subscription.repository';
+import { SubscriptionPlanModule } from '@/subscription/subscription-plan/subscription-plan.module';
+import { WorkspaceModule } from '@/workspace/workspace.module';
 
 @Module({
   imports: [

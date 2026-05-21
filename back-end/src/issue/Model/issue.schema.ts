@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, HydratedDocument, Types } from 'mongoose';
-import { IssueStatus } from 'src/common/type/IssueStatus';
-import { IssueType } from 'src/common/type/IssueType';
+import { IssueStatus } from '@/common/type/IssueStatus';
+import { IssueType } from '@/common/type/IssueType';
 
 export interface IAttachment {
   type: string;
@@ -61,6 +61,9 @@ export class Issue {
 
   @Prop({ type: String, default: null })
   assigneeId?: string | null;
+
+  @Prop({ type: Number, default: 0 })
+  estimatedHours?: number;
 
   @Prop({ default: null })
   startDate?: Date;

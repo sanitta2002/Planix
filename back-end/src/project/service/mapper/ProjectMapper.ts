@@ -1,8 +1,8 @@
 import { Types } from 'mongoose';
-import { CreateProjectDto } from 'src/project/dto/req/CreateProjectDto';
-import { ProjectListItemDto } from 'src/project/dto/res/ProjectListItemDto';
-import { ProjectResponseDto } from 'src/project/dto/res/ProjectResponseDto';
-import { ProjectDocument } from 'src/project/Model/project.schema';
+import { CreateProjectDto } from '@/project/dto/req/CreateProjectDto';
+import { ProjectListItemDto } from '@/project/dto/res/ProjectListItemDto';
+import { ProjectResponseDto } from '@/project/dto/res/ProjectResponseDto';
+import { ProjectDocument } from '@/project/Model/project.schema';
 
 export class ProjectMapper {
   static toEntity(

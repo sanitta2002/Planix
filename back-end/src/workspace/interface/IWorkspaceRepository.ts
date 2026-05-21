@@ -1,5 +1,5 @@
-import { IBaseRepository } from 'src/users/interfaces/baseRepo.interface';
-import { WorkspaceDocument } from '../Model/workspace.schema';
+import { IBaseRepository } from '@/users/interfaces/baseRepo.interface';
+import { WorkspaceDocument } from '@/workspace/Model/workspace.schema';
 
 export interface IWorkspaceRepository extends IBaseRepository<WorkspaceDocument> {
   findByUser(ownerId: string): Promise<WorkspaceDocument[]>;

@@ -22,7 +22,7 @@ export const AdminDashboardNavbar = ({ onMenuClick }: AdminDashboardNavbarProps)
                 >
                     <Menu className="w-5 h-5" />
                 </button>
-                </div>
+            </div>
             {/* Left: Workspace Selector */}
             <div className="flex items-center">
                 <div className="relative">

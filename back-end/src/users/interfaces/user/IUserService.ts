@@ -1,8 +1,8 @@
-import { ChangePasswordDto } from 'src/users/dto/ReqDto/ChangePasswordDto';
-import { UpdateProfileReqDto } from 'src/users/dto/ReqDto/UpdateProfileReqDto';
-import { UploadAvatarReqDto } from 'src/users/dto/ReqDto/UploadAvatarReqDto';
-import { UpdateProfileResponseDTO } from 'src/users/dto/ResDto/UpdateProfileResponseDTO';
-import { UploadAvatarResDto } from 'src/users/dto/ResDto/UploadAvatarResDto';
+import { ChangePasswordDto } from '@/users/dto/ReqDto/ChangePasswordDto';
+import { UpdateProfileReqDto } from '@/users/dto/ReqDto/UpdateProfileReqDto';
+import { UploadAvatarReqDto } from '@/users/dto/ReqDto/UploadAvatarReqDto';
+import { UpdateProfileResponseDTO } from '@/users/dto/ResDto/UpdateProfileResponseDTO';
+import { UploadAvatarResDto } from '@/users/dto/ResDto/UploadAvatarResDto';
 
 export interface IUserServicePRO {
   updateProfile(

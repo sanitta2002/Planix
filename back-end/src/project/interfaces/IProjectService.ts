@@ -1,9 +1,9 @@
-import { CreateProjectDto } from '../dto/req/CreateProjectDto';
-import { GetAllProjectsDTO } from '../dto/req/GetAllProjectsDTO';
-import { UpdateProjectDto } from '../dto/req/UpdateProjectDto';
-import { GetAllProjectsResponseDTO } from '../dto/res/GetAllProjectsResponseDTO';
-import { ProjectListItemDto } from '../dto/res/ProjectListItemDto';
-import { ProjectResponseDto } from '../dto/res/ProjectResponseDto';
+import { CreateProjectDto } from '@/project/dto/req/CreateProjectDto';
+import { GetAllProjectsDTO } from '@/project/dto/req/GetAllProjectsDTO';
+import { UpdateProjectDto } from '@/project/dto/req/UpdateProjectDto';
+import { GetAllProjectsResponseDTO } from '@/project/dto/res/GetAllProjectsResponseDTO';
+import { ProjectListItemDto } from '@/project/dto/res/ProjectListItemDto';
+import { ProjectResponseDto } from '@/project/dto/res/ProjectResponseDto';
 export interface IProjectService {
   createProject(
     project: CreateProjectDto,

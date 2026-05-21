@@ -13,15 +13,15 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import type { IWorkspaceService } from '../interface/IWorkspaceService';
+import type { IWorkspaceService } from '@/workspace/interface/IWorkspaceService';
 import { Request } from 'express';
-import { CreateWorkspaceDto } from '../dto/req/CreateWorkspaceDto';
-import { ApiResponse } from 'src/common/utils/api-response.util';
-import { WORKSPACE_MESSAGE } from 'src/common/constants/messages.constant';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { WorkspaceMembersResponseDto } from '../dto/res/WorkspaceMembersResponseDto';
-import { ApiResponseDto } from 'src/common/dto/api-response.dto';
-import { UpdateWorkspaceDto } from '../dto/req/UpdateWorkspaceDto';
+import { CreateWorkspaceDto } from '@/workspace/dto/req/CreateWorkspaceDto';
+import { ApiResponse } from '@/common/utils/api-response.util';
+import { WORKSPACE_MESSAGE } from '@/common/constants/messages.constant';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+import { WorkspaceMembersResponseDto } from '@/workspace/dto/res/WorkspaceMembersResponseDto';
+import { ApiResponseDto } from '@/common/dto/api-response.dto';
+import { UpdateWorkspaceDto } from '@/workspace/dto/req/UpdateWorkspaceDto';
 import { FileInterceptor } from '@nestjs/platform-express';
 interface AuthRequest extends Request {
   user: { userId: string };

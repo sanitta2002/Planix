@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-import { SprintStatus } from 'src/common/type/SprintStatus';
+import { SprintStatus } from '@/common/type/SprintStatus';
 
 export type SprintDocument = HydratedDocument<Sprint> & {
   createdAt: Date;

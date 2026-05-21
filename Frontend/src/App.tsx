@@ -9,9 +9,9 @@ function App() {
 
   return (
     <>
-    <Toaster   richColors position="top-right" />
-     <UserRoutes />
-     <AdminRoutes/>
+      <Toaster richColors position="top-right" />
+      <UserRoutes />
+      <AdminRoutes />
     </>
   )
 }

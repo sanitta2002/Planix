@@ -11,4 +11,9 @@ export class WorkspacePaymentResponseDto {
   startDate: Date | null;
 
   endDate?: Date | null;
+
+  maxMembers?: number | null;
+  maxProjects?: number | null;
+  stripeSubscriptionId?: string | null;
+  latestInvoiceId?: string | null;
 }

@@ -5,29 +5,29 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { IuserService } from '../interfaces/user.service.interface';
-import type { IUserRepository } from 'src/users/interfaces/user.repository.interface';
-import { RegisterUserDto } from '../dto/RequestDTO/Register.dto';
-import type { IHashingService } from 'src/common/hashing/interface/hashing.service.interface';
-import type { IMailService } from 'src/common/mail/interfaces/mail.interface';
-import type { IOtpService } from 'src/common/otp/interfaces/otp.service.interface';
-import { VerifyEmailDto } from '../dto/RequestDTO/verify-email.dto';
-import { Resendotp } from '../dto/RequestDTO/resend-otp.dto';
-import { LoginRequestDto } from '../dto/RequestDTO/Login.dto';
-import type { IJwtService } from 'src/common/jwt/interfaces/jwt.service.interface';
-import { LoginResponseDto } from '../dto/ResponseDTO/login.res.dto';
-import { ForgotPasswordDTO } from '../dto/RequestDTO/ForgotPassword.dto';
-import { ResetPasswordDto } from '../dto/RequestDTO/ResetPassword.dto';
-import type { ITempStoreService } from 'src/common/temp-store-user/interface/temp-store.interface';
-import { GoogleLoginDto } from '../dto/RequestDTO/google-login.dto';
+import { IuserService } from '@/auth/interfaces/user.service.interface';
+import type { IUserRepository } from '@/users/interfaces/user.repository.interface';
+import { RegisterUserDto } from '@/auth/dto/RequestDTO/Register.dto';
+import type { IHashingService } from '@/common/hashing/interface/hashing.service.interface';
+import type { IMailService } from '@/common/mail/interfaces/mail.interface';
+import type { IOtpService } from '@/common/otp/interfaces/otp.service.interface';
+import { VerifyEmailDto } from '@/auth/dto/RequestDTO/verify-email.dto';
+import { Resendotp } from '@/auth/dto/RequestDTO/resend-otp.dto';
+import { LoginRequestDto } from '@/auth/dto/RequestDTO/Login.dto';
+import type { IJwtService } from '@/common/jwt/interfaces/jwt.service.interface';
+import { LoginResponseDto } from '@/auth/dto/ResponseDTO/login.res.dto';
+import { ForgotPasswordDTO } from '@/auth/dto/RequestDTO/ForgotPassword.dto';
+import { ResetPasswordDto } from '@/auth/dto/RequestDTO/ResetPassword.dto';
+import type { ITempStoreService } from '@/common/temp-store-user/interface/temp-store.interface';
+import { GoogleLoginDto } from '@/auth/dto/RequestDTO/google-login.dto';
 import { OAuth2Client } from 'google-auth-library';
-import { RefreshTokenResponseDto } from '../dto/ResponseDTO/RefreshTokenResponseDto';
+import { RefreshTokenResponseDto } from '@/auth/dto/ResponseDTO/RefreshTokenResponseDto';
 import {
   AUTH_MESSAGES,
   OTP_MESSAGES,
   USER_MESSAGES,
-} from 'src/common/constants/messages.constant';
-import { AuthMapper, TempUser } from '../mapper/auth.mapper';
+} from '@/common/constants/messages.constant';
+import { AuthMapper, TempUser } from '@/auth/mapper/auth.mapper';
 import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
@@ -113,9 +113,6 @@ export class AuthService implements IuserService {
     if (!user) {
       throw new UnauthorizedException(AUTH_MESSAGES.INVALID_EMAIL);
     }
-    // if (!user.isEmailVerified) {
-    //   throw new UnauthorizedException(AUTH_MESSAGES.EMAIL_NOT_VERIFIED);
-    // }
     if (user.isBlocked) {
       throw new BadRequestException(AUTH_MESSAGES.ACCOUNT_BLOCKED);
     }

@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { IS3Service } from './interfaces/s3.service.interface';
+import { IS3Service } from '@/common/s3/interfaces/s3.service.interface';
 import {
   DeleteObjectCommand,
   GetObjectCommand,

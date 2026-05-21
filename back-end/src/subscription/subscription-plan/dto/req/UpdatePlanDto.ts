@@ -5,17 +5,17 @@ import {
   IsNumber,
   IsArray,
   IsBoolean,
-  IsNotEmpty,
 } from 'class-validator';
 
 export class UpdatePlanDto {
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  name: string;
+  name?: string;
 
+  @IsOptional()
   @Type(() => Number)
   @IsNumber()
-  price: number;
+  price?: number;
 
   @IsOptional()
   @Type(() => Number)
@@ -27,17 +27,20 @@ export class UpdatePlanDto {
   @IsNumber()
   maxProjects?: number;
 
+  @IsOptional()
+  @Type(() => Number)
   @IsNumber()
-  durationDays: number;
+  durationDays?: number;
 
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
   storage?: number;
 
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  features: string[];
+  features?: string[];
 
   @IsOptional()
   @Type(() => Boolean)

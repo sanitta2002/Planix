@@ -7,11 +7,11 @@ import {
   Post,
   Req,
 } from '@nestjs/common';
-import type { IPaymentService } from '../interface/IPaymentService';
-import type { ISubscriptionPlanService } from 'src/subscription/interface/ISubscriptionPlanService';
-import { CreateCheckoutDto } from '../dto/createCheckout.dto';
-import { ApiResponse } from 'src/common/utils/api-response.util';
-import { SUBSCRIPTION_MESSAGE } from 'src/common/constants/messages.constant';
+import type { IPaymentService } from '@/payment/interface/IPaymentService';
+import type { ISubscriptionPlanService } from '@/subscription/interface/ISubscriptionPlanService';
+import { CreateCheckoutDto } from '@/payment/dto/createCheckout.dto';
+import { ApiResponse } from '@/common/utils/api-response.util';
+import { SUBSCRIPTION_MESSAGE } from '@/common/constants/messages.constant';
 import type { Request } from 'express';
 
 @Controller('payment')

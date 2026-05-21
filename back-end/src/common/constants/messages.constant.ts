@@ -141,6 +141,7 @@ export const PROJECT = {
 };
 
 export const PROJECT_ERRORS = {
+  PROJECT_LIMIT: 'Workspace project limit reached',
   PROJECT_NOT_FOUND: 'Project not found !',
   PROJECT_CREATION_FAILED: 'Project creation failed',
   PROJECT_INVALIDATION: 'Error while validating project !',
@@ -255,4 +256,54 @@ export const SPRINT_MESSAGES = {
 
   ISSUE_ALREADY_ASSIGNED: 'Issue is already assigned to another sprint',
   ISSUE_NOT_FOUND: 'Issue not found',
+};
+
+export const COMMENT_MESSAGES = {
+  CREATED: 'Comment added successfully.',
+  FETCHED: 'Comments retrieved successfully.',
+  UPDATED: 'Comment updated successfully.',
+  DELETED: 'Comment deleted successfully.',
+
+  NOT_FOUND: 'Comment not found or has been deleted.',
+  ISSUE_NOT_FOUND: 'The issue you are trying to comment on does not exist.',
+  FORBIDDEN_UPDATE: 'You do not have permission to edit this comment.',
+  FORBIDDEN_DELETE: 'You do not have permission to delete this comment.',
+  CREATE_FAILED: 'Failed to add comment. Please try again later.',
+  UPDATE_FAILED: 'Failed to update comment. Please try again later.',
+  DELETE_FAILED: 'Failed to delete comment. Please try again later.',
+  FETCH_FAILED: 'Failed to retrieve comments. Please try again later.',
+
+  CONTENT_REQUIRED: 'Comment content cannot be empty.',
+  CONTENT_TOO_LONG: 'Comment content exceeds the maximum character limit.',
+  INVALID_ISSUE_ID: 'Invalid issue ID provided.',
+};
+
+export const NOTIFICATION_MESSAGES = {
+  FETCHED: 'Notifications fetched successfully',
+  COUNT_FETCHED: 'Unread count fetched successfully',
+  MARKED_AS_READ: 'Notification marked as read',
+  ALL_MARKED_AS_READ: 'All notifications marked as read',
+  INVALID_RECEIVER_ID: 'Invalid receiver ID provided',
+  INVALID_NOTIFICATION_ID: 'Invalid notification ID provided',
+  NOT_FOUND: 'Notification not found',
+};
+
+export const NOTIFICATION_TEMPLATES = {
+  ISSUE_CREATED: (title: string) => `A new issue "${title}" has been created.`,
+  ISSUE_ASSIGNED: (title: string) =>
+    `You have been assigned to the issue "${title}".`,
+  ISSUE_COMMENTED: (title: string, content: string) =>
+    `commented on "${title}": "${content.substring(0, 30)}${content.length > 30 ? '...' : ''}"`,
+  ISSUE_UPDATED: (title: string) => `The issue "${title}" has been updated.`,
+  ISSUE_STATUS_CHANGED: (title: string, oldStatus: string, newStatus: string) =>
+    `changed status of "${title}" from ${oldStatus} to ${newStatus}`,
+  ISSUE_MENTIONED: (sender: string, title: string) =>
+    `${sender} mentioned you in "${title}".`,
+  PROJECT_MEMBER_ADDED: (projectName: string) =>
+    `You have been added to the project "${projectName}".`,
+  SPRINT_STARTED: (sprintName: string) =>
+    `The sprint "${sprintName}" has started.`,
+  SPRINT_COMPLETED: (sprintName: string) =>
+    `The sprint "${sprintName}" has been completed.`,
+  NEW_MESSAGE: (sender: string) => `New message from ${sender}.`,
 };

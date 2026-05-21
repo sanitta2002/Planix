@@ -1,5 +1,5 @@
-import { WorkspaceResponseDto } from 'src/workspace/dto/res/WorkspaceResponseDto';
-import { WorkspaceDocument } from 'src/workspace/Model/workspace.schema';
+import { WorkspaceResponseDto } from '@/workspace/dto/res/WorkspaceResponseDto';
+import { WorkspaceDocument } from '@/workspace/Model/workspace.schema';
 type Owner = {
   _id: string;
   firstName: string;

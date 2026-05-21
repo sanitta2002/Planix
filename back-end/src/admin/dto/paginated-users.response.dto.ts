@@ -1,4 +1,4 @@
-import { AdminUserResponseDto } from './admin-user.response.dto';
+import { AdminUserResponseDto } from '@/admin/dto/admin-user.response.dto';
 
 export class PaginatedUsersResponseDto {
   users: AdminUserResponseDto[];

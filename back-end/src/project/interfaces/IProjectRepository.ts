@@ -1,5 +1,5 @@
-import { IBaseRepository } from 'src/users/interfaces/baseRepo.interface';
-import { ProjectDocument } from '../Model/project.schema';
+import { IBaseRepository } from '@/users/interfaces/baseRepo.interface';
+import { ProjectDocument } from '@/project/Model/project.schema';
 
 export interface IprojectRepository extends IBaseRepository<ProjectDocument> {
   getProjectByKey(

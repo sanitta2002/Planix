@@ -1,4 +1,4 @@
-import { SubscriptionStatus } from 'src/subscription/Model/subscription.schema';
+import { SubscriptionStatus } from '@/subscription/Model/subscription.schema';
 
 export class SubscriptionResponseDto {
   id: string;

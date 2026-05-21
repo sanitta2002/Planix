@@ -3,42 +3,52 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
-  Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { IIssueService } from '../interface/IIssueService';
-import type { IIssueRepository } from '../interface/IIssueRepository';
-import { CreateIssueDTO } from '../dto/req/CreateIssueDTO';
-import { IssueResponse } from '../dto/res/IssueResponse';
+import { IIssueService } from '@/issue/interface/IIssueService';
+import type { IIssueRepository } from '@/issue/interface/IIssueRepository';
+import { CreateIssueDTO } from '@/issue/dto/req/CreateIssueDTO';
+import { IssueResponse } from '@/issue/dto/res/IssueResponse';
 import {
   ISSUE_ERRORS,
   PROJECT_ERRORS,
-} from 'src/common/constants/messages.constant';
-import { IssueType } from 'src/common/type/IssueType';
-import type { IprojectRepository } from 'src/project/interfaces/IProjectRepository';
-import { IssueMapper } from './mapper/IssueMapper';
-import type { IProjectMemberRepository } from 'src/project/interfaces/IProjectMemberRepository';
+} from '@/common/constants/messages.constant';
+import { IssueType } from '@/common/type/IssueType';
+import type { IprojectRepository } from '@/project/interfaces/IProjectRepository';
+import { IssueMapper } from '@/issue/service/mapper/IssueMapper';
+import type { IProjectMemberRepository } from '@/project/interfaces/IProjectMemberRepository';
 import { Types } from 'mongoose';
-import { UpdateIssueDTO } from '../dto/req/UpdateIssueDTO';
-import { AddAttachmentDTO } from '../dto/req/AttachmentDTO';
-import type { IS3Service } from 'src/common/s3/interfaces/s3.service.interface';
+import { UpdateIssueDTO } from '@/issue/dto/req/UpdateIssueDTO';
+import { AddAttachmentDTO } from '@/issue/dto/req/AttachmentDTO';
+import type { IS3Service } from '@/common/s3/interfaces/s3.service.interface';
+
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import {
+  IssueAssignedEvent,
+  IssueCreatedEvent,
+  IssueStatusChangedEvent,
+} from '@/notification/events/notification.events';
+import { NotificationType } from '@/common/type/NotificationType';
+import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
 export class IssueService implements IIssueService {
-  private readonly _logger = new Logger(IssueService.name);
   constructor(
+    private readonly _logger: PinoLogger,
     @Inject('IIssueRepository') private readonly _IissueRepo: IIssueRepository,
     @Inject('IprojectRepository')
     private readonly _projectRepo: IprojectRepository,
     @Inject('IProjectMemberRepository')
     private readonly _projectMemberRepo: IProjectMemberRepository,
     @Inject('IS3Service') private readonly _S3Service: IS3Service,
+    private readonly _eventEmitter: EventEmitter2,
   ) {}
   async createIssue(
     dto: CreateIssueDTO,
     userId: string,
   ): Promise<IssueResponse> {
     console.log('**************', userId);
+    this._logger.info(`issue creationed by ${userId}`);
     if (!dto.title || !dto.title.trim()) {
       throw new BadRequestException(PROJECT_ERRORS.ISSUE_INVALIDATION);
     }
@@ -91,9 +101,42 @@ export class IssueService implements IIssueService {
       ...data,
       key,
     });
+
+    if (dto.issueType === IssueType.EPIC) {
+      dto.assigneeId = undefined;
+    }
+
+    if (dto.assigneeId) {
+      this._eventEmitter.emit(
+        NotificationType.ISSUE_ASSIGNED,
+        new IssueAssignedEvent(
+          issue._id.toString(),
+          issue.title,
+          dto.assigneeId,
+          userId,
+        ),
+      );
+    }
+
+    const projectMembers = await this._projectMemberRepo.getProjectMembers(
+      dto.projectId,
+    );
+    const memberIds = projectMembers.map((m) => m.userId._id.toString());
+
+    this._eventEmitter.emit(
+      NotificationType.ISSUE_CREATED,
+      new IssueCreatedEvent(
+        issue._id.toString(),
+        issue.title,
+        userId,
+        memberIds,
+      ),
+    );
+
     return IssueMapper.toResponse(issue);
   }
   async getIssuesByProject(projectId: string): Promise<IssueResponse[]> {
+    this._logger.info(`${projectId}`);
     const project = await this._projectRepo.findById(projectId);
     if (!project) {
       throw new NotFoundException(PROJECT_ERRORS.NO_PROJECTS_FOUND);
@@ -122,6 +165,9 @@ export class IssueService implements IIssueService {
     if (dto.description) updateData.description = dto.description;
     if (dto.status) updateData.status = dto.status;
     if (dto.issueType) updateData.issueType = dto.issueType;
+    if (dto.estimatedHours !== undefined) {
+      updateData.estimatedHours = dto.estimatedHours;
+    }
     if (dto.parentId) {
       const parent = await this._IissueRepo.findById(dto.parentId);
       if (!parent) {
@@ -152,6 +198,45 @@ export class IssueService implements IIssueService {
 
     if (!updatedIssue) {
       throw new BadRequestException(ISSUE_ERRORS.ISSUE_UPDATE_FAILED);
+    }
+
+    if (dto.assigneeId && dto.assigneeId !== issue.assigneeId?.toString()) {
+      this._eventEmitter.emit(
+        NotificationType.ISSUE_ASSIGNED,
+        new IssueAssignedEvent(
+          updatedIssue._id.toString(),
+          updatedIssue.title,
+          dto.assigneeId,
+          userId,
+        ),
+      );
+    }
+
+    if (dto.status && dto.status !== issue.status) {
+      const reporterId = issue.createdBy.toString();
+      const assigneeId = issue.assigneeId?.toString();
+
+      const receivers = new Set<string>();
+      if (reporterId && reporterId !== userId) {
+        receivers.add(reporterId);
+      }
+      if (assigneeId && assigneeId !== userId) {
+        receivers.add(assigneeId);
+      }
+
+      receivers.forEach((receiverId) => {
+        this._eventEmitter.emit(
+          NotificationType.ISSUE_STATUS_CHANGED,
+          new IssueStatusChangedEvent(
+            updatedIssue._id.toString(),
+            updatedIssue.title,
+            issue.status,
+            dto.status!,
+            userId,
+            receiverId,
+          ),
+        );
+      });
     }
 
     return IssueMapper.toResponse(updatedIssue);
