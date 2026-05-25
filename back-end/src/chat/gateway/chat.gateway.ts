@@ -13,6 +13,7 @@ import {
 import { PinoLogger } from 'nestjs-pino';
 import { Server, Socket } from 'socket.io';
 import { SendMessageDTO } from '@/chat/dto/req/SendMessageDTO';
+import { UpdateMessageDTO } from '@/chat/dto/req/UpdateMessageDTO';
 import type { IChatService } from '@/chat/interface/IChatService';
 import { JwtPayload } from '@/common/jwt/payload/JwtPayload';
 
@@ -110,6 +111,57 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     } catch (error) {
       this._logger.error('failed real-time message sending', error);
       client.emit('error', { message: 'message not be processed' });
+    }
+  }
+
+  @SubscribeMessage('editMessage')
+  async handleEditMessage(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    payload: { messageId: string; projectId: string } & UpdateMessageDTO,
+  ): Promise<void> {
+    const socketData = client.data as { user?: JwtPayload };
+    const userId = socketData.user?.userId;
+    if (!userId) {
+      client.emit('error', { message: 'Unauthorized session' });
+      return;
+    }
+    try {
+      const updated = await this._chatService.updateMessage(
+        userId,
+        payload.messageId,
+        {
+          content: payload.content,
+        },
+      );
+      const roomName = `project_room_${payload.projectId}`;
+      this.server.to(roomName).emit('messageEdited', updated);
+    } catch (error) {
+      this._logger.error('failed real-time message edit', error);
+      client.emit('error', { message: 'Message could not be edited' });
+    }
+  }
+
+  @SubscribeMessage('deleteMessage')
+  async handleDeleteMessage(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() payload: { messageId: string; projectId: string },
+  ): Promise<void> {
+    const socketData = client.data as { user?: JwtPayload };
+    const userId = socketData.user?.userId;
+    if (!userId) {
+      client.emit('error', { message: 'Unauthorized session' });
+      return;
+    }
+    try {
+      await this._chatService.deleteMessage(userId, payload.messageId);
+      const roomName = `project_room_${payload.projectId}`;
+      this.server
+        .to(roomName)
+        .emit('messageDeleted', { messageId: payload.messageId });
+    } catch (error) {
+      this._logger.error('failed real-time message deletion', error);
+      client.emit('error', { message: 'Message could not be deleted' });
     }
   }
 }

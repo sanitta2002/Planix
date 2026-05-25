@@ -22,7 +22,10 @@ export class ChatMapper {
       senderAvatar: senderAvatarUrl,
       content: message.content,
       attachments,
+      isEdited: message.isEdited ?? false,
       createdAt: message.createdAt ?? new Date(),
+      updatedAt: message.updatedAt,
     };
   }
 }
+

@@ -307,3 +307,19 @@ export const NOTIFICATION_TEMPLATES = {
     `The sprint "${sprintName}" has been completed.`,
   NEW_MESSAGE: (sender: string) => `New message from ${sender}.`,
 };
+
+export const CHAT_MESSAGES = {
+  SENT: 'Message sent successfully',
+  UPDATED: 'Message updated successfully',
+  DELETED: 'Message deleted successfully',
+  FETCHED: 'Chat history fetched successfully',
+
+  NOT_FOUND: 'Message not found',
+  FORBIDDEN_UPDATE: 'You do not have permission to edit this message',
+  FORBIDDEN_DELETE: 'You do not have permission to delete this message',
+
+  UPDATE_FAILED: 'Failed to update message. Please try again later.',
+  DELETE_FAILED: 'Failed to delete message. Please try again later.',
+
+  CONTENT_REQUIRED: 'Message content cannot be empty',
+};

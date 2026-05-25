@@ -57,6 +57,7 @@ export class IssueService implements IIssueService {
       if (!parent) {
         throw new NotFoundException(ISSUE_ERRORS.PARENT_ISSUE_NOT_FOUND);
       }
+
       if (dto.issueType === IssueType.EPIC) {
         throw new BadRequestException(
           PROJECT_ERRORS.NON_EPIC_ISSUE_WITHOUT_PARENT,

@@ -60,9 +60,10 @@ export class ProjectService implements IProjectService {
       throw new ConflictException(PROJECT_ERRORS.PROJECT_ALREADY_EXISTS);
     }
 
-    const activeSub = await this._subscriptionRepo.findActiveByWorkspace(workspaceId);
-    let projectLimit = 0; 
-    
+    const activeSub =
+      await this._subscriptionRepo.findActiveByWorkspace(workspaceId);
+    let projectLimit = 0;
+
     if (activeSub && activeSub.planId) {
       const plan = activeSub.planId as unknown as PopulatedPlan;
       if (plan.maxProjects !== undefined && plan.maxProjects !== null) {
@@ -70,7 +71,8 @@ export class ProjectService implements IProjectService {
       }
     }
 
-    const currentProjects = await this._projectRepository.getProjectsByWorkspace(workspaceId);
+    const currentProjects =
+      await this._projectRepository.getProjectsByWorkspace(workspaceId);
     if (currentProjects.length >= projectLimit) {
       throw new ConflictException(PROJECT_ERRORS.PROJECT_LIMIT);
     }

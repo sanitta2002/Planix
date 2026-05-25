@@ -31,6 +31,10 @@ export class Message {
 
   @Prop({ type: [Attachment], default: [] })
   attachments!: Attachment[];
+
+  @Prop({ default: false })
+  isEdited!: boolean;
+
   createdAt?: Date;
   updatedAt?: Date;
 }
