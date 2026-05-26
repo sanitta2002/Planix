@@ -34,5 +34,6 @@ export const FRONTEND_ROUTES = {
   PROJECT:'/projects',
 
   BACKLOG: '/backlog',
-  BOARD :'/board'
+  BOARD: '/board',
+  CHAT: '/chat',
 };

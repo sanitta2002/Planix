@@ -18,6 +18,11 @@ import { S3Module } from '@/common/s3/s3.module';
     S3Module,
   ],
   controllers: [UserDashboardController],
-  providers: [UserDashboardService],
+  providers: [
+    {
+      provide: 'IUserDashboardService',
+      useClass: UserDashboardService,
+    },
+  ],
 })
 export class UserDashboardModule {}

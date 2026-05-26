@@ -95,5 +95,9 @@ export const API_ROUTES = {
   },
   DASHBOARD: {
     GET_USER_DASHBOARD: "/user-dashboard/project/:projectId",
-  }
+  },
+  CHAT: {
+    HISTORY: "/chat/history",
+    SEND_MESSAGE: "/chat/message",
+  },
 };

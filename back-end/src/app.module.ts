@@ -30,6 +30,7 @@ import { CommentModule } from '@/comment/comment.module';
 import { NotificationModule } from '@/notification/notification.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
     CommentModule,
     NotificationModule,
     DashboardModule,
+    ChatModule,
   ],
 
   controllers: [AppController],

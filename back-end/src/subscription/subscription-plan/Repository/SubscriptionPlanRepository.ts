@@ -25,7 +25,10 @@ export class SubscriptionPlanRepository
   }
 
   async findActivePlans(): Promise<SubscriptionPlanDocument[]> {
-    return await this._subscriptionPlanModel.find({ isActive: true, isDeleted: { $ne: true } });
+    return await this._subscriptionPlanModel.find({
+      isActive: true,
+      isDeleted: { $ne: true },
+    });
   }
 
   async findByStripePriceId(

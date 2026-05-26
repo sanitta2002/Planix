@@ -67,9 +67,10 @@ export class InvitationService implements IInvitationService {
       }
     }
 
-    const activeSub = await this._subscriptionRepo.findActiveByWorkspace(workspaceId);
+    const activeSub =
+      await this._subscriptionRepo.findActiveByWorkspace(workspaceId);
     let memberLimit = 0;
-    
+
     if (activeSub && activeSub.planId) {
       const plan = activeSub.planId as unknown as PopulatedPlan;
       if (plan.maxMembers !== undefined && plan.maxMembers !== null) {
