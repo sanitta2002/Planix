@@ -51,7 +51,7 @@ export class ChatController {
     const result = await this._chatService.getChatHistory(
       dto.projectId,
       dto.limit ?? 50,
-      dto.offset ?? 0,
+      dto.offset ?? 0,  
     );
     return ApiResponse.success(HttpStatus.OK, CHAT_MESSAGES.FETCHED, result);
   }

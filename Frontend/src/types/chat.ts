@@ -14,6 +14,7 @@ export interface MessageResponse {
   senderAvatar?: string;
   content?: string;
   attachments: AttachmentResponse[];
+  isEdited?: boolean;
   createdAt: string;
 }
 

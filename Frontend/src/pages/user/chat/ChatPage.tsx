@@ -14,6 +14,8 @@ import {
   WifiOff,
   ChevronRight,
   FolderKanban,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import type { RootState } from "../../../store/Store";
 import type { MessageResponse } from "../../../types/chat";
@@ -116,69 +118,183 @@ const ProjectItem = ({ project, isActive, onClick }: ProjectItemProps) => {
 // ─── Message Bubble ──────────────────────────────────────────────────────────
 
 interface BubbleProps {
-  message: MessageResponse;
+  message: MessageResponse & { isEdited?: boolean };
   isOwn: boolean;
   showMeta: boolean;
+  onEdit: (messageId: string, newContent: string) => void;
+  onDelete: (messageId: string) => void;
 }
 
-const Bubble = ({ message, isOwn, showMeta }: BubbleProps) => (
-  <div
-    className={`flex gap-2.5 px-4 py-0.5 group hover:bg-white/[0.015] transition-colors ${
-      isOwn ? "flex-row-reverse" : "flex-row"
-    }`}
-    style={{ animation: "msgIn 0.25s cubic-bezier(0.16,1,0.3,1)" }}
-  >
-    {/* Avatar col */}
-    <div className="w-8 flex-shrink-0 pt-0.5">
-      {showMeta && (
-        <div className="w-8 h-8 rounded-full overflow-hidden">
-          {message.senderAvatar ? (
-            <img src={message.senderAvatar} alt="" className="w-full h-full object-cover" />
-          ) : (
+const Bubble = ({ message, isOwn, showMeta, onEdit, onDelete }: BubbleProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(message.content || "");
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+
+  useEffect(() => {
+    setEditValue(message.content || "");
+  }, [message.content]);
+
+  return (
+    <div
+      className={`flex gap-2.5 px-4 py-0.5 group hover:bg-white/[0.015] transition-colors relative ${
+        isOwn ? "flex-row-reverse" : "flex-row"
+      }`}
+      style={{ animation: "msgIn 0.25s cubic-bezier(0.16,1,0.3,1)" }}
+    >
+      {/* Hover Action Bar for own messages */}
+      {isOwn && !isEditing && !isConfirmingDelete && (
+        <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-4 -top-3.5 z-10 flex items-center gap-1 bg-slate-800/90 border border-white/10 rounded-lg p-0.5 shadow-lg backdrop-blur-md">
+          <button
+            onClick={() => setIsEditing(true)}
+            className="p-1 rounded-md text-white/40 hover:text-white/80 hover:bg-white/5 transition-all"
+            title="Edit message"
+          >
+            <Pencil className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={() => setIsConfirmingDelete(true)}
+            className="p-1 rounded-md text-white/40 hover:text-rose-400 hover:bg-rose-500/10 transition-all"
+            title="Delete message"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
+      {/* Avatar col */}
+      <div className="w-8 flex-shrink-0 pt-0.5">
+        {showMeta && (
+          <div className="w-8 h-8 rounded-full overflow-hidden">
+            {message.senderAvatar ? (
+              <img src={message.senderAvatar} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <div
+                className={`w-full h-full flex items-center justify-center text-[11px] font-bold text-white bg-gradient-to-br ${
+                  isOwn ? "from-indigo-500 to-purple-600" : "from-emerald-500 to-teal-600"
+                }`}
+              >
+                {message.senderName?.[0]?.toUpperCase() || "?"}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Bubble */}
+      <div className={`flex flex-col max-w-[68%] ${isOwn ? "items-end" : "items-start"}`}>
+        {showMeta && (
+          <div className={`flex items-baseline gap-2 mb-1 ${isOwn ? "flex-row-reverse" : "flex-row"}`}>
+            <span className="text-[12px] font-semibold text-white/75">
+              {isOwn ? "You" : message.senderName || "Unknown"}
+            </span>
+            <span className="text-[10px] text-white/25">
+              {formatTime(message.createdAt)}
+              {message.isEdited && (
+                <span className="text-[10px] text-white/20 ml-1.5 font-normal select-none" title="Edited">
+                  (edited)
+                </span>
+              )}
+            </span>
+          </div>
+        )}
+
+        {isEditing ? (
+          <div className="w-full min-w-[220px] flex flex-col gap-2 mt-1 bg-secondary/80 border border-indigo-500/30 rounded-2xl p-3 shadow-lg">
+            <textarea
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              className="w-full bg-slate-900/60 border border-white/10 rounded-xl px-3 py-2 text-[13px] text-white outline-none focus:ring-1 focus:ring-indigo-500/80 resize-none leading-relaxed"
+              rows={2}
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  if (editValue.trim() && editValue.trim() !== message.content) {
+                    onEdit(message.id, editValue.trim());
+                  }
+                  setIsEditing(false);
+                } else if (e.key === "Escape") {
+                  setIsEditing(false);
+                  setEditValue(message.content || "");
+                }
+              }}
+            />
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => {
+                  setIsEditing(false);
+                  setEditValue(message.content || "");
+                }}
+                className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white/5 hover:bg-white/10 text-white/75 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (editValue.trim()) {
+                    if (editValue.trim() !== message.content) {
+                      onEdit(message.id, editValue.trim());
+                    }
+                    setIsEditing(false);
+                  }
+                }}
+                disabled={!editValue.trim()}
+                className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-indigo-500 hover:bg-indigo-400 text-white transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        ) : isConfirmingDelete ? (
+          <div className="w-full min-w-[200px] flex flex-col gap-2 mt-1 bg-slate-900/90 border border-rose-500/30 rounded-2xl p-3 shadow-lg">
+            <p className="text-[12px] text-rose-300 font-medium">Delete this message?</p>
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setIsConfirmingDelete(false)}
+                className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white/5 hover:bg-white/10 text-white/75 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  onDelete(message.id);
+                  setIsConfirmingDelete(false);
+                }}
+                className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-rose-600 hover:bg-rose-500 text-white transition-all shadow-md shadow-rose-600/20"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ) : (
+          message.content && (
             <div
-              className={`w-full h-full flex items-center justify-center text-[11px] font-bold text-white bg-gradient-to-br ${
-                isOwn ? "from-indigo-500 to-purple-600" : "from-emerald-500 to-teal-600"
+              className={`relative px-3.5 py-2 text-[13.5px] leading-relaxed break-words ${
+                isOwn
+                  ? "bg-indigo-500 text-white rounded-2xl rounded-br-sm shadow-md shadow-indigo-500/15"
+                  : "bg-secondary/60 text-foreground/85 rounded-2xl rounded-bl-sm border border-border"
               }`}
             >
-              {message.senderName?.[0]?.toUpperCase() || "?"}
+              {message.content}
+              {!showMeta && (
+                <div className={`absolute ${isOwn ? "-left-20" : "-right-20"} top-1/2 -translate-y-1/2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap`}>
+                  <span className="text-[9px] text-white/30">
+                    {formatTime(message.createdAt)}
+                  </span>
+                  {message.isEdited && (
+                    <span className="text-[9px] text-white/15 select-none" title="Edited">
+                      (ed.)
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      )}
+          )
+        )}
+      </div>
     </div>
-
-    {/* Bubble */}
-    <div className={`flex flex-col max-w-[68%] ${isOwn ? "items-end" : "items-start"}`}>
-      {showMeta && (
-        <div className={`flex items-baseline gap-2 mb-1 ${isOwn ? "flex-row-reverse" : "flex-row"}`}>
-          <span className="text-[12px] font-semibold text-white/75">
-            {isOwn ? "You" : message.senderName || "Unknown"}
-          </span>
-          <span className="text-[10px] text-white/25">{formatTime(message.createdAt)}</span>
-        </div>
-      )}
-
-      {message.content && (
-        <div
-          className={`relative px-3.5 py-2 text-[13.5px] leading-relaxed break-words ${
-            isOwn
-              ? "bg-indigo-500 text-white rounded-2xl rounded-br-sm shadow-md shadow-indigo-500/15"
-              : "bg-secondary/60 text-foreground/85 rounded-2xl rounded-bl-sm border border-border"
-          }`}
-        >
-          {message.content}
-          {!showMeta && (
-            <span
-              className={`absolute ${isOwn ? "-left-12" : "-right-12"} top-1/2 -translate-y-1/2 text-[9px] text-white/0 group-hover:text-white/30 transition-colors whitespace-nowrap`}
-            >
-              {formatTime(message.createdAt)}
-            </span>
-          )}
-        </div>
-      )}
-    </div>
-  </div>
-);
+  );
+};
 
 
 interface InputBarProps {
@@ -305,20 +421,85 @@ const ChatPage = () => {
     [projects, search]
   );
 
+  // States to track local and realtime edits/deletions
+  const [editedMessages, setEditedMessages] = useState<Record<string, string>>({});
+  const [deletedMessageIds, setDeletedMessageIds] = useState<Set<string>>(new Set());
+
+  // Reset local overrides when active project changes
+  useEffect(() => {
+    setEditedMessages({});
+    setDeletedMessageIds(new Set());
+  }, [projectId]);
+
+  const onMessageEdited = useCallback((editedMessage: MessageResponse) => {
+    setEditedMessages((prev) => ({
+      ...prev,
+      [editedMessage.id]: editedMessage.content || "",
+    }));
+  }, []);
+
+  const onMessageDeleted = useCallback((messageId: string) => {
+    setDeletedMessageIds((prev) => {
+      const next = new Set(prev);
+      next.add(messageId);
+      return next;
+    });
+  }, []);
+
   // Chat data
   const { data: historyData, isLoading: historyLoading } = useGetChatHistory(projectId);
-  const { messages: liveMessages, sendMessage, isConnected } = useChatSocket(projectId);
+  const {
+    messages: liveMessages,
+    sendMessage,
+    editMessage,
+    deleteMessage,
+    isConnected,
+  } = useChatSocket(projectId, { onMessageEdited, onMessageDeleted });
+
+  // Optimistic edit/delete handlers
+  const handleEdit = useCallback(
+    (messageId: string, newContent: string) => {
+      setEditedMessages((prev) => ({
+        ...prev,
+        [messageId]: newContent,
+      }));
+      editMessage(messageId, newContent);
+    },
+    [editMessage]
+  );
+
+  const handleDelete = useCallback(
+    (messageId: string) => {
+      setDeletedMessageIds((prev) => {
+        const next = new Set(prev);
+        next.add(messageId);
+        return next;
+      });
+      deleteMessage(messageId);
+    },
+    [deleteMessage]
+  );
 
   // Merge history + realtime
   const allMessages = useMemo(() => {
-    const hist = historyData?.messages || [];
+    const hist = [...(historyData?.messages || [])].reverse();
     const seen = new Set<string>();
-    return [...hist, ...liveMessages].filter((m) => {
-      if (seen.has(m.id)) return false;
-      seen.add(m.id);
-      return true;
-    });
-  }, [historyData?.messages, liveMessages]);
+    return [...hist, ...liveMessages]
+      .filter((m) => {
+        if (seen.has(m.id)) return false;
+        seen.add(m.id);
+        return true;
+      })
+      .filter((m) => !deletedMessageIds.has(m.id))
+      .map((m) => {
+        const hasLocalEdit = editedMessages[m.id] !== undefined;
+        return {
+          ...m,
+          content: hasLocalEdit ? editedMessages[m.id] : m.content,
+          isEdited: m.isEdited || hasLocalEdit,
+        };
+      });
+  }, [historyData?.messages, liveMessages, deletedMessageIds, editedMessages]);
 
   // Group by date
   const grouped = useMemo(() => {
@@ -471,25 +652,29 @@ const ChatPage = () => {
               {/* Members */}
               <div className="flex items-center gap-3">
                 <div className="flex -space-x-1.5">
-                  {(currentProject.members || []).slice(0, 5).map((m, i) => (
-                    <div
-                      key={m.user.id}
-                      style={{ zIndex: 10 - i }}
-                      className="relative w-7 h-7 rounded-full border-2 border-background overflow-hidden"
-                      title={m.user.firstName}
-                    >
-                      {m.user.avatarUrl ? (
-                        <img src={m.user.avatarUrl} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center text-[9px] font-bold text-white">
-                          {m.user.firstName?.[0]?.toUpperCase()}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                  {(currentProject?.members || []).slice(0, 5).map((m, i) => {
+                    const memberId = m?.user?.id || m?.user?._id || `member-${i}`;
+                    const firstName = m?.user?.firstName || "Member";
+                    return (
+                      <div
+                        key={memberId}
+                        style={{ zIndex: 10 - i }}
+                        className="relative w-7 h-7 rounded-full border-2 border-background overflow-hidden"
+                        title={firstName}
+                      >
+                        {m?.user?.avatarUrl ? (
+                          <img src={m.user.avatarUrl} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center text-[9px] font-bold text-white">
+                            {firstName[0]?.toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
                 <span className="text-[11px] text-white/30">
-                  {currentProject.members?.length || 0} members
+                  {currentProject?.members?.length || 0} members
                 </span>
               </div>
             </div>
@@ -539,11 +724,23 @@ const ChatPage = () => {
 
                   <div className="space-y-0.5">
                     {group.messages.map((msg, idx) => {
-                      const isOwn = msg.senderId === user?.id;
+                      console.log('[DEBUG CHAT]', {
+                        messageContent: msg.content,
+                        msgSenderId: msg.senderId,
+                        authUserId: user?.id,
+                        isOwnMatch: msg.senderId === (user?.id || user?._id)
+                      });
+                      const isOwn = msg.senderId === (user?.id || user?._id);
                       const meta = shouldShowMeta(group.messages, idx);
                       return (
                         <div key={msg.id} className={meta && idx > 0 ? "mt-3" : ""}>
-                          <Bubble message={msg} isOwn={isOwn} showMeta={meta} />
+                          <Bubble
+                            message={msg}
+                            isOwn={isOwn}
+                            showMeta={meta}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                          />
                         </div>
                       );
                     })}

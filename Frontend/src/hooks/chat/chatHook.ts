@@ -16,13 +16,25 @@ export const useGetChatHistory = (projectId: string, limit = 50, offset = 0) => 
   });
 };
 
-export const useChatSocket = (projectId: string) => {
+export const useChatSocket = (
+  projectId: string,
+  options?: {
+    onMessageEdited?: (message: MessageResponse) => void;
+    onMessageDeleted?: (messageId: string) => void;
+  }
+) => {
   const socketRef = useRef<Socket | null>(null);
   const [messages, setMessages] = useState<MessageResponse[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const accessToken = useSelector((state: RootState) => state.token.accessToken);
 
+  const callbacksRef = useRef(options);
   useEffect(() => {
+    callbacksRef.current = options;
+  }, [options]);
+
+  useEffect(() => {
+    setMessages([]);
     if (!projectId || !accessToken) return;
 
     const socket = createChatSocket(accessToken);
@@ -38,7 +50,39 @@ export const useChatSocket = (projectId: string) => {
     });
 
     socket.on("newMessage", (message: MessageResponse) => {
-      setMessages((prev) => [...prev, message]);
+      console.log(
+        "[DEBUG SOCKET]",
+        message.projectId,
+        projectId,
+        message.senderId
+      );
+
+      if (String(message.projectId) !== String(projectId)) {
+        return;
+      }
+
+      setMessages((prev) => {
+        const exists = prev.some((m) => m.id === message.id);
+        if (exists) return prev;
+        return [...prev, message];
+      });
+    });
+
+    socket.on("messageEdited", (message: MessageResponse) => {
+      console.log("[DEBUG SOCKET] messageEdited", message);
+      if (String(message.projectId) !== String(projectId)) {
+        return;
+      }
+      setMessages((prev) =>
+        prev.map((m) => (m.id === message.id ? message : m))
+      );
+      callbacksRef.current?.onMessageEdited?.(message);
+    });
+
+    socket.on("messageDeleted", ({ messageId }: { messageId: string }) => {
+      console.log("[DEBUG SOCKET] messageDeleted", messageId);
+      setMessages((prev) => prev.filter((m) => m.id !== messageId));
+      callbacksRef.current?.onMessageDeleted?.(messageId);
     });
 
     socket.on("error", (err: { message: string }) => {
@@ -53,6 +97,8 @@ export const useChatSocket = (projectId: string) => {
       socket.off("connect");
       socket.off("joinedRoom");
       socket.off("newMessage");
+      socket.off("messageEdited");
+      socket.off("messageDeleted");
       socket.off("error");
       socket.off("disconnect");
       socket.disconnect();
@@ -72,9 +118,41 @@ export const useChatSocket = (projectId: string) => {
     [projectId]
   );
 
+  const editMessage = useCallback(
+    (messageId: string, content: string) => {
+      if (socketRef.current?.connected) {
+        socketRef.current.emit("editMessage", {
+          messageId,
+          projectId,
+          content,
+        });
+      }
+    },
+    [projectId]
+  );
+
+  const deleteMessage = useCallback(
+    (messageId: string) => {
+      if (socketRef.current?.connected) {
+        socketRef.current.emit("deleteMessage", {
+          messageId,
+          projectId,
+        });
+      }
+    },
+    [projectId]
+  );
+
   const clearMessages = useCallback(() => {
     setMessages([]);
   }, []);
 
-  return { messages, sendMessage, isConnected, clearMessages };
+  return {
+    messages,
+    sendMessage,
+    editMessage,
+    deleteMessage,
+    isConnected,
+    clearMessages,
+  };
 };
