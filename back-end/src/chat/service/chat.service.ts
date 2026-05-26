@@ -23,6 +23,7 @@ import {
 import { Types } from 'mongoose';
 import { ChatMapper } from './mapper/ChatMapper';
 import { MessageDocument } from '@/chat/Model/message.schema';
+import type { IS3Service } from '@/common/s3/interfaces/s3.service.interface';
 
 @Injectable()
 export class ChatService implements IChatService {
@@ -35,6 +36,8 @@ export class ChatService implements IChatService {
     private readonly _projectRepository: IprojectRepository,
     @Inject('IProjectMemberRepository')
     private readonly _projectMemberRepository: IProjectMemberRepository,
+    @Inject('IS3Service')
+    private readonly _s3Service: IS3Service,
   ) {}
 
   async sendMessage(
@@ -63,7 +66,10 @@ export class ChatService implements IChatService {
       content: dto.content,
       attachments: dto.attachments || [],
     });
-    return ChatMapper.toResponse(message, sender);
+    const avatarUrl = sender.avatarKey
+      ? await this._s3Service.createSignedUrl(sender.avatarKey)
+      : undefined;
+    return ChatMapper.toResponse(message, sender, avatarUrl);
   }
 
   async getChatHistory(
@@ -86,7 +92,10 @@ export class ChatService implements IChatService {
         const sender = await this._userRepository.findById(
           msg.senderId.toString(),
         );
-        return ChatMapper.toResponse(msg, sender);
+        const avatarUrl = sender?.avatarKey
+          ? await this._s3Service.createSignedUrl(sender.avatarKey)
+          : undefined;
+        return ChatMapper.toResponse(msg, sender, avatarUrl);
       }),
     );
     return { messages: formatted, total };
@@ -112,7 +121,10 @@ export class ChatService implements IChatService {
       throw new NotFoundException(CHAT_MESSAGES.NOT_FOUND);
     }
     const sender = await this._userRepository.findById(senderId);
-    return ChatMapper.toResponse(updated, sender);
+    const avatarUrl = sender?.avatarKey
+      ? await this._s3Service.createSignedUrl(sender.avatarKey)
+      : undefined;
+    return ChatMapper.toResponse(updated, sender, avatarUrl);
   }
 
   async deleteMessage(senderId: string, messageId: string): Promise<void> {
