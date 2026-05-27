@@ -9,6 +9,7 @@ import {
 import { subscriptionRepository } from '@/subscription/subscriptions/repository/subscription.repository';
 import { SubscriptionPlanModule } from '@/subscription/subscription-plan/subscription-plan.module';
 import { WorkspaceModule } from '@/workspace/workspace.module';
+import { LoggerModule } from '@/logger/logger.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { WorkspaceModule } from '@/workspace/workspace.module';
     ]),
     SubscriptionPlanModule,
     forwardRef(() => WorkspaceModule),
+    LoggerModule,
   ],
   providers: [
     {

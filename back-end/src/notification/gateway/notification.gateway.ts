@@ -8,7 +8,8 @@ import {
 import { Server, Socket } from 'socket.io';
 import { NotificationDocument } from '@/notification/Model/notification.schema';
 import { Types } from 'mongoose';
-import { PinoLogger } from 'nestjs-pino';
+import type { ILogger } from '@/logger/ILogger';
+import { Inject } from '@nestjs/common';
 @WebSocketGateway({
   cors: {
     origin: process.env.FRONTEND_URL || 'http://localhost:5173',
@@ -21,7 +22,10 @@ export class NotificationGateway
 {
   @WebSocketServer()
   server!: Server;
-  constructor(private readonly _logger: PinoLogger) {}
+  constructor(
+    @Inject('ILogger')
+    private readonly _logger: ILogger,
+  ) {}
   async handleConnection(client: Socket) {
     const userId = client.handshake.query.userId as string;
     if (userId && Types.ObjectId.isValid(userId)) {

@@ -6,12 +6,14 @@ import { Comment, CommentSchema } from '@/comment/Model/comment.schema';
 import { CommentRepository } from '@/comment/repository/commentRepository';
 import { IssueModule } from '@/issue/issue.module';
 import { ProjectModule } from '@/project/project.module';
+import { LoggerModule } from '@/logger/logger.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }]),
     IssueModule,
     ProjectModule,
+    LoggerModule,
   ],
   providers: [
     {

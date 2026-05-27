@@ -13,6 +13,7 @@ import { S3Service } from '@/common/s3/s3.service';
 import { WorkspaceModule } from '@/workspace/workspace.module';
 import { SubscriptionsModule } from '@/subscription/subscriptions/subscriptions.module';
 import { PaymentModule } from '@/payment/payment.module';
+import { LoggerModule } from '@/logger/logger.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { PaymentModule } from '@/payment/payment.module';
     WorkspaceModule,
     SubscriptionsModule,
     PaymentModule,
+    LoggerModule,
   ],
   providers: [
     {

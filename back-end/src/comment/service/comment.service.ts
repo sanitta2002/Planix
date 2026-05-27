@@ -14,13 +14,14 @@ import { CommentMapper } from '@/comment/service/Mapper/comment.mapper';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { IssueCommentedEvent } from '@/notification/events/notification.events';
 import { NotificationType } from '@/common/type/NotificationType';
-import { PinoLogger } from 'nestjs-pino';
 import type { ICommentRepository } from '@/comment/Interface/ICommentRepository';
+import type { ILogger } from '@/logger/ILogger';
 
 @Injectable()
 export class CommentService implements ICommentService {
   constructor(
-    private readonly _logger: PinoLogger,
+    @Inject('ILogger')
+    private readonly _logger: ILogger,
     @Inject('ICommentRepository')
     private readonly _commentRepo: ICommentRepository,
     @Inject('IIssueRepository') private readonly _issueRepo: IIssueRepository,

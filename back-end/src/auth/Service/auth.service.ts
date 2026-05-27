@@ -28,7 +28,7 @@ import {
   USER_MESSAGES,
 } from '@/common/constants/messages.constant';
 import { AuthMapper, TempUser } from '@/auth/mapper/auth.mapper';
-import { PinoLogger } from 'nestjs-pino';
+import type { ILogger } from '@/logger/ILogger';
 
 @Injectable()
 export class AuthService implements IuserService {
@@ -38,7 +38,8 @@ export class AuthService implements IuserService {
     redirectUri: 'postmessage',
   });
   constructor(
-    private readonly _logger: PinoLogger,
+    @Inject('ILogger')
+    private readonly _logger: ILogger,
     @Inject('IUserRepository') private readonly userRepository: IUserRepository,
     @Inject('IHashingService') private readonly hashingService: IHashingService,
     @Inject('IOtpService') private readonly otpService: IOtpService,
@@ -98,7 +99,7 @@ export class AuthService implements IuserService {
       throw new BadRequestException(USER_MESSAGES.NOT_FOUND);
     }
     const otp = await this.otpService.sendOtp(`otp:${email}`);
-    this._logger.info('resendOtp:', otp);
+    this._logger.info(`resendOtp:, ${otp}`);
     if (!otp) {
       throw new ConflictException(OTP_MESSAGES.FAILED_TO_GENERATE);
     }
@@ -127,7 +128,6 @@ export class AuthService implements IuserService {
       userId: user._id.toString(),
       email: user.email,
     };
-    this._logger.info(payload);
     const accessToken = this.jwtService.signAccessToken(payload);
     const refreshToken = this.jwtService.signRefreshToken(payload);
     console.log('accessToken', accessToken);

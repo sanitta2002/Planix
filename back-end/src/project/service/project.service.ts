@@ -25,12 +25,13 @@ import { GetAllProjectsDTO } from '@/project/dto/req/GetAllProjectsDTO';
 import { GetAllProjectsResponseDTO } from '@/project/dto/res/GetAllProjectsResponseDTO';
 import type { ISubscriptionRepository } from '@/subscription/interface/ISubscriptionRepository';
 import { PopulatedPlan } from '@/common/type/Populated';
-import { PinoLogger } from 'nestjs-pino';
+import type { ILogger } from '@/logger/ILogger';
 
 @Injectable()
 export class ProjectService implements IProjectService {
   constructor(
-    private readonly _logger: PinoLogger,
+    @Inject('ILogger')
+    private readonly _logger: ILogger,
     @Inject('IprojectRepository')
     private readonly _projectRepository: IprojectRepository,
     @Inject('IWorkspaceRepository')
@@ -47,7 +48,7 @@ export class ProjectService implements IProjectService {
     workspaceId: string,
     userId: string,
   ): Promise<ProjectResponseDto> {
-    this._logger.info('workspaceId :', workspaceId);
+    this._logger.info(`orkspaceId :, ${workspaceId}`);
     const workspace = await this._workspaceRepository.findById(workspaceId);
     if (!workspace) {
       throw new NotFoundException(WORKSPACE_MESSAGE.NOT_FOUND);

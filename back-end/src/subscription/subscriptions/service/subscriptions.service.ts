@@ -14,12 +14,13 @@ import { SubscriptionMapper } from '@/subscription/subscriptions/service/mapper/
 import { Types } from 'mongoose';
 import { SubscriptionStatus } from '@/subscription/Model/subscription.schema';
 import type { IWorkspaceRepository } from '@/workspace/interface/IWorkspaceRepository';
-import { PinoLogger } from 'nestjs-pino';
+import type { ILogger } from '@/logger/ILogger';
 
 @Injectable()
 export class SubscriptionsService implements ISubscriptionService {
   constructor(
-    private readonly _logger: PinoLogger,
+    @Inject('ILogger')
+    private readonly _logger: ILogger,
     @Inject('ISubscriptionRepository')
     private readonly _subscriptionRepo: ISubscriptionRepository,
     @Inject('ISubscriptionPlanRepository')

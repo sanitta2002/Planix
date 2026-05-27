@@ -7,6 +7,7 @@ import { IssueRepository } from '@/issue/repository/IssueRepository';
 import { ProjectModule } from '@/project/project.module';
 import { RoleModule } from '@/role/role.module';
 import { S3Module } from '@/common/s3/s3.module';
+import { LoggerModule } from '@/logger/logger.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { S3Module } from '@/common/s3/s3.module';
     ProjectModule,
     RoleModule,
     S3Module,
+    LoggerModule,
   ],
   providers: [
     {

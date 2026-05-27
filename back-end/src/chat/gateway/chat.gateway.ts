@@ -10,12 +10,12 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { PinoLogger } from 'nestjs-pino';
 import { Server, Socket } from 'socket.io';
 import { SendMessageDTO } from '@/chat/dto/req/SendMessageDTO';
 import { UpdateMessageDTO } from '@/chat/dto/req/UpdateMessageDTO';
 import type { IChatService } from '@/chat/interface/IChatService';
 import { JwtPayload } from '@/common/jwt/payload/JwtPayload';
+import type { ILogger } from '@/logger/ILogger';
 
 @WebSocketGateway({
   cors: {
@@ -28,7 +28,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server!: Server;
   constructor(
-    private readonly _logger: PinoLogger,
+    @Inject('ILogger')
+    private readonly _logger: ILogger,
     @Inject('IJwtService') private readonly _jwtService: IJwtService,
     @Inject('IProjectMemberRepository')
     private readonly _projectMemberRepo: IProjectMemberRepository,

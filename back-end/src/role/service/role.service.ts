@@ -11,12 +11,13 @@ import { RoleDocument } from '@/role/Model/role.schema';
 import { ROLE_MESSAGE } from '@/common/constants/messages.constant';
 import { UpdateRoleDTO } from '@/role/dto/UpdateRoleDTO';
 import { Types } from 'mongoose';
-import { PinoLogger } from 'nestjs-pino';
+import type { ILogger } from '@/logger/ILogger';
 
 @Injectable()
 export class RoleService implements IRoleService {
   constructor(
-    private readonly _logger: PinoLogger,
+    @Inject('ILogger')
+    private readonly _logger: ILogger,
     @Inject('IRoleRepository')
     private readonly _roleRepository: IRoleRepository,
   ) {}

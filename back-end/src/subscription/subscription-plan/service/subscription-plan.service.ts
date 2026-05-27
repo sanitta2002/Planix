@@ -6,12 +6,13 @@ import { PlanResponseDto } from '@/subscription/subscription-plan/dto/res/PlanRe
 import { planMapper } from '@/subscription/subscription-plan/service/Mapper/plan.mapper';
 import { UpdatePlanDto } from '@/subscription/subscription-plan/dto/req/UpdatePlanDto';
 import { SUBSCRIPTION_MESSAGE } from '@/common/constants/messages.constant';
-import { PinoLogger } from 'nestjs-pino';
+import type { ILogger } from '@/logger/ILogger';
 
 @Injectable()
 export class SubscriptionPlanService implements ISubscriptionPlanService {
   constructor(
-    private readonly _logger: PinoLogger,
+    @Inject('ILogger')
+    private readonly _logger: ILogger,
     @Inject('ISubscriptionPlanRepository')
     private readonly _subscriptionPlanRepository: ISubscriptionPlanRepository,
   ) {}

@@ -4,10 +4,12 @@ import { RoleController } from '@/role/controller/role.controller';
 import { RoleRepository } from '@/role/Repository/RoleRepository';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Role, RoleSchema } from '@/role/Model/role.schema';
+import { LoggerModule } from '@/logger/logger.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Role.name, schema: RoleSchema }]),
+    LoggerModule,
   ],
   controllers: [RoleController],
   providers: [

@@ -9,6 +9,7 @@ import { TempStoreUserModule } from '@/common/temp-store-user/temp-store-user.mo
 import { PassportModule } from '@nestjs/passport';
 import { UsersModule } from '@/users/users.module';
 import { JwtStrategy } from '@/auth/strategies/jwt.strategy';
+import { LoggerModule } from '@/logger/logger.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { JwtStrategy } from '@/auth/strategies/jwt.strategy';
     TempStoreUserModule,
     PassportModule,
     UsersModule,
+    LoggerModule,
   ],
   providers: [
     JwtStrategy,

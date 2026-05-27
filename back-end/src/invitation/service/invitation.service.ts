@@ -26,12 +26,13 @@ import { CompleteProfileDto } from '@/invitation/dto/req/CompleteProfileDto';
 import type { ISubscriptionRepository } from '@/subscription/interface/ISubscriptionRepository';
 import type { IHashingService } from '@/common/hashing/interface/hashing.service.interface';
 import { PopulatedPlan } from '@/common/type/Populated';
-import { PinoLogger } from 'nestjs-pino';
+import type { ILogger } from '@/logger/ILogger';
 
 @Injectable()
 export class InvitationService implements IInvitationService {
   constructor(
-    private readonly _logger: PinoLogger,
+    @Inject('ILogger')
+    private readonly _logger: ILogger,
     @Inject('IInvitationRepository')
     private readonly _invitationRepo: IInvitationRepository,
     @Inject('IWorkspaceRepository')
@@ -103,7 +104,6 @@ export class InvitationService implements IInvitationService {
       inviter.user,
       token,
     );
-    this._logger.info(invitationData);
     await this._invitationRepo.create(invitationData);
     const frontendUrl = this._configService.get<string>('FRONTEND_URL');
     const inviteLink = `${frontendUrl}/invite/${token}`;

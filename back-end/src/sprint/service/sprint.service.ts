@@ -14,17 +14,18 @@ import { ISprintservice } from '@/sprint/interface/IsprintSerivce';
 import { SprintStatus } from '@/common/type/SprintStatus';
 import { UpdateSprintDto } from '@/sprint/dto/req/UpdateSprintDto ';
 import type { IIssueRepository } from '@/issue/interface/IIssueRepository';
-import { PinoLogger } from 'nestjs-pino';
 
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { SprintStartedEvent } from '@/notification/events/notification.events';
 import { NotificationType } from '@/common/type/NotificationType';
 import type { IProjectMemberRepository } from '@/project/interfaces/IProjectMemberRepository';
+import type { ILogger } from '@/logger/ILogger';
 
 @Injectable()
 export class SprintService implements ISprintservice {
   constructor(
-    private readonly _logger: PinoLogger,
+    @Inject('ILogger')
+    private readonly _logger: ILogger,
     @Inject('IsprintRepository')
     private readonly _sprintRepo: IsprintRepository,
     @Inject('IIssueRepository')

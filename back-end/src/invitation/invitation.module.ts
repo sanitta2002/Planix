@@ -13,6 +13,7 @@ import { HashingModule } from '@/common/hashing/hashing.module';
 import { UsersModule } from '@/users/users.module';
 import { AppJwtModule } from '@/common/jwt/jwt.module';
 import { SubscriptionsModule } from '@/subscription/subscriptions/subscriptions.module';
+import { LoggerModule } from '@/logger/logger.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { SubscriptionsModule } from '@/subscription/subscriptions/subscriptions.
     UsersModule,
     AppJwtModule,
     SubscriptionsModule,
+    LoggerModule,
   ],
   providers: [
     {

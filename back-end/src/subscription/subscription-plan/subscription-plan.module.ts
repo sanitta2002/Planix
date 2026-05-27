@@ -7,12 +7,14 @@ import {
 } from '@/subscription/Model/SubscriptionPlan.shema';
 import { SubscriptionPlanRepository } from '@/subscription/subscription-plan/Repository/SubscriptionPlanRepository';
 import { SubPlanController } from '@/subscription/subscription-plan/controller/sub-plan.controller';
+import { LoggerModule } from '@/logger/logger.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: SubscriptionPlan.name, schema: SubscriptionPlanSchema },
     ]),
+    LoggerModule,
   ],
   controllers: [SubPlanController],
   providers: [

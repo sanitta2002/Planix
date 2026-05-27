@@ -19,13 +19,14 @@ import {
 } from '@/subscription/Model/subscription.schema';
 import type { ISubscriptionPlanRepository } from '@/subscription/interface/ISubscriptionPlanRepository';
 import { PaymentDto } from '@/payment/dto/PaymentDto';
-import { PinoLogger } from 'nestjs-pino';
+import type { ILogger } from '@/logger/ILogger';
 
 @Injectable()
 export class PaymentService implements IPaymentService {
   private stripe: Stripe;
   constructor(
-    private readonly _logger: PinoLogger,
+    @Inject('ILogger')
+    private readonly _logger: ILogger,
     private _configService: ConfigService,
     @Inject('ISubscriptionService')
     private readonly subscriptionService: ISubscriptionService,

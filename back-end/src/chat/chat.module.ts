@@ -9,6 +9,7 @@ import { S3Module } from '@/common/s3/s3.module';
 import { ProjectModule } from '@/project/project.module';
 import { AppJwtModule } from '@/common/jwt/jwt.module';
 import { ChatGateway } from './gateway/chat.gateway';
+import { LoggerModule } from '@/logger/logger.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ChatGateway } from './gateway/chat.gateway';
     S3Module,
     ProjectModule,
     AppJwtModule,
+    LoggerModule,
   ],
   providers: [
     ChatGateway,

@@ -8,6 +8,7 @@ import { SprintRepository } from '@/sprint/repository/sprintRepository';
 import { IssueModule } from '@/issue/issue.module';
 import { ProjectModule } from '@/project/project.module';
 import { RoleModule } from '@/role/role.module';
+import { LoggerModule } from '@/logger/logger.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { RoleModule } from '@/role/role.module';
     IssueModule,
     ProjectModule,
     RoleModule,
+    LoggerModule,
   ],
   providers: [
     {

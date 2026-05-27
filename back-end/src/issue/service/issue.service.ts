@@ -29,12 +29,13 @@ import {
   IssueStatusChangedEvent,
 } from '@/notification/events/notification.events';
 import { NotificationType } from '@/common/type/NotificationType';
-import { PinoLogger } from 'nestjs-pino';
+import type { ILogger } from '@/logger/ILogger';
 
 @Injectable()
 export class IssueService implements IIssueService {
   constructor(
-    private readonly _logger: PinoLogger,
+    @Inject('ILogger')
+    private readonly _logger: ILogger,
     @Inject('IIssueRepository') private readonly _IissueRepo: IIssueRepository,
     @Inject('IprojectRepository')
     private readonly _projectRepo: IprojectRepository,
@@ -344,10 +345,11 @@ export class IssueService implements IIssueService {
     if (!updatedIssue) {
       throw new BadRequestException('Failed to delete attachment');
     }
+
     try {
       await this._S3Service.deleteFile(attachmentKey);
     } catch (err) {
-      this._logger.warn('S3 delete failed', err);
+      this._logger.warn(`S3 delete failed ${err}`);
     }
 
     return IssueMapper.toResponse(updatedIssue);

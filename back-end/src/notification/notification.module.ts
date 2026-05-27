@@ -9,12 +9,14 @@ import {
 import { NotificationRepository } from '@/notification/repository/notification.repository';
 import { NotificationGateway } from '@/notification/gateway/notification.gateway';
 import { NotificationListener } from '@/notification/listener/notification.listener';
+import { LoggerModule } from '@/logger/logger.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Notification.name, schema: NotificationSchema },
     ]),
+    LoggerModule,
   ],
   providers: [
     NotificationGateway,

@@ -26,12 +26,13 @@ import { PaginatedPaymentsResponseDto } from '@/admin/dto/paginated-payments.res
 import type { IPaymentService } from '@/payment/interface/IPaymentService';
 import { PaymentDto } from '@/payment/dto/PaymentDto';
 import type { IUserRepository } from '@/users/interfaces/user.repository.interface';
-import { PinoLogger } from 'nestjs-pino';
+import type { ILogger } from '@/logger/ILogger';
 
 @Injectable()
 export class AdminService implements IAdminService {
   constructor(
-    private readonly _logger: PinoLogger,
+    @Inject('ILogger')
+    private readonly _logger: ILogger,
     @Inject('IJwtService') private readonly _jwtService: IJwtService,
     @Inject('IUserRepository')
     private readonly _userRepository: IUserRepository,

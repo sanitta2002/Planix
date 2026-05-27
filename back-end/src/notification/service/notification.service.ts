@@ -10,12 +10,13 @@ import { NotificationDocument } from '@/notification/Model/notification.schema';
 import { Types } from 'mongoose';
 
 import { NOTIFICATION_MESSAGES } from '@/common/constants/messages.constant';
-import { PinoLogger } from 'nestjs-pino';
+import type { ILogger } from '@/logger/ILogger';
 
 @Injectable()
 export class NotificationService implements INotificationService {
   constructor(
-    private readonly _logger: PinoLogger,
+    @Inject('ILogger')
+    private readonly _logger: ILogger,
     @Inject('INotificationRepository')
     private readonly _notificationRepository: INotificationRepository,
   ) {}
