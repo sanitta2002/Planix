@@ -12,7 +12,20 @@ import { useGetRoles, useWorkspaceMembers, useWorkspacePaymentDetails } from "..
 import type { Project } from "../../types/project";
 import { setCurrentProject } from "../../store/projectSlice";
 
-
+type ExtendedMember = {
+    user: {
+        id?: string;
+        _id?: string;
+        firstName?: string;
+        avatarUrl?: string;
+    };
+    role: {
+        id?: string;
+        _id?: string;
+        name?: string;
+        permissions?: string[];
+    };
+};
 
 interface ProjectModalProps {
     isOpen?: boolean;
@@ -85,9 +98,9 @@ const ProjectModal = ({ isOpen, onClose, project }: ProjectModalProps) => {
             setProjectKey(project.key || '');
             setDescription(project.description || '');
             if (project.members) {
-                setMembers(project.members.map((m:any) => ({
-                    userId: m.user?.id || m.user?._id,
-                    roleId: m.role?.id || m.role?._id,
+                setMembers((project.members as ExtendedMember[]).map((m) => ({
+                    userId: m.user?.id || m.user?._id || "",
+                    roleId: m.role?.id || m.role?._id || "",
                 })));
             } else {
                 setMembers([]);
@@ -127,15 +140,15 @@ const ProjectModal = ({ isOpen, onClose, project }: ProjectModalProps) => {
         }
 
         if (project) {
-            const originalMembers = project.members ? project.members.map((m:any) => ({
-                userId: m.user?.id || m.user?._id,
-                roleId: m.role?.id || m.role?._id,
+            const originalMembers = project.members ? (project.members as ExtendedMember[]).map((m) => ({
+                userId: m.user?.id || m.user?._id || "",
+                roleId: m.role?.id || m.role?._id || "",
             })) : [];
 
             const isNameUnchanged = projectName.trim() === (project.projectName || '').trim();
             const isDescUnchanged = description.trim() === (project.description || '').trim();
             const isMembersUnchanged = members.length === originalMembers.length && 
-                members.every(m => originalMembers.some((om:any) => om.userId === m.userId && om.roleId === m.roleId));
+                members.every(m => originalMembers.some((om: ProjectMember) => om.userId === m.userId && om.roleId === m.roleId));
 
             if (isNameUnchanged && isDescUnchanged && isMembersUnchanged) {
                 toast.info("No changes made to update");

@@ -7,6 +7,7 @@ import {
   deleteAttachment,
   type CreateIssueProps,
   type UpdateIssueProps,
+  type IAttachement,
 } from "../../Service/issue/issue";
 
 export interface IssueData {
@@ -23,7 +24,7 @@ export interface IssueData {
   parentId?: string | null;
   startDate?: string | null;
   endDate?: string | null;
-  attachments?: any[];
+  attachments?: IAttachement[];
   projectId?: string;
   estimatedHours?: number;
 }

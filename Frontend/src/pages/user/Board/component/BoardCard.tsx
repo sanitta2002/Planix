@@ -4,11 +4,12 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { ExtendedIssue } from '../../../../types/BacklogTypes';
 import { IssueStatus } from '../../../../types/IssueType';
+import type { Member } from '../../../../types/project';
 
 interface BoardCardProps {
   issue: ExtendedIssue;
   onClick?: (issue: ExtendedIssue) => void;
-  members?: any[];
+  members?: Member[];
 }
 
 const BoardCard: React.FC<BoardCardProps> = ({ issue, onClick, members }) => {

@@ -1,3 +1,5 @@
+import type { IAttachement } from "../Service/issue/issue";
+
 export interface IssueData {
   id: string;
   _id?: string;
@@ -12,7 +14,7 @@ export interface IssueData {
   parentId?: string | null;
   startDate?: string | null;
   endDate?: string | null;
-  attachments?: any[];
+  attachments?: IAttachement[];
   estimatedHours?: number;
   loggedHours?: number;
 }

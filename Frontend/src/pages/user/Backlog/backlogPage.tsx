@@ -424,8 +424,8 @@ function BacklogPage() {
           onClose={handleCloseCompleteModal}
           onComplete={handleCompleteSprintSubmit}
           sprint={sprintToComplete!}
-          issues={allIssues.filter((i: any) => i.sprintId === sprintToComplete?._id)}
-          plannedSprints={sprints.filter((s: any) => s.status === "PLANNED")}
+          issues={allIssues.filter((i: IssueData) => i.sprintId === sprintToComplete?._id)}
+          plannedSprints={sprints.filter((s: ISprint) => s.status === "PLANNED")}
           isLoading={isCompletingSprint}
         />
       </div>

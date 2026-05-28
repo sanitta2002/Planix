@@ -9,20 +9,29 @@ import type { Role } from "../../types/role";
 import { useRemoveProjectMember, useUpdateProject } from "../../hooks/project/projectHook";
 import { toast } from "sonner";
 import ConfirmationModal from "./ConfirmationModal";
+type ProjectMemberDetail = {
+    user?: {
+        id?: string;
+        _id?: string;
+        firstName?: string;
+        avatarUrl?: string;
+    };
+    role?: {
+        id?: string;
+        _id?: string;
+        name?: string;
+    };
+    userId?: string;
+    roleId?: string;
+};
+
 type Project = {
     id: string;
-    members: {
-        user: {
-            id: string;
-            firstName: string;
-            avatarUrl?: string;
-        };
-        role: {
-            id: string;
-            name: string;
-        };
-    }[];
+    members: ProjectMemberDetail[];
 };
+
+type ExtendedRole = Role & { id?: string };
+
 type ManageMembersModalProps = {
     open: boolean;
     onClose: () => void;
@@ -36,7 +45,7 @@ const ManageMembersModal = ({
     project,
 }: ManageMembersModalProps) => {
 
-    const [roles, setRoles] = useState<Role[]>([]);
+    const [roles, setRoles] = useState<ExtendedRole[]>([]);
     const [members, setMembers] = useState<ProjectMember[]>([]);
     const [workspaceMembers, setWorkspaceMembers] = useState<WorkspaceMember[]>([]);
     const currentWorkspace = useSelector((state: RootState) => state.workspace.currentWorkspace)
@@ -69,9 +78,9 @@ const ManageMembersModal = ({
     useEffect(() => {
         if (project?.members) {
             setMembers(
-                project.members.map((m: any) => ({
-                    userId: m.user?.id || m.user?._id || m.userId,
-                    roleId: m.role?.id || m.role?._id || m.roleId,
+                project.members.map((m: ProjectMemberDetail) => ({
+                    userId: m.user?.id || m.user?._id || m.userId || "",
+                    roleId: m.role?.id || m.role?._id || m.roleId || "",
                 }))
             );
         }
@@ -244,10 +253,10 @@ const ManageMembersModal = ({
                             {members.length > 0 ? (
                                 members.map((member, index) => {
                                     const user = workspaceMembers.find((u) => u.id === member.userId) ||
-                                        project?.members?.find((m: any) => (m.user?.id || m.user?._id) === member.userId)?.user;
+                                        project?.members?.find((m: ProjectMemberDetail) => (m.user?.id || m.user?._id) === member.userId)?.user;
 
                                     const role = roles.find((r) => r._id === member.roleId) ||
-                                        project?.members?.find((m: any) => (m.role?.id || m.role?._id) === member.roleId)?.role;
+                                        project?.members?.find((m: ProjectMemberDetail) => (m.role?.id || m.role?._id) === member.roleId)?.role;
 
                                     return (
                                         <div
@@ -294,7 +303,7 @@ const ManageMembersModal = ({
                                                             className="w-full bg-[#0F172A]/50 border border-white/5 rounded-lg px-3 py-2 text-sm text-slate-300"
                                                         >
                                                             <option value="" disabled>Select Role</option>
-                                                            {roles?.map((r: any) => (
+                                                            {roles?.map((r: ExtendedRole) => (
                                                                 <option key={r._id || r.id} value={r._id || r.id}>
                                                                     {r.name}
                                                                 </option>
