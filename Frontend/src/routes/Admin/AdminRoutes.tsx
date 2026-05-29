@@ -9,6 +9,7 @@ import UserPage from "../../pages/admin/userMangement/UserPage"
 import SubPlan from "../../pages/admin/subscriptionPlan/SubPlan"
 import WorkspacesPage from "../../pages/admin/workspaces/WorkspacesPage"
 import AdminPayments from "../../pages/admin/payments/PaymentPage"
+import AdminSalesReportPage from "../../pages/admin/AdminSalesReportPage"
 
 
 
@@ -23,7 +24,7 @@ const AdminRoutes = () => {
             <Route element={<AdminLayout />}>
                 <Route path={FRONTEND_ROUTES.ADMIN} element={<AdminDashboardPage />} />
                 <Route path={FRONTEND_ROUTES.ADMIN_USERS} element={<UserPage/>}/>
-                <Route path={FRONTEND_ROUTES.ADMIN_SALES_REPORT} element={<h1>sales</h1>} />
+                <Route path={FRONTEND_ROUTES.ADMIN_SALES_REPORT} element={<AdminSalesReportPage />} />
                 <Route path={FRONTEND_ROUTES.ADMIN_SUBSCRIPTIONS} element={<SubPlan/>}/>
                 <Route path={FRONTEND_ROUTES.ADMIN_WORKSPACES} element={<WorkspacesPage/>}/>
                 <Route path={FRONTEND_ROUTES.ADMIN_PAYMENTS_DETAILS} element={<AdminPayments/>} />

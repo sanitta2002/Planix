@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { CreditCard, FileText, X, Printer } from "lucide-react";
+import { CreditCard, FileText, X, Download } from "lucide-react";
+import jsPDF from "jspdf";
 import { useRetryPayment, useWorkspacePaymentDetails } from "../../../hooks/user/userHook";
 import type { RootState } from "../../../store/Store";
 import { useNavigate } from "react-router";
@@ -92,6 +93,77 @@ const PaymentDetails = () => {
         console.error("Retry payment failed", error);
       },
     });
+  };
+
+  const handleExportPDF = (receipt: Payment) => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Title
+    doc.setFontSize(22);
+    doc.setTextColor(30, 41, 59);
+    doc.text("Transaction Receipt", 14, 22);
+
+    doc.setFontSize(10);
+    doc.setTextColor(100, 116, 139);
+    doc.text("Receipt details for your subscription", 14, 30);
+
+    // Divider
+    doc.setDrawColor(203, 213, 225);
+    doc.line(14, 35, pageWidth - 14, 35);
+
+    // Amount section
+    doc.setFontSize(12);
+    doc.setTextColor(100, 116, 139);
+    doc.text("Total Paid Amount", 14, 48);
+    doc.setFontSize(28);
+    doc.setTextColor(16, 185, 129);
+    doc.text(`Rs.${receipt.amount}`, 14, 60);
+
+    // Status
+    doc.setFontSize(11);
+    doc.setTextColor(30, 41, 59);
+    doc.text(`Status: ${receipt.status.charAt(0).toUpperCase() + receipt.status.slice(1)}`, 14, 72);
+
+    // Divider
+    doc.setDrawColor(203, 213, 225);
+    doc.line(14, 78, pageWidth - 14, 78);
+
+    // Details
+    let y = 90;
+    const addRow = (label: string, value: string) => {
+      doc.setFontSize(10);
+      doc.setTextColor(100, 116, 139);
+      doc.text(label, 14, y);
+      doc.setTextColor(30, 41, 59);
+      doc.text(value, pageWidth - 14, y, { align: "right" });
+      y += 10;
+    };
+
+    addRow("Transaction ID", receipt.id);
+    addRow("Plan Name", receipt.plan);
+    addRow("Date Issued", new Date(receipt.startDate).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }));
+    if (receipt.endDate) {
+      addRow("End Date", new Date(receipt.endDate).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }));
+    }
+    addRow("Payment Channel", "Stripe Gateway");
+    if (receipt.stripeSubscriptionId) {
+      addRow("Stripe Sub ID", receipt.stripeSubscriptionId);
+    }
+    if (receipt.latestInvoiceId) {
+      addRow("Stripe Invoice ID", receipt.latestInvoiceId);
+    }
+
+    // Footer
+    y += 10;
+    doc.setDrawColor(203, 213, 225);
+    doc.line(14, y, pageWidth - 14, y);
+    y += 10;
+    doc.setFontSize(9);
+    doc.setTextColor(148, 163, 184);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, y);
+
+    doc.save(`receipt-${receipt.id.slice(-8)}-${new Date().toISOString().split("T")[0]}.pdf`);
   };
 
 
@@ -447,11 +519,11 @@ const PaymentDetails = () => {
             {/* Modal Actions */}
             <div className="flex gap-3 mt-8 border-t border-white/5 pt-5 border-none">
               <button
-                onClick={() => window.print()}
+                onClick={() => handleExportPDF(selectedReceipt)}
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-white/[0.04] border border-white/5 text-slate-300 hover:text-white hover:bg-white/[0.08] text-sm font-semibold transition-all duration-200"
               >
-                <Printer className="w-4 h-4" />
-                Print Receipt
+                <Download className="w-4 h-4" />
+                Export PDF
               </button>
               <button
                 onClick={() => setSelectedReceipt(null)}

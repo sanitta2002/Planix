@@ -32,8 +32,8 @@ export class WorkspaceRepository
   }
 
   async findAllWorkspace(
-    page: number,
-    limit: number,
+    page?: number,
+    limit?: number,
     search?: string,
   ): Promise<{ workspaces: WorkspaceDocument[]; total: number }> {
     let filter = {};
@@ -43,12 +43,13 @@ export class WorkspaceRepository
         $or: [{ name: { $regex: search, $options: 'i' } }],
       };
     }
+    const skip = page && limit ? (page - 1) * limit : 0;
     const [workspaces, total] = await Promise.all([
       this._workSpaceModel
         .find(filter)
         .populate('ownerId', 'firstName lastName email')
-        .skip((page - 1) * limit)
-        .limit(limit)
+        .skip(skip)
+        .limit(limit || 0)
         .sort({ createdAt: -1 }),
       this._workSpaceModel.countDocuments(filter),
     ]);

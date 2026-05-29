@@ -125,3 +125,14 @@ export const downloadReport = async (params?: { planId?: string; startDate?: str
   });
   return response.data;
 };
+
+export const getAdminDashboardMetrics = async () => {
+  const response = await AxiosInstance.get(API_ROUTES.Admin.DASHBOARD);
+  return response.data;
+};
+
+export const getAdminSalesReportData = async () => {
+  const response = await AxiosInstance.get(API_ROUTES.Admin.DASHBOARD_SALES_REPORT);
+  return response.data;
+};
+

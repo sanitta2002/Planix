@@ -4,8 +4,8 @@ import { WorkspaceDocument } from '@/workspace/Model/workspace.schema';
 export interface IWorkspaceRepository extends IBaseRepository<WorkspaceDocument> {
   findByUser(ownerId: string): Promise<WorkspaceDocument[]>;
   findAllWorkspace(
-    page: number,
-    limit: number,
+    page?: number,
+    limit?: number,
     search?: string,
   ): Promise<{ workspaces: WorkspaceDocument[]; total: number }>;
   findByNameAndOwner(

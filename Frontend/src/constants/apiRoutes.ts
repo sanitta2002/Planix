@@ -17,7 +17,9 @@ export const API_ROUTES = {
     SUBSCRIPTION_PLAN: "/admin/subscriptionPlan",
     WORKSPACES: "/admin/workspaces",
     paymets:"/admin/paymets",
-    REPORT:"/admin/report"
+    REPORT:"/admin/report",
+    DASHBOARD: "/admin/dashboard/metrics",
+    DASHBOARD_SALES_REPORT: "/admin/dashboard/sales-report"
   },
   USER: {
     UPDATE_PROFILE: "/users/profile",
