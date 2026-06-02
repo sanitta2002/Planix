@@ -27,6 +27,7 @@ export interface IssueData {
   attachments?: IAttachement[];
   projectId?: string;
   estimatedHours?: number;
+  storyPoints?: number;
 }
 
 export interface GetIssuesResponse {

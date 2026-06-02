@@ -1,4 +1,4 @@
-import { AxiosError } from "axios";
+
 import { AxiosInstance } from "../../axios/axios";
 import { API_ROUTES } from "../../constants/apiRoutes";
 

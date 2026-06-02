@@ -28,6 +28,7 @@ export interface IssueFormData {
     attachments: IAttachement[];
     assigneeId?: string | null;
     estimatedHours?: number;
+    storyPoints?: number;
 }
 
 export const CreateIssueModal = ({ 
@@ -62,6 +63,7 @@ export const CreateIssueModal = ({
     const [assigneeId, setAssigneeId] = useState("");
     const [attachments, setAttachments] = useState<IAttachement[]>([]);
     const [estimatedHours, setEstimatedHours] = useState<number | "">("");
+    const [storyPoints, setStoryPoints] = useState<string>("1");
 
 
     // Reset when modal opens
@@ -99,6 +101,7 @@ export const CreateIssueModal = ({
             attachments, 
             assigneeId: assigneeId || null,
             estimatedHours: estimatedHours === "" ? undefined : Number(estimatedHours),
+            storyPoints: issueType.toUpperCase() === "STORY" ? Number(storyPoints) : undefined,
         });
         handleClose();
     };
@@ -111,6 +114,7 @@ export const CreateIssueModal = ({
         setAssigneeId("");
         setAttachments([]);
         setEstimatedHours("");
+        setStoryPoints("1");
         onClose();
     };
 
@@ -284,19 +288,45 @@ export const CreateIssueModal = ({
                                     </div>
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-sm text-zinc-300">
-                                    Estimated Hours
-                                </label>
-                                <input
-                                    type="number"
-                                    min={0}
-                                    value={estimatedHours}
-                                    onChange={(e) => setEstimatedHours(e.target.value === "" ? "" : Number(e.target.value))}
-                                    placeholder="0"
-                                    className="w-full bg-[#0F172A] border border-[#1E293B] rounded-lg px-4 py-3 text-sm text-slate-200 placeholder:text-zinc-500 focus:outline-none focus:border-[#6366F1] transition-colors"
-                                />
-                            </div>
+                            {issueType.toUpperCase() !== "STORY" && (
+                                <div className="space-y-2">
+                                    <label className="text-sm text-zinc-300">
+                                        Estimated Hours
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min={0}
+                                        value={estimatedHours}
+                                        onChange={(e) => setEstimatedHours(e.target.value === "" ? "" : Number(e.target.value))}
+                                        placeholder="0"
+                                        className="w-full bg-[#0F172A] border border-[#1E293B] rounded-lg px-4 py-3 text-sm text-slate-200 placeholder:text-zinc-500 focus:outline-none focus:border-[#6366F1] transition-colors"
+                                    />
+                                </div>
+                            )}
+                            {issueType.toUpperCase() === "STORY" && (
+                                <div className="space-y-2">
+                                    <label className="text-sm text-zinc-300">
+                                        Story Points
+                                    </label>
+                                    <div className="relative">
+                                        <select
+                                            value={storyPoints}
+                                            onChange={(e) => setStoryPoints(e.target.value)}
+                                            className="w-full bg-[#0F172A] border border-[#1E293B] rounded-lg px-4 py-3 text-sm text-slate-200 appearance-none focus:outline-none focus:border-[#6366F1] transition-colors cursor-pointer"
+                                        >
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="5">5</option>
+                                            <option value="8">8</option>
+                                            <option value="13">13</option>
+                                        </select>
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                            <ChevronDown className="w-4 h-4 text-zinc-400" />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 

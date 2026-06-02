@@ -65,6 +65,9 @@ export class Issue {
   @Prop({ type: Number, default: 0 })
   estimatedHours?: number;
 
+  @Prop({ type: Number, enum: [1, 2, 3, 5, 8, 13], default: 1 })
+  storyPoints?: number;
+
   @Prop({ default: null })
   startDate?: Date;
 

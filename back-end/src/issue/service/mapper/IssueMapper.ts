@@ -19,6 +19,7 @@ export class IssueMapper {
 
       assigneeId: dto.assigneeId ?? null,
       estimatedHours: dto.estimatedHours ?? 0,
+      storyPoints: dto.storyPoints ?? 1,
       attachments: dto.attachments || [],
       startDate: dto.startDate,
       endDate: dto.endDate,
@@ -40,6 +41,7 @@ export class IssueMapper {
       key: issue.key,
       assigneeId: issue.assigneeId,
       estimatedHours: issue.estimatedHours ?? 0,
+      storyPoints: issue.storyPoints ?? 1,
       sprintId: issue.sprintId ? issue.sprintId.toString() : null,
       createdAt: issue.createdAt,
       parentId: issue.parentId ? issue.parentId.toString() : null,

@@ -5,6 +5,7 @@ import {
   IsEnum,
   IsDateString,
   IsNumber,
+  IsIn,
 } from 'class-validator';
 import { IssueStatus } from '@/common/type/IssueStatus';
 import { IssueType } from '@/common/type/IssueType';
@@ -57,6 +58,11 @@ export class CreateIssueDTO {
   @IsOptional()
   @IsNumber()
   estimatedHours?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @IsIn([1, 2, 3, 5, 8, 13])
+  storyPoints?: number;
 
   @IsOptional()
   @IsDateString()

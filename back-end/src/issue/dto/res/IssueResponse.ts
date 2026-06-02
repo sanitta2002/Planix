@@ -11,6 +11,7 @@ export interface IssueResponse {
   key: string;
   assigneeId?: string | null;
   estimatedHours?: number;
+  storyPoints?: number;
   sprintId?: string | null;
   createdAt: Date;
   startDate?: Date | null;

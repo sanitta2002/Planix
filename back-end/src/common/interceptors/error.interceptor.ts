@@ -20,8 +20,10 @@ export class ErrorInterceptor implements NestInterceptor {
 
         if (error instanceof HttpException) {
           statusCode = error.getStatus();
-          const response = error.getResponse() as { message?: string | string[] };
-          
+          const response = error.getResponse() as {
+            message?: string | string[];
+          };
+
           if (Array.isArray(response.message)) {
             message = response.message[0];
           } else {
@@ -29,12 +31,18 @@ export class ErrorInterceptor implements NestInterceptor {
           }
         }
 
-        return throwError(() => new HttpException({
-          success: false,
-          statusCode: statusCode,
-          message: message,
-          timestamp: new Date().toISOString(),
-        }, statusCode));
+        return throwError(
+          () =>
+            new HttpException(
+              {
+                success: false,
+                statusCode: statusCode,
+                message: message,
+                timestamp: new Date().toISOString(),
+              },
+              statusCode,
+            ),
+        );
       }),
     );
   }

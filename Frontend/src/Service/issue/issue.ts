@@ -22,6 +22,7 @@ export interface CreateIssueProps {
   startDate?: string | null;
   endDate?: string | null;
   estimatedHours?: number;
+  storyPoints?: number;
 }
 
 export interface UpdateIssueProps {
@@ -36,6 +37,7 @@ export interface UpdateIssueProps {
   startDate?: string | null;
   endDate?: string | null;
   estimatedHours?: number;
+  storyPoints?: number;
 }
 
 export const createIssue = async (data: CreateIssueProps) => {

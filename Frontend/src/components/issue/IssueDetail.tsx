@@ -41,6 +41,7 @@ export interface Issue {
     attachments?: Attachment[];
     assigneeId?: string;
     estimatedHours?: number;
+    storyPoints?: number;
 }
 
 interface EmojiData {
@@ -80,6 +81,7 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
     const [editStartDate, setEditStartDate] = useState("");
     const [editEndDate, setEditEndDate] = useState("");
     const [editEstimatedHours, setEditEstimatedHours] = useState<number | "">("");
+    const [editStoryPoints, setEditStoryPoints] = useState<number | "">("");
 
     // Attachment states
     const [attachmentTab, setAttachmentTab] = useState<'file' | 'image' | 'link'>('file');
@@ -346,6 +348,7 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
             setEditStartDate(issue.startDate ? new Date(issue.startDate).toISOString().split('T')[0] : "");
             setEditEndDate(issue.endDate ? new Date(issue.endDate).toISOString().split('T')[0] : "");
             setEditEstimatedHours(issue.estimatedHours !== undefined ? issue.estimatedHours : "");
+            setEditStoryPoints(issue.storyPoints !== undefined ? issue.storyPoints : "");
         }
     });
 
@@ -357,6 +360,7 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
             setEditStartDate(issue.startDate ? new Date(issue.startDate).toISOString().split('T')[0] : "");
             setEditEndDate(issue.endDate ? new Date(issue.endDate).toISOString().split('T')[0] : "");
             setEditEstimatedHours(issue.estimatedHours !== undefined ? issue.estimatedHours : "");
+            setEditStoryPoints(issue.storyPoints !== undefined ? issue.storyPoints : "");
         }
     }, [issue]);
 
@@ -388,6 +392,7 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
                 startDate: editStartDate || null,
                 endDate: editEndDate || null,
                 estimatedHours: editEstimatedHours === "" ? 0 : Number(editEstimatedHours),
+                storyPoints: (issue.type || issue.issueType || "").toUpperCase() === "STORY" ? (editStoryPoints === "" ? undefined : Number(editStoryPoints)) : undefined,
             }
         }, {
             onSuccess: () => {
@@ -427,7 +432,8 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
             workspaceId: currentProject?.workspaceId || "",
             assigneeId: data.assigneeId,
             parentId: data.parentId,
-            estimatedHours: data.estimatedHours
+            estimatedHours: data.estimatedHours,
+            storyPoints: data.storyPoints
         }, {
             onSuccess: () => {
                 const subtaskTypeName = data.issueType?.charAt(0) + data.issueType?.slice(1).toLowerCase();
@@ -697,19 +703,43 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
                                     </div>
                                 </div>
 
-                                <div>
-                                    <span className="text-[11px] font-medium text-zinc-500 block mb-2">Estimated Hours</span>
-                                    <div className="relative">
-                                        <input
-                                            type="number"
-                                            min={0}
-                                            value={editEstimatedHours}
-                                            onChange={(e) => setEditEstimatedHours(e.target.value === "" ? "" : Number(e.target.value))}
-                                            placeholder="0"
-                                            className="w-full bg-[#0A0E17] border border-[#1E293B] rounded-xl px-4 py-3 text-[13px] font-medium text-zinc-300 focus:outline-none focus:border-[#8B5CF6] hover:border-zinc-700 transition-colors"
-                                        />
+                                {(issue?.type || issue?.issueType || "").toUpperCase() !== "STORY" && (
+                                    <div>
+                                        <span className="text-[11px] font-medium text-zinc-500 block mb-2">Estimated Hours</span>
+                                        <div className="relative">
+                                            <input
+                                                type="number"
+                                                min={0}
+                                                value={editEstimatedHours}
+                                                onChange={(e) => setEditEstimatedHours(e.target.value === "" ? "" : Number(e.target.value))}
+                                                placeholder="0"
+                                                className="w-full bg-[#0A0E17] border border-[#1E293B] rounded-xl px-4 py-3 text-[13px] font-medium text-zinc-300 focus:outline-none focus:border-[#8B5CF6] hover:border-zinc-700 transition-colors"
+                                            />
+                                        </div>
                                     </div>
-                                </div>
+                                )}
+                                {(issue?.type || issue?.issueType || "").toUpperCase() === "STORY" && (
+                                    <div>
+                                        <span className="text-[11px] font-medium text-zinc-500 block mb-2">Story Points</span>
+                                        <div className="relative">
+                                            <select
+                                                value={editStoryPoints}
+                                                onChange={(e) => setEditStoryPoints(e.target.value === "" ? "" : Number(e.target.value))}
+                                                className="w-full bg-[#0A0E17] border border-[#1E293B] rounded-xl px-4 py-3 text-[13px] font-medium text-zinc-300 appearance-none focus:outline-none focus:border-[#8B5CF6] hover:border-zinc-700 transition-colors cursor-pointer"
+                                            >
+                                                <option value={1}>1</option>
+                                                <option value={2}>2</option>
+                                                <option value={3}>3</option>
+                                                <option value={5}>5</option>
+                                                <option value={8}>8</option>
+                                                <option value={13}>13</option>
+                                            </select>
+                                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                                                <ChevronDown size={16} className="text-zinc-600" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
