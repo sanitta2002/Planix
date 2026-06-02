@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import { AxiosInstance } from "../../axios/axios";
 import { API_ROUTES } from "../../constants/apiRoutes";
 
@@ -87,13 +88,6 @@ export const updatePlan = async (planId: string, data: UpdatePlanPayload) => {
   const response = await AxiosInstance.patch(
     `${API_ROUTES.Admin.SUBSCRIPTION_PLAN}/${planId}`,
     data,
-  );
-  return response.data;
-};
-
-export const deletePlan = async (planId: string) => {
-  const response = await AxiosInstance.delete(
-    `${API_ROUTES.Admin.SUBSCRIPTION_PLAN}/${planId}`,
   );
   return response.data;
 };

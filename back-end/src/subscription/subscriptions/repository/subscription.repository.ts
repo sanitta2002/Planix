@@ -105,4 +105,9 @@ export class subscriptionRepository
       .populate('planId', 'name price durationDays maxMembers maxProjects')
       .sort({ createdAt: -1 });
   }
+  async getSubscriberCount(planId: string): Promise<number> {
+    return await this._subscriptionModel.countDocuments({
+      planId: new Types.ObjectId(planId),
+    });
+  }
 }

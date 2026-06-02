@@ -1,4 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import type { ISubscriptionPlanRepository } from '@/subscription/interface/ISubscriptionPlanRepository';
 import { ISubscriptionPlanService } from '@/subscription/interface/ISubscriptionPlanService';
 import { CreatePlanDto } from '@/subscription/subscription-plan/dto/req/createplan.dto';
@@ -7,6 +12,7 @@ import { planMapper } from '@/subscription/subscription-plan/service/Mapper/plan
 import { UpdatePlanDto } from '@/subscription/subscription-plan/dto/req/UpdatePlanDto';
 import { SUBSCRIPTION_MESSAGE } from '@/common/constants/messages.constant';
 import type { ILogger } from '@/logger/ILogger';
+import type { ISubscriptionRepository } from '@/subscription/interface/ISubscriptionRepository';
 
 @Injectable()
 export class SubscriptionPlanService implements ISubscriptionPlanService {
@@ -15,6 +21,8 @@ export class SubscriptionPlanService implements ISubscriptionPlanService {
     private readonly _logger: ILogger,
     @Inject('ISubscriptionPlanRepository')
     private readonly _subscriptionPlanRepository: ISubscriptionPlanRepository,
+    @Inject('ISubscriptionRepository')
+    private readonly _subscriptionRepository: ISubscriptionRepository,
   ) {}
   async createPlan(data: CreatePlanDto): Promise<PlanResponseDto> {
     this._logger.info(`create sub plan :${data.name}`);
@@ -34,6 +42,16 @@ export class SubscriptionPlanService implements ISubscriptionPlanService {
   ): Promise<PlanResponseDto> {
     this._logger.info(`update plan : ${planId}`);
     console.log(planId);
+    if (data.isActive === false) {
+      const subscriberCount =
+        await this._subscriptionRepository.getSubscriberCount(planId);
+
+      if (subscriberCount > 0) {
+        throw new BadRequestException(
+          'Cannot unlist a plan that has subscribers',
+        );
+      }
+    }
     const updatePlan = await this._subscriptionPlanRepository.updateById(
       planId,
       data,
@@ -44,16 +62,6 @@ export class SubscriptionPlanService implements ISubscriptionPlanService {
     return planMapper.toResponse(updatePlan);
   }
 
-  async deletePlan(planId: string): Promise<void> {
-    this._logger.info(`delete plan : ${planId}`);
-    const updated = await this._subscriptionPlanRepository.updateById(planId, {
-      isDeleted: true,
-      isActive: false,
-    });
-    if (!updated) {
-      throw new NotFoundException(SUBSCRIPTION_MESSAGE.NOT_FOUND);
-    }
-  }
   async getActivePlans(): Promise<PlanResponseDto[]> {
     this._logger.info(`fetch active subscription plans`);
 

@@ -3,7 +3,6 @@ import {
   adminLogin,
   blockUser,
   createPlan,
-  deletePlan,
   getAllPayments,
   getPlans,
   getUsers,
@@ -16,6 +15,7 @@ import {
 } from "../../Service/admin/adminService";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
+import { AxiosError } from "axios";
 
 export const useAdminLogin = () => {
   return useMutation({
@@ -190,7 +190,14 @@ export const useUpdatePlan = () => {
         }
       );
     },
-    onError: (_, variables) => {
+    onError: (error, variables) => {
+      const err = error as AxiosError<{ message: string }>;
+      if (err?.isAxiosError || err?.response) {
+        const backendMessage = err.response?.data?.message || err.message;
+        toast.error(backendMessage);
+        return;
+      }
+      
       if (variables?.data?.isActive !== undefined) {
         toast.error(
           variables.data.isActive
@@ -204,29 +211,6 @@ export const useUpdatePlan = () => {
   });
 };
 
-export const useDeletePlan = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: deletePlan,
-    onSuccess: (_, planId) => {
-      toast.success("Plan deleted successfully");
-      queryClient.setQueryData<GetPlansResponse>(
-        ["subscription-plans"],
-        (oldData) => {
-          if (!oldData) return oldData;
-          return {
-            ...oldData,
-            data: oldData.data.filter((plan: Plan) => plan.id !== planId),
-          };
-        }
-      );
-    },
-    onError: () => {
-      toast.error("Failed to delete plan");
-    },
-  });
-};
 
 export const useGetWorkspaces = (params: GetWorkspacePayload) => {
   return useQuery({

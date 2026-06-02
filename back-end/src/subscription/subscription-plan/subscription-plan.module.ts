@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { SubscriptionPlanService } from '@/subscription/subscription-plan/service/subscription-plan.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
@@ -8,6 +8,7 @@ import {
 import { SubscriptionPlanRepository } from '@/subscription/subscription-plan/Repository/SubscriptionPlanRepository';
 import { SubPlanController } from '@/subscription/subscription-plan/controller/sub-plan.controller';
 import { LoggerModule } from '@/logger/logger.module';
+import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { LoggerModule } from '@/logger/logger.module';
       { name: SubscriptionPlan.name, schema: SubscriptionPlanSchema },
     ]),
     LoggerModule,
+    forwardRef(() => SubscriptionsModule),
   ],
   controllers: [SubPlanController],
   providers: [

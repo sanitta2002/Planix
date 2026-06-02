@@ -18,4 +18,5 @@ export interface ISubscriptionRepository extends IBaseRepository<SubscriptionDoc
     limit?: number,
   ): Promise<{ payments: SubscriptionDocument[]; total: number }>;
   findAllByWorkspace(workspaceId: string): Promise<SubscriptionDocument[]>;
+  getSubscriberCount(planId: string): Promise<number>;
 }

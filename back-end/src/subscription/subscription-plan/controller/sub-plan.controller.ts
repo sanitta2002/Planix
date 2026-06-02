@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   HttpStatus,
   Inject,
@@ -57,14 +56,6 @@ export class SubPlanController {
       HttpStatus.OK,
       SUBSCRIPTION_MESSAGE.SUBSCRIPTION_UPDATE,
       updatePlan,
-    );
-  }
-  @Delete(':planId')
-  async deletePlan(@Param('planId') planId: string) {
-    await this.subscriptionPlanService.deletePlan(planId);
-    return ApiResponse.success(
-      HttpStatus.OK,
-      SUBSCRIPTION_MESSAGE.SUBSCRIPTION_DELETE,
     );
   }
 }

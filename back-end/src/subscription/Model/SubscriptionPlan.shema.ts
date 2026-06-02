@@ -5,19 +5,19 @@ export type SubscriptionPlanDocument = SubscriptionPlan & Document;
 @Schema({ timestamps: true })
 export class SubscriptionPlan {
   @Prop({ required: true, trim: true })
-  name: string;
+  name!: string;
 
   @Prop({ required: true })
-  price: number;
+  price!: number;
 
   @Prop({ required: true })
-  maxMembers: number;
+  maxMembers!: number;
 
   @Prop({ required: true })
-  maxProjects: number;
+  maxProjects!: number;
 
   @Prop({ required: true })
-  durationDays: number;
+  durationDays!: number;
 
   @Prop({ default: null })
   stripeProductId?: string;
@@ -26,15 +26,15 @@ export class SubscriptionPlan {
   stripePriceId?: string;
 
   @Prop({ type: [String], required: true })
-  features: string[];
+  features!: string[];
 
   @Prop({ default: true })
-  isActive: boolean;
+  isActive!: boolean;
 
   @Prop({ default: false })
-  isDeleted: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  isDeleted!: boolean;
+  createdAt!: Date;
+  updatedAt!: Date;
 }
 
 export const SubscriptionPlanSchema =

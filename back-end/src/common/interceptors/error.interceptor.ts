@@ -20,15 +20,21 @@ export class ErrorInterceptor implements NestInterceptor {
 
         if (error instanceof HttpException) {
           statusCode = error.getStatus();
-          message = error.message;
+          const response = error.getResponse() as { message?: string | string[] };
+          
+          if (Array.isArray(response.message)) {
+            message = response.message[0];
+          } else {
+            message = response.message || error.message;
+          }
         }
 
-        return throwError(() => ({
+        return throwError(() => new HttpException({
           success: false,
           statusCode: statusCode,
           message: message,
           timestamp: new Date().toISOString(),
-        }));
+        }, statusCode));
       }),
     );
   }

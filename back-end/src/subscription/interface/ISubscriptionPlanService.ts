@@ -7,6 +7,5 @@ export interface ISubscriptionPlanService {
   getAllPlans(): Promise<PlanResponseDto[]>;
   getActivePlans(): Promise<PlanResponseDto[]>;
   updatePlan(planId: string, data: UpdatePlanDto): Promise<PlanResponseDto>;
-  deletePlan(planId: string): Promise<void>;
   getPlanById(planId: string): Promise<PlanResponseDto>;
 }

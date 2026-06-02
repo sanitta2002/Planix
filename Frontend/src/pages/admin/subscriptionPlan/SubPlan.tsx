@@ -4,6 +4,8 @@ import { useGetPlans, useUpdatePlan } from "../../../hooks/Admin/adminHook";
 import AddPlanModal from "./modal/AddPlanModal";
 import ConfirmationModal from "../../../components/modal/ConfirmationModal";
 import { Button } from "../../../components/ui/Button";
+import { AxiosError } from "axios";
+import { toast } from "sonner";
 
 interface Plan {
   id: string;
@@ -75,8 +77,9 @@ function SubPlan() {
       {
         onSuccess: () => {
           setConfirmModal({ isOpen: false, plan: null, action: null });
-        },
-      }
+        }
+      },
+
     );
   };
 
