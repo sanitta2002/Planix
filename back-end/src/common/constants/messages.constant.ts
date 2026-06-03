@@ -224,6 +224,9 @@ export const ISSUE_ERRORS = {
   ISSUE_CREATION_FAILED: 'Failed to create issue',
   ISSUE_UPDATE_FAILED: 'Failed to update issue',
   ISSUE_DELETE_FAILED: 'Failed to delete issue',
+  STORY_POINTS_REQUIRED: 'Story points are required for Story issues',
+  ESTIMATED_HOURS_REQUIRED:
+    'Estimated hours are required for Task, Bug and Subtask issues',
 };
 
 export const SPRINT_MESSAGES = {

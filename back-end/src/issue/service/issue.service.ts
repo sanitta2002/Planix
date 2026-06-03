@@ -70,6 +70,11 @@ export class IssueService implements IIssueService {
       ) {
         throw new BadRequestException(ISSUE_ERRORS.STORY_PARENT_INVALID);
       }
+      if (dto.issueType === IssueType.STORY) {
+        if (dto.storyPoints === undefined) {
+          throw new BadRequestException(ISSUE_ERRORS.STORY_POINTS_REQUIRED);
+        }
+      }
       if (
         (dto.issueType === IssueType.TASK || dto.issueType === IssueType.BUG) &&
         parent.issueType !== IssueType.STORY
@@ -81,6 +86,15 @@ export class IssueService implements IIssueService {
         parent.issueType !== IssueType.TASK
       ) {
         throw new BadRequestException(ISSUE_ERRORS.SUBTASK_PARENT_INVALID);
+      }
+      if (
+        dto.issueType === IssueType.TASK ||
+        dto.issueType === IssueType.BUG ||
+        dto.issueType === IssueType.SUBTASK
+      ) {
+        if (dto.estimatedHours === undefined || dto.estimatedHours <= 0) {
+          throw new BadRequestException(ISSUE_ERRORS.ESTIMATED_HOURS_REQUIRED);
+        }
       }
     }
     const project = await this._projectRepo.findById(dto.projectId);
@@ -169,6 +183,9 @@ export class IssueService implements IIssueService {
     if (dto.issueType) updateData.issueType = dto.issueType;
     if (dto.estimatedHours !== undefined) {
       updateData.estimatedHours = dto.estimatedHours;
+    }
+    if (dto.storyPoints !== undefined) {
+      updateData.storyPoints = dto.storyPoints;
     }
     if (dto.parentId) {
       const parent = await this._IissueRepo.findById(dto.parentId);
