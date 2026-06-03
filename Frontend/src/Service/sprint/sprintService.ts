@@ -1,6 +1,6 @@
 import { AxiosInstance } from "../../axios/axios";
 import { API_ROUTES } from "../../constants/apiRoutes";
-import type { CreateSprintProps, ISprint, UpdateSprintProps } from "../../types/Sprint";
+import type { CreateSprintProps, ISprint, UpdateSprintProps, BurndownResponse } from "../../types/Sprint";
 
 export const createSprint = async (data: CreateSprintProps): Promise<ISprint> => {
   const response = await AxiosInstance.post(API_ROUTES.SPRINT.CREATE, data);
@@ -24,4 +24,7 @@ export const completeSprint = async (sprintId: string, moveToSprintId?: string):
   return response.data;
 };
 
-
+export const getSprintBurndown = async (sprintId: string): Promise<BurndownResponse> => {
+  const response = await AxiosInstance.get(API_ROUTES.SPRINT.GET_BURNDOWN.replace(":sprintId", sprintId));
+  return response.data.data;
+};

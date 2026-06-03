@@ -22,6 +22,7 @@ import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 import { ProjectPermissionGuard } from '@/auth/guards/project-permission.guard';
 import { Permissions } from '@/common/decorators/permissions.decorator';
 import { UpdateSprintDto } from '@/sprint/dto/req/UpdateSprintDto ';
+import { BurndownResponse } from '../dto/res/BurndownResponse';
 @UseGuards(JwtAuthGuard, ProjectPermissionGuard)
 @Controller('sprint')
 export class SprintController {
@@ -79,5 +80,16 @@ export class SprintController {
     );
 
     return ApiResponse.success(HttpStatus.OK, SPRINT_MESSAGES.UPDATED, sprint);
+  }
+  @Get(':sprintId/burndown')
+  async getBurndownData(
+    @Param('sprintId') sprintId: string,
+  ): Promise<ApiResponseDto<BurndownResponse>> {
+    const data = await this._sprintService.getBurndownData(sprintId);
+    return ApiResponse.success(
+      HttpStatus.OK,
+      SPRINT_MESSAGES.BURNDOWN_FETCHED,
+      data,
+    );
   }
 }

@@ -4,6 +4,7 @@ import {
   getSprintsByProject,
   startSprint,
   completeSprint,
+  getSprintBurndown,
 } from "../../Service/sprint/sprintService";
 import type { CreateSprintProps, UpdateSprintProps } from "../../types/Sprint";
 
@@ -62,5 +63,13 @@ export const useCompleteSprint = () => {
       queryClient.invalidateQueries({ queryKey: ["sprints"] });
       queryClient.invalidateQueries({ queryKey: ["issues"] });
     },
+  });
+};
+
+export const useGetSprintBurndown = (sprintId: string) => {
+  return useQuery({
+    queryKey: ["burndown", sprintId],
+    queryFn: () => getSprintBurndown(sprintId),
+    enabled: !!sprintId,
   });
 };

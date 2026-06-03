@@ -11,7 +11,8 @@ import {
     Settings,
     DollarSign,
     ChevronRight,
-    Layers
+    Layers,
+    TrendingDown
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useDispatch, useSelector } from 'react-redux';
@@ -109,6 +110,7 @@ export const Sidebar = ({ className }: { className?: string }) => {
                     <SidebarItem icon={LayoutDashboard} label="Dashboard" to="/dashboard" />
                     <SidebarItem icon={ListTodo} label="Backlog" to="/backlog" />
                     <SidebarItem icon={Kanban} label="Board" to="/board" />
+                    <SidebarItem icon={TrendingDown} label="Burndown" to="/burndown" />
                 </SidebarSection>
 
                 <SidebarSection title="Communication">

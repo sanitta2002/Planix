@@ -36,4 +36,5 @@ export const FRONTEND_ROUTES = {
   BACKLOG: '/backlog',
   BOARD: '/board',
   CHAT: '/chat',
+  BURNDOWN: '/burndown',
 };

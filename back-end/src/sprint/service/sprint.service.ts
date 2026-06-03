@@ -20,6 +20,9 @@ import { SprintStartedEvent } from '@/notification/events/notification.events';
 import { NotificationType } from '@/common/type/NotificationType';
 import type { IProjectMemberRepository } from '@/project/interfaces/IProjectMemberRepository';
 import type { ILogger } from '@/logger/ILogger';
+import { BurndownResponse } from '../dto/res/BurndownResponse';
+import { IssueType } from '@/common/type/IssueType';
+import { IssueStatus } from '@/common/type/IssueStatus';
 
 @Injectable()
 export class SprintService implements ISprintservice {
@@ -202,5 +205,120 @@ export class SprintService implements ISprintservice {
     );
 
     return SprintMapper.toResponse(updatedSprint);
+  }
+  async getBurndownData(sprintId: string): Promise<BurndownResponse> {
+    const sprint = await this._sprintRepo.findById(sprintId);
+    if (!sprint) {
+      throw new NotFoundException(SPRINT_MESSAGES.SPRINT_NOT_FOUND);
+    }
+
+    const issues = await this._issueRepo.findBySprint(sprintId);
+    const countableIssues = issues.filter(
+      (issue) => issue.issueType !== IssueType.EPIC,
+    );
+
+    const totalPoints = countableIssues.reduce(
+      (sum, issue) => sum + (issue.storyPoints || 0),
+      0,
+    );
+    const totalHours = countableIssues.reduce(
+      (sum, issue) => sum + (issue.estimatedHours || 0),
+      0,
+    );
+
+    const completedIssues = countableIssues.filter(
+      (issue) => issue.status === IssueStatus.DONE,
+    );
+    const completedPoints = completedIssues.reduce(
+      (sum, issue) => sum + (issue.storyPoints || 0),
+      0,
+    );
+    const completedHours = completedIssues.reduce(
+      (sum, issue) => sum + (issue.estimatedHours || 0),
+      0,
+    );
+    const trendData: BurndownResponse['trendData'] = [];
+
+    if (sprint.startDate && sprint.endDate) {
+      const start = new Date(sprint.startDate);
+      const end = new Date(sprint.endDate);
+      const today = new Date();
+      today.setHours(23, 59, 59, 999);
+
+      const totalDays = Math.ceil(
+        (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24),
+      );
+
+      if (totalDays > 0) {
+        const idealPointsPerDay = totalPoints / totalDays;
+        const idealHoursPerDay = totalHours / totalDays;
+
+        for (let i = 0; i <= totalDays; i++) {
+          const currentDay = new Date(start);
+          currentDay.setDate(currentDay.getDate() + i);
+
+          const dayLabel = currentDay.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+          });
+
+          const idealPoints = Math.max(
+            0,
+            Math.round((totalPoints - idealPointsPerDay * i) * 10) / 10,
+          );
+          const idealHours = Math.max(
+            0,
+            Math.round((totalHours - idealHoursPerDay * i) * 10) / 10,
+          );
+
+          let actualPoints: number | null = null;
+          let actualHours: number | null = null;
+
+          if (currentDay <= today) {
+            const endOfDay = new Date(currentDay);
+            endOfDay.setHours(23, 59, 59, 999);
+
+            let donePoints = 0;
+            let doneHours = 0;
+
+            completedIssues.forEach((issue) => {
+              const completedDate = issue.completedAt
+                ? new Date(issue.completedAt)
+                : issue.updatedAt
+                  ? new Date(issue.updatedAt)
+                  : null;
+
+              if (completedDate && completedDate <= endOfDay) {
+                donePoints += issue.storyPoints || 0;
+                doneHours += issue.estimatedHours || 0;
+              }
+            });
+
+            actualPoints = Math.max(0, totalPoints - donePoints);
+            actualHours = Math.max(0, totalHours - doneHours);
+          }
+
+          trendData.push({
+            day: dayLabel,
+            idealPoints,
+            actualPoints: actualPoints !== null ? actualPoints : idealPoints,
+            idealHours,
+            actualHours: actualHours !== null ? actualHours : idealHours,
+          });
+        }
+      }
+    }
+
+    return {
+      sprintId: sprint._id.toString(),
+      sprintName: sprint.name,
+      totalPoints,
+      completedPoints,
+      remainingPoints: totalPoints - completedPoints,
+      totalHours,
+      completedHours,
+      remainingHours: totalHours - completedHours,
+      trendData,
+    };
   }
 }

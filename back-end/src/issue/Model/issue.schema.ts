@@ -74,6 +74,9 @@ export class Issue {
   @Prop({ default: null })
   endDate?: Date;
 
+  @Prop({ type: Date, default: null })
+  completedAt?: Date | null;
+
   @Prop({ required: true })
   createdBy!: string;
 }

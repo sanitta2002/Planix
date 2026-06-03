@@ -7,4 +7,5 @@ export interface IIssueRepository extends IBaseRepository<IssueDocument> {
     sprintId: string,
     newSprintId: string | null,
   ): Promise<void>;
+  findBySprint(sprintId: string): Promise<IssueDocument[]>;
 }

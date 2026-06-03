@@ -30,6 +30,7 @@ import {
 } from '@/notification/events/notification.events';
 import { NotificationType } from '@/common/type/NotificationType';
 import type { ILogger } from '@/logger/ILogger';
+import { IssueStatus } from '@/common/type/IssueStatus';
 
 @Injectable()
 export class IssueService implements IIssueService {
@@ -212,6 +213,17 @@ export class IssueService implements IIssueService {
 
     if (dto.attachments) {
       updateData.attachments = dto.attachments;
+    }
+    if (dto.status === IssueStatus.DONE && issue.status !== IssueStatus.DONE) {
+      updateData.completedAt = new Date();
+    }
+
+    if (
+      dto.status &&
+      dto.status !== IssueStatus.DONE &&
+      issue.status === IssueStatus.DONE
+    ) {
+      updateData.completedAt = null;
     }
     const updatedIssue = await this._IissueRepo.updateById(id, updateData);
 

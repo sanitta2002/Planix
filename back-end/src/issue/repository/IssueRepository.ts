@@ -37,4 +37,9 @@ export class IssueRepository
       },
     );
   }
+  async findBySprint(sprintId: string): Promise<IssueDocument[]> {
+    return await this._IssueModel.find({
+      sprintId: new Types.ObjectId(sprintId),
+    });
+  }
 }

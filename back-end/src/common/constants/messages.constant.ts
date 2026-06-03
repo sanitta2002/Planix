@@ -259,6 +259,8 @@ export const SPRINT_MESSAGES = {
 
   ISSUE_ALREADY_ASSIGNED: 'Issue is already assigned to another sprint',
   ISSUE_NOT_FOUND: 'Issue not found',
+  BURNDOWN_FETCHED: 'Burndown data fetched successfully',
+  VELOCITY_FETCHED: 'Velocity data fetched successfully',
 };
 
 export const COMMENT_MESSAGES = {

@@ -81,7 +81,8 @@ export const API_ROUTES = {
     CREATE: "/sprint",
     GET_BY_PROJECT: "/sprint/project/:projectId",
     START_SPRINT: "/sprint/:id/start",
-    COMPLETE_SPRINT: "/sprint/:id/complete"
+    COMPLETE_SPRINT: "/sprint/:id/complete",
+    GET_BURNDOWN: "/sprint/:sprintId/burndown",
   },
   COMMENT: {
     CREATE_COMMENT: "/comments/:issueId",
