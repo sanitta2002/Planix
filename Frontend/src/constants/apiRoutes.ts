@@ -103,4 +103,12 @@ export const API_ROUTES = {
     HISTORY: "/chat/history",
     SEND_MESSAGE: "/chat/message",
   },
+  MEETING: {
+    CREATE: "/meeting",
+    GET_BY_PROJECT: "/meeting/project/:projectId",
+    GET_BY_ID: "/meeting/:meetingId",
+    UPDATE: "/meeting/:meetingId",
+    JOIN: "/meeting/:meetingId/join",
+    END: "/meeting/:meetingId/end",
+  },
 };

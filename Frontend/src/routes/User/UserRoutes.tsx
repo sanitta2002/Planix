@@ -23,6 +23,7 @@ import BacklogPage from '../../pages/user/Backlog/backlogPage'
 import BoardPage from '../../pages/user/Board/BoardPage'
 import ChatPage from '../../pages/user/chat/ChatPage'
 import BurndownPage from '../../pages/user/Burndown/BurndownPage'
+import MeetingPage from '../../pages/user/Meeting/MeetingPage'
 
 function UserRoutes() {
   return (
@@ -48,6 +49,7 @@ function UserRoutes() {
           <Route path={FRONTEND_ROUTES.BOARD} element={<BoardPage/>} />
           <Route path={FRONTEND_ROUTES.CHAT} element={<ChatPage/>} />
           <Route path={FRONTEND_ROUTES.BURNDOWN} element={<BurndownPage/>} />
+          <Route path={FRONTEND_ROUTES.MEETING} element={<MeetingPage/>} />
         </Route>
         <Route path={FRONTEND_ROUTES.PLAN} element={<SubscriptionPage />} />
         <Route path={FRONTEND_ROUTES.PAYMENT_SUCCESS} element={<PaymentSuccess />} />

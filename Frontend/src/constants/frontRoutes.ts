@@ -37,4 +37,5 @@ export const FRONTEND_ROUTES = {
   BOARD: '/board',
   CHAT: '/chat',
   BURNDOWN: '/burndown',
+  MEETING: '/meeting',
 };
