@@ -328,3 +328,13 @@ export const CHAT_MESSAGES = {
 
   CONTENT_REQUIRED: 'Message content cannot be empty',
 };
+
+export const MEETING_MESSAGES = {
+  CREATED: 'Meeting created successfully',
+  UPDATED: 'Meeting updated successfully',
+  FETCHED: 'Meeting fetched successfully',
+  NOT_FOUND: 'Meeting not found',
+  INVALID_DATES: 'End time must be after start time',
+  STARTED: 'Meeting started successfully',
+  COMPLETED: 'Meeting completed successfully',
+};

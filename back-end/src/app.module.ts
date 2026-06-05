@@ -32,6 +32,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { ChatModule } from './chat/chat.module';
 import { LoggerModule } from './logger/logger.module';
+import { MeetingModule } from './meeting/meeting.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { LoggerModule } from './logger/logger.module';
     DashboardModule,
     ChatModule,
     LoggerModule,
+    MeetingModule,
   ],
 
   controllers: [AppController],

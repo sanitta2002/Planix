@@ -20,7 +20,8 @@ import { UploadAvatarReqDto } from '@/users/dto/ReqDto/UploadAvatarReqDto';
 import { ApiResponse } from '@/common/utils/api-response.util';
 import { USER_MESSAGES } from '@/common/constants/messages.constant';
 import type { IUserServicePRO } from '@/users/interfaces/user/IUserService';
-
+import { GetUser } from '@/common/decorators/getuser.decorator';
+import type { AuthUser } from '@/common/decorators/getuser.decorator';
 interface AuthRequest extends Request {
   user: {
     userId: string;
@@ -81,9 +82,9 @@ export class UsersController {
 
   @Get('profile')
   @HttpCode(HttpStatus.OK)
-  async getProfile(@Req() req: AuthRequest) {
+  async getProfile(@GetUser() user: AuthUser) {
     const profileResponse = await this._usersService.getProfilePhoto(
-      req.user.userId,
+      user.userId,
     );
     return ApiResponse.success(
       HttpStatus.OK,

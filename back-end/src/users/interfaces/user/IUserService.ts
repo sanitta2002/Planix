@@ -15,5 +15,12 @@ export interface IUserServicePRO {
     dto: UploadAvatarReqDto,
     file: Express.Multer.File,
   ): Promise<UploadAvatarResDto>;
-  getProfilePhoto(userId: string);
+  getProfilePhoto(userId: string): Promise<{
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    avatarUrl: string | null;
+    hasPassword: boolean;
+  }>;
 }
