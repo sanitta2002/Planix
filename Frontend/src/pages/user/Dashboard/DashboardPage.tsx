@@ -10,13 +10,11 @@ import {
   Award,
   BarChart3,
   AlertCircle,
-  ArrowUpRight,
   ShieldCheck,
   Sparkles,
   Kanban,
   Folder,
   RotateCw,
-  Play,
   Layers,
   Bug,
   BookOpen
@@ -141,7 +139,6 @@ const DashboardPage: React.FC = () => {
     timeSpentByTeam,
     topPerformer,
     issuesByType,
-    issueStatusDistribution,
     currentSprint,
     epicsOverview
   } = data;
@@ -574,12 +571,6 @@ const DashboardPage: React.FC = () => {
                     Tasks Closed
                   </div>
                   <div className="text-xl font-black text-white mt-1">{topPerformer.issuesCompleted}</div>
-                </div>
-                <div className="bg-background/40 border border-white/5 p-4 rounded-2xl text-center">
-                  <div className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">
-                    Avg Cycle Time
-                  </div>
-                  <div className="text-xl font-black text-amber-400 mt-1">{topPerformer.avgCycleTime}d</div>
                 </div>
               </div>
             </div>
