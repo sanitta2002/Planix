@@ -19,7 +19,7 @@ import type { ILogger } from '@/logger/ILogger';
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: process.env.FRONTEND_URL,
     credentials: true,
   },
   namespace: 'chat',

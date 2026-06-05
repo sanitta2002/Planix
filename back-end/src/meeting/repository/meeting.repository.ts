@@ -18,9 +18,11 @@ export class MeetingRepository
     super(_meeting);
   }
   async findByProject(projectId: string): Promise<MeetingDocument[]> {
-    return await this._meeting.find({
-      projectId: new Types.ObjectId(projectId),
-    }).populate('hostId', 'firstName lastName avatarKey');
+    return await this._meeting
+      .find({
+        projectId: new Types.ObjectId(projectId),
+      })
+      .populate('hostId', 'firstName lastName avatarKey');
   }
   async findUpcomingMeetings(projectId: string): Promise<MeetingDocument[]> {
     return await this._meeting

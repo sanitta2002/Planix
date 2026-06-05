@@ -1,8 +1,6 @@
 import {
-    Search,
     Bell,
     Settings,
-    ChevronDown,
     Menu
 } from 'lucide-react';
 import LogoutButton from '../../ui/LogoutButton';
@@ -26,24 +24,10 @@ export const AdminDashboardNavbar = ({ onMenuClick }: AdminDashboardNavbarProps)
             {/* Left: Workspace Selector */}
             <div className="flex items-center">
                 <div className="relative">
-                    <button className="flex items-center gap-3 px-4 py-2.5 bg-black border border-gray-700/50 rounded-lg text-sm font-medium hover:bg-[#23273a] transition-colors text-white min-w-[180px] justify-between">
-                        <span>All Workspaces</span>
-                        <ChevronDown className="w-4 h-4 text-gray-400" />
-                    </button>
                 </div>
             </div>
 
-            {/* Center: Search */}
-            <div className="flex-1 max-w-xl px-8">
-                <div className="relative group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
-                    <input
-                        type="text"
-                        placeholder="Search users, workspaces, plans..."
-                        className="w-full pl-11 pr-4 py-2.5 bg-black border border-transparent rounded-lg text-sm text-gray-200 placeholder:text-gray-500 focus:outline-none focus:bg-[#1f2235] focus:ring-1 focus:ring-blue-500/50 transition-all"
-                    />
-                </div>
-            </div>
+
 
             {/* Right: Actions */}
             <div className="flex items-center gap-6">

@@ -1,6 +1,6 @@
 import React from 'react';
 import {  MeetingStatus, MeetingType, type Meeting } from '../../../../types/meeting';
-import { Edit2, MoreHorizontal, Video, FileText, Calendar, Clock } from 'lucide-react';
+import { Edit2, MoreHorizontal, Video, Calendar, Clock } from 'lucide-react';
 import { useJoinMeeting } from '../../../../hooks/meeting/meetingHooks';
 import { format, isToday, isTomorrow } from 'date-fns';
 import { cn } from '../../../../lib/utils';
@@ -138,8 +138,8 @@ export const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isRecent = fa
           </button>
         ) : (
           <button className="flex items-center gap-2 px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-accent/10 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
-            <FileText className="w-4 h-4" />
-            Notes
+            {/* <FileText className="w-4 h-4" />
+            Notes */}
           </button>
         )}
         

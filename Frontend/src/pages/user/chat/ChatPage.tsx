@@ -8,7 +8,6 @@ import {
   Users,
   Send,
   Smile,
-  Paperclip,
   X,
   Wifi,
   WifiOff,
@@ -358,9 +357,9 @@ const InputBar = ({ onSend, disabled }: InputBarProps) => {
           {emoji ? <X className="w-4 h-4" /> : <Smile className="w-4 h-4" />}
         </button>
 
-        <button className="flex-shrink-0 w-9 h-9 mb-1.5 flex items-center justify-center rounded-xl text-white/30 hover:text-white/60 transition-all">
+        {/* <button className="flex-shrink-0 w-9 h-9 mb-1.5 flex items-center justify-center rounded-xl text-white/30 hover:text-white/60 transition-all">
           <Paperclip className="w-4 h-4" />
-        </button>
+        </button> */}
 
         <textarea
           ref={ref}
