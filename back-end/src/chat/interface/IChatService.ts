@@ -1,4 +1,4 @@
-import { SendMessageDTO } from '@/chat/dto/req/SendMessageDTO';
+import { SendMessageDTO, AttachmentDTO } from '@/chat/dto/req/SendMessageDTO';
 import { UpdateMessageDTO } from '@/chat/dto/req/UpdateMessageDTO';
 import {
   MessageResponse,
@@ -6,6 +6,11 @@ import {
 } from '@/chat/dto/res/MessageResponse';
 
 export interface IChatService {
+  uploadAttachments(
+    files: Express.Multer.File[],
+    userId: string,
+  ): Promise<AttachmentDTO[]>;
+
   sendMessage(senderId: string, dto: SendMessageDTO): Promise<MessageResponse>;
 
   getChatHistory(

@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { IChatService } from '@/chat/interface/IChatService';
 import type { IChatRepository } from '@/chat/interface/IChatRepository';
-import { SendMessageDTO } from '@/chat/dto/req/SendMessageDTO';
+import { SendMessageDTO, AttachmentDTO } from '@/chat/dto/req/SendMessageDTO';
 import { UpdateMessageDTO } from '@/chat/dto/req/UpdateMessageDTO';
 import {
   ChatHistoryResponse,
@@ -69,7 +69,18 @@ export class ChatService implements IChatService {
     const avatarUrl = sender.avatarKey
       ? await this._s3Service.createSignedUrl(sender.avatarKey)
       : undefined;
-    return ChatMapper.toResponse(message, sender, avatarUrl);
+    const resolvedAttachments = await Promise.all(
+      (message.attachments || []).map(async (att) => ({
+        ...att,
+        fileUrl: await this._s3Service.createSignedUrl(att.fileKey),
+      })),
+    );
+    return ChatMapper.toResponse(
+      message,
+      sender,
+      avatarUrl,
+      resolvedAttachments,
+    );
   }
 
   async getChatHistory(
@@ -95,7 +106,18 @@ export class ChatService implements IChatService {
         const avatarUrl = sender?.avatarKey
           ? await this._s3Service.createSignedUrl(sender.avatarKey)
           : undefined;
-        return ChatMapper.toResponse(msg, sender, avatarUrl);
+        const resolvedAttachments = await Promise.all(
+          (msg.attachments || []).map(async (att) => ({
+            ...att,
+            fileUrl: await this._s3Service.createSignedUrl(att.fileKey),
+          })),
+        );
+        return ChatMapper.toResponse(
+          msg,
+          sender,
+          avatarUrl,
+          resolvedAttachments,
+        );
       }),
     );
     return { messages: formatted, total };
@@ -124,7 +146,18 @@ export class ChatService implements IChatService {
     const avatarUrl = sender?.avatarKey
       ? await this._s3Service.createSignedUrl(sender.avatarKey)
       : undefined;
-    return ChatMapper.toResponse(updated, sender, avatarUrl);
+    const resolvedAttachments = await Promise.all(
+      (updated.attachments || []).map(async (att) => ({
+        ...att,
+        fileUrl: await this._s3Service.createSignedUrl(att.fileKey),
+      })),
+    );
+    return ChatMapper.toResponse(
+      updated,
+      sender,
+      avatarUrl,
+      resolvedAttachments,
+    );
   }
 
   async deleteMessage(senderId: string, messageId: string): Promise<void> {
@@ -136,5 +169,29 @@ export class ChatService implements IChatService {
       throw new ForbiddenException(CHAT_MESSAGES.FORBIDDEN_DELETE);
     }
     await this._chatRepository.deleteById(messageId);
+  }
+
+  async uploadAttachments(
+    files: Express.Multer.File[],
+    userId: string,
+  ): Promise<AttachmentDTO[]> {
+    const uploadedAttachments = await Promise.all(
+      files.map(async (file) => {
+        const { key } = await this._s3Service.uploadFile(
+          file,
+          userId,
+          'chat_attachments',
+        );
+        const fileUrl = await this._s3Service.createSignedUrl(key);
+        return {
+          fileKey: key,
+          fileName: file.originalname,
+          fileType: file.mimetype,
+          fileSize: file.size,
+          fileUrl: fileUrl,
+        };
+      }),
+    );
+    return uploadedAttachments;
   }
 }

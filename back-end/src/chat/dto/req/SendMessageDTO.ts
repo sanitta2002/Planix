@@ -24,6 +24,10 @@ export class AttachmentDTO {
   @IsOptional()
   @IsNumber()
   fileSize?: number;
+
+  @IsOptional()
+  @IsString()
+  fileUrl?: string;
 }
 
 export class SendMessageDTO {

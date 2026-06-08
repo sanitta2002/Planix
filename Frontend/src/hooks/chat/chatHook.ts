@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { getChatHistory } from "../../Service/chat/chatService";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { getChatHistory, uploadChatAttachments } from "../../Service/chat/chatService";
 import { useEffect, useRef, useCallback, useState } from "react";
 import { createChatSocket } from "../../socket/chatSocket";
 import type { MessageResponse, SendMessagePayload } from "../../types/chat";
@@ -13,6 +13,12 @@ export const useGetChatHistory = (projectId: string, limit = 50, offset = 0) => 
     queryFn: () => getChatHistory({ projectId, limit, offset }),
     enabled: !!projectId,
     placeholderData: (prev) => prev,
+  });
+};
+
+export const useUploadChatAttachments = () => {
+  return useMutation({
+    mutationFn: (files: File[]) => uploadChatAttachments(files),
   });
 };
 

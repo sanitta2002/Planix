@@ -12,7 +12,11 @@ import {
   Post,
   Query,
   UseGuards,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { AttachmentDTO } from '@/chat/dto/req/SendMessageDTO';
 import type { IChatService } from '@/chat/interface/IChatService';
 import { GetUser } from '@/common/decorators/getuser.decorator';
 import type { AuthUser } from '@/common/decorators/getuser.decorator';
@@ -42,6 +46,23 @@ export class ChatController {
   ): Promise<ApiResponseDto<MessageResponse>> {
     const message = await this._chatService.sendMessage(user.userId, dto);
     return ApiResponse.success(HttpStatus.CREATED, CHAT_MESSAGES.SENT, message);
+  }
+
+  @Post('upload')
+  @UseInterceptors(FilesInterceptor('files'))
+  async uploadAttachments(
+    @UploadedFiles() files: Express.Multer.File[],
+    @GetUser() user: AuthUser,
+  ): Promise<ApiResponseDto<AttachmentDTO[]>> {
+    const attachments = await this._chatService.uploadAttachments(
+      files,
+      user.userId,
+    );
+    return ApiResponse.success(
+      HttpStatus.CREATED,
+      'Attachments uploaded successfully',
+      attachments,
+    );
   }
 
   @Get('history')

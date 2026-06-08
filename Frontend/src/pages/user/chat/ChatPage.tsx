@@ -15,15 +15,26 @@ import {
   FolderKanban,
   Pencil,
   Trash2,
+  Paperclip,
+  FileText,
+  Download,
+  X as CloseIcon,
 } from "lucide-react";
 import type { RootState } from "../../../store/Store";
-import type { MessageResponse } from "../../../types/chat";
-import { useGetChatHistory, useChatSocket } from "../../../hooks/chat/chatHook";
+import type { MessageResponse, AttachmentResponse } from "../../../types/chat";
+import { useGetChatHistory, useChatSocket, useUploadChatAttachments } from "../../../hooks/chat/chatHook";
 import { useGetAllProjects } from "../../../hooks/project/projectHook";
 import { setCurrentProject } from "../../../store/projectSlice";
 import type { Project } from "../../../types/project";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+
+const formatFileSize = (bytes?: number): string => {
+  if (!bytes) return "";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / 1048576).toFixed(1)} MB`;
+};
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -122,9 +133,10 @@ interface BubbleProps {
   showMeta: boolean;
   onEdit: (messageId: string, newContent: string) => void;
   onDelete: (messageId: string) => void;
+  setPreviewImage: (url: string | null) => void;
 }
 
-const Bubble = ({ message, isOwn, showMeta, onEdit, onDelete }: BubbleProps) => {
+const Bubble = ({ message, isOwn, showMeta, onEdit, onDelete, setPreviewImage }: BubbleProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(message.content || "");
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
@@ -266,7 +278,7 @@ const Bubble = ({ message, isOwn, showMeta, onEdit, onDelete }: BubbleProps) => 
             </div>
           </div>
         ) : (
-          message.content && (
+          message.content && message.attachments?.length === 0 && (
             <div
               className={`relative px-3.5 py-2 text-[13.5px] leading-relaxed break-words ${
                 isOwn
@@ -290,6 +302,74 @@ const Bubble = ({ message, isOwn, showMeta, onEdit, onDelete }: BubbleProps) => 
             </div>
           )
         )}
+        
+        {/* Attachments & Content Combined (WhatsApp style) */}
+        {!isEditing && !isConfirmingDelete && message.attachments && message.attachments.length > 0 && (
+          <div
+            className={`relative flex flex-col gap-1.5 overflow-hidden text-[13.5px] leading-relaxed break-words ${
+              isOwn
+                ? "bg-indigo-500 text-white rounded-2xl rounded-br-sm shadow-md shadow-indigo-500/15"
+                : "bg-secondary/60 text-foreground/85 rounded-2xl rounded-bl-sm border border-border"
+            }`}
+          >
+            {/* Image Grid or Single Image */}
+            <div className={`flex flex-col gap-1 ${message.attachments.some(a => !(a.fileType || "").startsWith('image/')) ? 'p-1.5 pb-0' : 'p-1'}`}>
+              {message.attachments.map((att, idx) => {
+                const isImage = (att.fileType || "").startsWith("image/");
+                if (isImage) {
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => setPreviewImage(att.fileUrl)}
+                      className="relative block rounded-xl overflow-hidden bg-black/10 aspect-video max-w-sm hover:opacity-90 transition-opacity cursor-pointer"
+                    >
+                      <img src={att.fileUrl} alt={att.fileName || "Attachment"} className="w-full h-full object-cover" />
+                    </div>
+                  );
+                }
+                return (
+                  <a
+                    key={idx}
+                    href={att.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 cursor-pointer group/file max-w-sm ${
+                      isOwn ? "bg-white/10 hover:bg-white/20" : "bg-black/20 hover:bg-black/30"
+                    }`}
+                  >
+                    <div className={`flex items-center justify-center w-9 h-9 rounded-lg ${isOwn ? "bg-white/20 text-white" : "bg-indigo-500/20 text-indigo-400"}`}>
+                      <FileText className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0 pr-4">
+                      <p className="text-[13px] font-medium truncate">
+                        {att.fileName}
+                      </p>
+                      <p className={`text-[10px] mt-0.5 ${isOwn ? "text-white/70" : "text-white/40"}`}>
+                        {formatFileSize(att.fileSize)} • {(att.fileType || "").split('/')[1]?.toUpperCase() || 'FILE'}
+                      </p>
+                    </div>
+                    <Download className="w-4 h-4 opacity-50 group-hover/file:opacity-100 transition-opacity" />
+                  </a>
+                );
+              })}
+            </div>
+            
+            {/* Message Content under attachments */}
+            {message.content && (
+              <div className="px-3.5 py-2 pt-1">
+                {message.content}
+              </div>
+            )}
+            
+            {!showMeta && message.content && (
+              <div className={`absolute ${isOwn ? "-left-20" : "-right-20"} bottom-2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap`}>
+                <span className="text-[9px] text-white/30">
+                  {formatTime(message.createdAt)}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -297,7 +377,7 @@ const Bubble = ({ message, isOwn, showMeta, onEdit, onDelete }: BubbleProps) => 
 
 
 interface InputBarProps {
-  onSend: (msg: string) => void;
+  onSend: (msg: string, attachments: AttachmentResponse[]) => void;
   disabled?: boolean;
 }
 
@@ -305,7 +385,10 @@ const InputBar = ({ onSend, disabled }: InputBarProps) => {
   const [text, setText] = useState("");
   const [emoji, setEmoji] = useState(false);
   const [focused, setFocused] = useState(false);
+  const [attachments, setAttachments] = useState<AttachmentResponse[]>([]);
   const ref = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { mutate: uploadFiles, isPending: isUploading } = useUploadChatAttachments();
 
   const grow = () => {
     const el = ref.current;
@@ -314,14 +397,57 @@ const InputBar = ({ onSend, disabled }: InputBarProps) => {
 
   const send = useCallback(() => {
     const t = text.trim();
-    if (!t || disabled) return;
-    onSend(t);
+    if ((!t && attachments.length === 0) || disabled || isUploading) return;
+    onSend(t, attachments);
     setText("");
+    setAttachments([]);
     if (ref.current) ref.current.style.height = "auto";
-  }, [text, disabled, onSend]);
+  }, [text, attachments, disabled, isUploading, onSend]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const files = Array.from(e.target.files);
+      uploadFiles(files, {
+        onSuccess: (data) => {
+          setAttachments((prev) => [...prev, ...data]);
+        },
+      });
+      e.target.value = "";
+    }
+  };
+
+  const removeAttachment = (index: number) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
+  };
 
   return (
-    <div className="relative px-4 py-3 bg-secondary/30 border-t border-border">
+    <div className="relative px-4 py-3 bg-secondary/30 border-t border-border flex flex-col gap-2">
+      {attachments.length > 0 && (
+        <div className="flex flex-wrap gap-2 px-1 pb-1">
+          {attachments.map((att, idx) => {
+            const isImage = (att.fileType || "").startsWith("image/");
+            return (
+              <div key={idx} className="relative group/preview flex items-center justify-center bg-secondary/50 border border-border rounded-xl overflow-hidden w-16 h-16 shadow-sm">
+                {isImage ? (
+                  <img src={att.fileUrl} alt={att.fileName} className="w-full h-full object-cover" />
+                ) : (
+                  <FileText className="w-6 h-6 text-indigo-400 opacity-80" />
+                )}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/preview:opacity-100 transition-opacity flex items-center justify-center">
+                  <button onClick={() => removeAttachment(idx)} className="text-white hover:text-rose-400 transition-colors bg-black/50 rounded-full p-1">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+                {!isImage && (
+                  <div className="absolute bottom-0 inset-x-0 bg-black/60 px-1 py-0.5 text-[8px] text-center text-white/80 truncate">
+                    {att.fileName.split('.').pop()?.toUpperCase()}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
       {emoji && (
         <div className="absolute bottom-full left-4 mb-2 z-50">
           <div className="rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10">
@@ -357,9 +483,13 @@ const InputBar = ({ onSend, disabled }: InputBarProps) => {
           {emoji ? <X className="w-4 h-4" /> : <Smile className="w-4 h-4" />}
         </button>
 
-        {/* <button className="flex-shrink-0 w-9 h-9 mb-1.5 flex items-center justify-center rounded-xl text-white/30 hover:text-white/60 transition-all">
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          className="flex-shrink-0 w-9 h-9 mb-1.5 flex items-center justify-center rounded-xl text-white/30 hover:text-white/60 transition-all"
+        >
           <Paperclip className="w-4 h-4" />
-        </button> */}
+        </button>
+        <input type="file" ref={fileInputRef} hidden multiple onChange={handleFileChange} />
 
         <textarea
           ref={ref}
@@ -377,14 +507,14 @@ const InputBar = ({ onSend, disabled }: InputBarProps) => {
 
         <button
           onClick={send}
-          disabled={!text.trim() || disabled}
+          disabled={(!text.trim() && attachments.length === 0) || disabled || isUploading}
           className={`flex-shrink-0 w-9 h-9 mb-1.5 flex items-center justify-center rounded-xl transition-all duration-200 ${
-            text.trim() && !disabled
+            (text.trim() || attachments.length > 0) && !disabled && !isUploading
               ? "bg-indigo-500 text-white hover:bg-indigo-400 active:scale-95 shadow-md shadow-indigo-500/20"
               : "text-white/15 cursor-not-allowed"
           }`}
         >
-          <Send className="w-4 h-4 translate-x-px" />
+          {isUploading ? <Loader2 className="w-4 h-4 animate-spin text-indigo-400" /> : <Send className="w-4 h-4 translate-x-px" />}
         </button>
       </div>
 
@@ -406,6 +536,7 @@ const ChatPage = () => {
   const [search, setSearch] = useState("");
   const messagesEnd = useRef<HTMLDivElement>(null);
   const projectId = currentProject?.id || "";
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   // Fetch all workspace projects for the sidebar
   const { data: projectsData, isLoading: projectsLoading } = useGetAllProjects({
@@ -521,7 +652,7 @@ const ChatPage = () => {
     dispatch(setCurrentProject(project));
   };
 
-  const handleSend = (content: string) => sendMessage({ content });
+  const handleSend = (content: string, attachments: AttachmentResponse[]) => sendMessage({ content, attachments });
 
   return (
     <div className="flex h-[calc(100vh-6rem)] rounded-2xl overflow-hidden border border-border bg-background shadow-2xl shadow-black/40">
@@ -652,7 +783,8 @@ const ChatPage = () => {
               <div className="flex items-center gap-3">
                 <div className="flex -space-x-1.5">
                   {(currentProject?.members || []).slice(0, 5).map((m, i) => {
-                    const memberId = m?.user?.id || m?.user?._id || `member-${i}`;
+                    const typedUser = m?.user as { id?: string; _id?: string; firstName?: string };
+                    const memberId = typedUser?.id || typedUser?._id || `member-${i}`;
                     const firstName = m?.user?.firstName || "Member";
                     return (
                       <div
@@ -723,13 +855,7 @@ const ChatPage = () => {
 
                   <div className="space-y-0.5">
                     {group.messages.map((msg, idx) => {
-                      console.log('[DEBUG CHAT]', {
-                        messageContent: msg.content,
-                        msgSenderId: msg.senderId,
-                        authUserId: user?.id,
-                        isOwnMatch: msg.senderId === (user?.id || user?._id)
-                      });
-                      const isOwn = msg.senderId === (user?.id || user?._id);
+                      const isOwn = msg.senderId === (user?.id || (user as { id?: string; _id?: string })?._id);
                       const meta = shouldShowMeta(group.messages, idx);
                       return (
                         <div key={msg.id} className={meta && idx > 0 ? "mt-3" : ""}>
@@ -739,6 +865,7 @@ const ChatPage = () => {
                             showMeta={meta}
                             onEdit={handleEdit}
                             onDelete={handleDelete}
+                            setPreviewImage={setPreviewImage}
                           />
                         </div>
                       );
@@ -762,6 +889,24 @@ const ChatPage = () => {
           to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>
+
+      {/* Full Screen Image Preview Modal */}
+      {previewImage && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4" onClick={() => setPreviewImage(null)}>
+          <button 
+            className="absolute top-6 right-6 text-white/50 hover:text-white bg-black/50 hover:bg-black/80 rounded-full p-2 transition-all cursor-pointer"
+            onClick={(e) => { e.stopPropagation(); setPreviewImage(null); }}
+          >
+            <CloseIcon className="w-6 h-6" />
+          </button>
+          <img 
+            src={previewImage} 
+            alt="Preview" 
+            className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl" 
+            onClick={(e) => e.stopPropagation()} 
+          />
+        </div>
+      )}
     </div>
   );
 };

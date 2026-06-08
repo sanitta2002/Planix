@@ -102,6 +102,7 @@ export const API_ROUTES = {
   CHAT: {
     HISTORY: "/chat/history",
     SEND_MESSAGE: "/chat/message",
+    UPLOAD_ATTACHMENTS: "/chat/upload",
   },
   MEETING: {
     CREATE: "/meeting",
