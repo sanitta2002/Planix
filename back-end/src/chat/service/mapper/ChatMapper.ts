@@ -23,6 +23,7 @@ export class ChatMapper {
       content: message.content,
       attachments,
       isEdited: message.isEdited ?? false,
+      isDeleted: message.isDeleted ?? false,
       createdAt: message.createdAt ?? new Date(),
       updatedAt: message.updatedAt,
     };

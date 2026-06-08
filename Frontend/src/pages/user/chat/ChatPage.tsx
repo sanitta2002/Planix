@@ -153,7 +153,7 @@ const Bubble = ({ message, isOwn, showMeta, onEdit, onDelete, setPreviewImage }:
       style={{ animation: "msgIn 0.25s cubic-bezier(0.16,1,0.3,1)" }}
     >
       {/* Hover Action Bar for own messages */}
-      {isOwn && !isEditing && !isConfirmingDelete && (
+      {isOwn && !isEditing && !isConfirmingDelete && !message.isDeleted && (
         <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute right-4 -top-3.5 z-10 flex items-center gap-1 bg-slate-800/90 border border-white/10 rounded-lg p-0.5 shadow-lg backdrop-blur-md">
           <button
             onClick={() => setIsEditing(true)}
@@ -200,7 +200,7 @@ const Bubble = ({ message, isOwn, showMeta, onEdit, onDelete, setPreviewImage }:
             </span>
             <span className="text-[10px] text-white/25">
               {formatTime(message.createdAt)}
-              {message.isEdited && (
+              {message.isEdited && !message.isDeleted && (
                 <span className="text-[10px] text-white/20 ml-1.5 font-normal select-none" title="Edited">
                   (edited)
                 </span>
@@ -286,13 +286,15 @@ const Bubble = ({ message, isOwn, showMeta, onEdit, onDelete, setPreviewImage }:
                   : "bg-secondary/60 text-foreground/85 rounded-2xl rounded-bl-sm border border-border"
               }`}
             >
-              {message.content}
+              <div className={message.isDeleted ? "italic opacity-80" : ""}>
+                {message.content}
+              </div>
               {!showMeta && (
                 <div className={`absolute ${isOwn ? "-left-20" : "-right-20"} top-1/2 -translate-y-1/2 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap`}>
                   <span className="text-[9px] text-white/30">
                     {formatTime(message.createdAt)}
                   </span>
-                  {message.isEdited && (
+                  {message.isEdited && !message.isDeleted && (
                     <span className="text-[9px] text-white/15 select-none" title="Edited">
                       (ed.)
                     </span>
@@ -621,8 +623,15 @@ const ChatPage = () => {
         seen.add(m.id);
         return true;
       })
-      .filter((m) => !deletedMessageIds.has(m.id))
       .map((m) => {
+        if (deletedMessageIds.has(m.id) || m.isDeleted) {
+          return {
+            ...m,
+            content: "This message is deleted",
+            attachments: [],
+            isDeleted: true,
+          };
+        }
         const hasLocalEdit = editedMessages[m.id] !== undefined;
         return {
           ...m,

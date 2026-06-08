@@ -15,6 +15,7 @@ export interface MessageResponse {
   content?: string;
   attachments: AttachmentResponse[];
   isEdited?: boolean;
+  isDeleted?: boolean;
   createdAt: string;
 }
 

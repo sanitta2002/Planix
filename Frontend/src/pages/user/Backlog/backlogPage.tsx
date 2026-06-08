@@ -283,12 +283,12 @@ function BacklogPage() {
       newSprintId = null;
     } else {
       // Check if overId is a sprint ID
-      const targetSprint = sprints.find((s) => s._id === overId);
+      const targetSprint = sprints.find((s: ISprint) => s._id === overId);
       if (targetSprint) {
         newSprintId = targetSprint._id;
       } else {
         // Check if overId is an issue ID
-        const targetIssue = allIssues.find((i) => (i.id || i._id) === overId);
+        const targetIssue = allIssues.find((i: IssueData) => (i.id || i._id) === overId);
         if (targetIssue) {
           newSprintId = targetIssue.sprintId || null;
         }
@@ -296,7 +296,7 @@ function BacklogPage() {
     }
 
     // Find the active issue
-    const activeIssue = allIssues.find((i) => (i.id || i._id) === issueId);
+    const activeIssue = allIssues.find((i: IssueData) => (i.id || i._id) === issueId);
 
     // Only update if the sprintId actually changed
     if (activeIssue && activeIssue.sprintId !== newSprintId) {

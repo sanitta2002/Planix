@@ -134,12 +134,24 @@ const BurndownPage: React.FC = () => {
 
   // --- Tooltip ---
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
+  interface TooltipPayload {
+    color?: string;
+    name?: string;
+    value?: string | number;
+  }
+
+  interface CustomTooltipProps {
+    active?: boolean;
+    payload?: TooltipPayload[];
+    label?: string;
+  }
+
+  const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-[#1A2234] border border-slate-700/50 rounded-lg p-3 shadow-xl">
           <p className="text-white font-semibold text-sm mb-2">{label}</p>
-          {payload.map((entry: any, index: number) => (
+          {payload.map((entry: TooltipPayload, index: number) => (
             <div key={index} className="flex items-center justify-between gap-6 mt-1">
               <div className="flex items-center gap-2">
                 <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: entry.color }} />

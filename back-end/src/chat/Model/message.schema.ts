@@ -35,6 +35,9 @@ export class Message {
   @Prop({ default: false })
   isEdited!: boolean;
 
+  @Prop({ default: false })
+  isDeleted!: boolean;
+
   createdAt?: Date;
   updatedAt?: Date;
 }

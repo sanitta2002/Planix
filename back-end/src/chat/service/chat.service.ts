@@ -168,7 +168,11 @@ export class ChatService implements IChatService {
     if (message.senderId.toString() !== senderId) {
       throw new ForbiddenException(CHAT_MESSAGES.FORBIDDEN_DELETE);
     }
-    await this._chatRepository.deleteById(messageId);
+    await this._chatRepository.updateById(messageId, {
+      content: 'This message is deleted',
+      isDeleted: true,
+      attachments: [],
+    } as Partial<MessageDocument>);
   }
 
   async uploadAttachments(
