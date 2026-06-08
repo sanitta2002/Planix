@@ -320,7 +320,7 @@ const Bubble = ({ message, isOwn, showMeta, onEdit, onDelete, setPreviewImage }:
                   return (
                     <div
                       key={idx}
-                      onClick={() => setPreviewImage(att.fileUrl)}
+                      onClick={() => setPreviewImage(att.fileUrl || null)}
                       className="relative block rounded-xl overflow-hidden bg-black/10 aspect-video max-w-sm hover:opacity-90 transition-opacity cursor-pointer"
                     >
                       <img src={att.fileUrl} alt={att.fileName || "Attachment"} className="w-full h-full object-cover" />
@@ -537,6 +537,7 @@ const ChatPage = () => {
   const messagesEnd = useRef<HTMLDivElement>(null);
   const projectId = currentProject?.id || "";
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [showMembersModal, setShowMembersModal] = useState(false);
 
   // Fetch all workspace projects for the sidebar
   const { data: projectsData, isLoading: projectsLoading } = useGetAllProjects({
@@ -780,12 +781,15 @@ const ChatPage = () => {
               </div>
 
               {/* Members */}
-              <div className="flex items-center gap-3">
+              <div 
+                className="flex items-center gap-3 cursor-pointer hover:bg-white/5 py-1.5 px-2.5 rounded-xl transition-colors"
+                onClick={() => setShowMembersModal(true)}
+              >
                 <div className="flex -space-x-1.5">
                   {(currentProject?.members || []).slice(0, 5).map((m, i) => {
-                    const typedUser = m?.user as { id?: string; _id?: string; firstName?: string };
+                    const typedUser = m?.user as { id?: string; _id?: string; firstName?: string; avatarUrl?: string };
                     const memberId = typedUser?.id || typedUser?._id || `member-${i}`;
-                    const firstName = m?.user?.firstName || "Member";
+                    const firstName = typedUser?.firstName || "Member";
                     return (
                       <div
                         key={memberId}
@@ -793,8 +797,8 @@ const ChatPage = () => {
                         className="relative w-7 h-7 rounded-full border-2 border-background overflow-hidden"
                         title={firstName}
                       >
-                        {m?.user?.avatarUrl ? (
-                          <img src={m.user.avatarUrl} alt="" className="w-full h-full object-cover" />
+                        {typedUser?.avatarUrl ? (
+                          <img src={typedUser.avatarUrl} alt="" className="w-full h-full object-cover" />
                         ) : (
                           <div className="w-full h-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center text-[9px] font-bold text-white">
                             {firstName[0]?.toUpperCase()}
@@ -804,7 +808,7 @@ const ChatPage = () => {
                     );
                   })}
                 </div>
-                <span className="text-[11px] text-white/30">
+                <span className="text-[11px] text-white/50 font-medium group-hover:text-white/80 transition-colors">
                   {currentProject?.members?.length || 0} members
                 </span>
               </div>
@@ -905,6 +909,86 @@ const ChatPage = () => {
             className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl" 
             onClick={(e) => e.stopPropagation()} 
           />
+        </div>
+      )}
+
+      {/* WhatsApp-Style Group Info / Members Modal */}
+      {showMembersModal && currentProject && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 transition-opacity" onClick={() => setShowMembersModal(false)}>
+          <div 
+            className="w-full max-w-[400px] bg-[#111b21] rounded-2xl shadow-2xl overflow-hidden flex flex-col" 
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxHeight: '85vh' }}
+          >
+            {/* Header */}
+            <div className="flex items-center gap-4 px-4 py-3 bg-[#202c33] text-[#e9edef]">
+              <button 
+                onClick={() => setShowMembersModal(false)}
+                className="p-1 hover:bg-white/10 rounded-full transition-colors"
+              >
+                <CloseIcon className="w-5 h-5 text-[#aebac1]" />
+              </button>
+              <h3 className="text-[16px] font-medium">Group info</h3>
+            </div>
+
+            <div className="overflow-y-auto custom-scrollbar bg-[#111b21]">
+              {/* Group Profile Info */}
+              <div className="flex flex-col items-center py-6 px-4 bg-[#111b21] border-b border-[#202c33] mb-2">
+                <div className={`w-32 h-32 rounded-full mb-4 flex items-center justify-center text-4xl font-bold text-white shadow-lg bg-gradient-to-br ${getProjectColor(currentProject.projectName)}`}>
+                  {currentProject.projectName[0]?.toUpperCase()}
+                </div>
+                <h2 className="text-[#e9edef] text-xl font-medium mb-1 text-center">
+                  {currentProject.projectName}
+                </h2>
+                <p className="text-[#8696a0] text-sm">
+                  Group · {(currentProject.members || []).length} participants
+                </p>
+              </div>
+
+              {/* Members List */}
+              <div className="bg-[#111b21] pb-4">
+                <div className="px-4 py-2 text-[#00a884] text-[13px] font-medium">
+                  {(currentProject.members || []).length} participants
+                </div>
+                <div className="flex flex-col">
+                  {(currentProject.members || []).map((m, i) => {
+                    const typedUser = m?.user as { id?: string; _id?: string; firstName?: string; avatarUrl?: string; email?: string };
+                    const memberId = typedUser?.id || typedUser?._id || `member-${i}`;
+                    const isCurrentUser = memberId === (user?.id || (user as { _id?: string })?._id);
+                    const firstName = typedUser?.firstName ? (isCurrentUser ? "You" : typedUser.firstName) : "Unknown Member";
+                    const email = typedUser?.email 
+                    const roleName = typeof m.role === 'string' ? m.role : m.role?.name || "";
+                    const isAdmin = roleName.toLowerCase().includes('admin') || roleName.toLowerCase() === 'owner' || roleName.toLowerCase() === 'manager';
+                    
+                    return (
+                      <div key={memberId} className="flex items-center gap-3 px-4 py-2.5 hover:bg-[#202c33] cursor-pointer transition-colors">
+                        <div className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 bg-[#374248]">
+                          {typedUser?.avatarUrl ? (
+                            <img src={typedUser.avatarUrl} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-sm font-medium text-[#d1d7db]">
+                              {typedUser?.firstName?.[0]?.toUpperCase() || "U"}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0 border-b border-[#202c33] pb-2.5 pt-1 flex items-center justify-between">
+                          <div className="min-w-0 pr-2">
+                            <p className="text-[#e9edef] text-[15px] font-normal truncate">{firstName}</p>
+                            <p className="text-[#8696a0] text-[13px] truncate mt-0.5">{email}</p>
+                          </div>
+                          {isAdmin && (
+                            <div className="text-[#00a884] text-[11px] font-medium px-1.5 py-0.5 border border-[#00a884] rounded-md flex-shrink-0">
+                              Group Admin
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

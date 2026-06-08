@@ -53,7 +53,7 @@ export class ProjectMemberRepository
       .find({
         projectId: new Types.ObjectId(projectId),
       })
-      .populate('userId', 'firstName')
+      .populate('userId', 'firstName email avatarKey')
       .populate('roleId', 'name')
       .lean<PopulatedProjectMember[]>();
   }

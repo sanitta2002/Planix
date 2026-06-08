@@ -5,6 +5,7 @@ export type PopulatedUser = {
   _id: string;
   firstName: string;
   email: string;
+  avatarKey?: string;
 };
 
 export type PopulatedPlan = {

@@ -26,6 +26,7 @@ import { GetAllProjectsResponseDTO } from '@/project/dto/res/GetAllProjectsRespo
 import type { ISubscriptionRepository } from '@/subscription/interface/ISubscriptionRepository';
 import { PopulatedPlan } from '@/common/type/Populated';
 import type { ILogger } from '@/logger/ILogger';
+import type { IS3Service } from '@/common/s3/interfaces/s3.service.interface';
 
 @Injectable()
 export class ProjectService implements IProjectService {
@@ -42,6 +43,7 @@ export class ProjectService implements IProjectService {
     private readonly _projectMemberRepo: IProjectMemberRepository,
     @Inject('ISubscriptionRepository')
     private readonly _subscriptionRepo: ISubscriptionRepository,
+    @Inject('IS3Service') private readonly _S3Service: IS3Service,
   ) {}
   async createProject(
     project: CreateProjectDto,
@@ -151,16 +153,25 @@ export class ProjectService implements IProjectService {
         );
         return {
           ...ProjectMapper.toListItem(project),
-          members: members.map((m) => ({
-            user: {
-              id: m.userId._id.toString(),
-              firstName: m.userId.firstName,
-            },
-            role: {
-              id: m.roleId._id.toString(),
-              name: m.roleId.name,
-            },
-          })),
+          members: await Promise.all(
+            members.map(async (m) => {
+              const avatarUrl = m.userId.avatarKey
+                ? await this._S3Service.createSignedUrl(m.userId.avatarKey)
+                : null;
+              return {
+                user: {
+                  id: m.userId._id.toString(),
+                  firstName: m.userId.firstName,
+                  email: m.userId.email,
+                  avatarUrl,
+                },
+                role: {
+                  id: m.roleId._id.toString(),
+                  name: m.roleId.name,
+                },
+              };
+            }),
+          ),
         };
       }),
     );

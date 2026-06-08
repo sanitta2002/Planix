@@ -13,6 +13,7 @@ import { RoleModule } from '@/role/role.module';
 import { ProjectMemberRepository } from '@/project/repository/ProjectMember/ProjectMemberRepository';
 import { SubscriptionsModule } from '@/subscription/subscriptions/subscriptions.module';
 import { LoggerModule } from '@/logger/logger.module';
+import { S3Module } from '@/common/s3/s3.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { LoggerModule } from '@/logger/logger.module';
     RoleModule,
     SubscriptionsModule,
     LoggerModule,
+    S3Module,
   ],
   providers: [
     {
