@@ -1,0 +1,17 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      REDIS_URL: redis://redis:6379
+      DATABASE_URL: mongodb://mongo/planix
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:latest
+  mongo:
+    image: mongo:latest
