@@ -122,8 +122,9 @@ export const createWorkspace = async (data: CreateWorkspacePayload) => {
   return response.data;
 };
 
-export const getUserWorkspaces = async () => {
-  const response = await AxiosInstance.get(API_ROUTES.WORKSPACE.GETWORKSPACE);
+export const getUserWorkspaces = async (search?: string) => {
+  const url = search ? `${API_ROUTES.WORKSPACE.GETWORKSPACE}?search=${encodeURIComponent(search)}` : API_ROUTES.WORKSPACE.GETWORKSPACE;
+  const response = await AxiosInstance.get(url);
   return response.data;
 };
 

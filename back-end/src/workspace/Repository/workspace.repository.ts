@@ -19,16 +19,19 @@ export class WorkspaceRepository
   ) {
     super(_workSpaceModel);
   }
-  async findByUser(userId: string): Promise<WorkspaceDocument[]> {
-    return await this._workSpaceModel
-      .find({
-        isDeleted: false,
-        $or: [
-          { ownerId: new Types.ObjectId(userId) },
-          { 'members.user': new Types.ObjectId(userId) },
-        ],
-      })
-      .sort({ createdAt: -1 });
+  async findByUser(
+    userId: string,
+    search?: string,
+  ): Promise<WorkspaceDocument[]> {
+    const filter = {
+      isDeleted: false,
+      $or: [
+        { ownerId: new Types.ObjectId(userId) },
+        { 'members.user': new Types.ObjectId(userId) },
+      ],
+      ...(search ? { name: { $regex: search, $options: 'i' } } : {}),
+    };
+    return await this._workSpaceModel.find(filter).sort({ createdAt: -1 });
   }
 
   async findAllWorkspace(
@@ -36,13 +39,9 @@ export class WorkspaceRepository
     limit?: number,
     search?: string,
   ): Promise<{ workspaces: WorkspaceDocument[]; total: number }> {
-    let filter = {};
-    if (search) {
-      filter = {
-        ...filter,
-        $or: [{ name: { $regex: search, $options: 'i' } }],
-      };
-    }
+    const filter = search
+      ? { $or: [{ name: { $regex: search, $options: 'i' } }] }
+      : {};
     const skip = page && limit ? (page - 1) * limit : 0;
     const [workspaces, total] = await Promise.all([
       this._workSpaceModel

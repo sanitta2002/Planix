@@ -10,7 +10,10 @@ export interface IWorkspaceService {
     userId: string,
     dto: CreateWorkspaceDto,
   ): Promise<WorkspaceResponseDto>;
-  getUserWorkspaces(userId: string): Promise<WorkspaceResponseDto[]>;
+  getUserWorkspaces(
+    userId: string,
+    search?: string,
+  ): Promise<WorkspaceResponseDto[]>;
   getWorkspaceMembers(
     workspaceId: string,
   ): Promise<WorkspaceMembersResponseDto>;

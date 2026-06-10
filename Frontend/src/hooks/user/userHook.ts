@@ -57,11 +57,11 @@ export const useCreateWorkspace = () => {
   });
 };
 
-export const useUserWorkspaces = () => {
-  return useQuery({
-    queryKey: ["workspaces"],
-    queryFn: getUserWorkspaces,
-  });
+export const useUserWorkspaces = (search?: string) => {
+    return useQuery({
+        queryKey: ["workspaces", search],
+        queryFn: () => getUserWorkspaces(search),
+    })
 };
 
 export const useWorkspaceProfile = (workspaceId: string) => {

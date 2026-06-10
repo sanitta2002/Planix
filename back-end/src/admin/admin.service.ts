@@ -126,7 +126,11 @@ export class AdminService implements IAdminService {
     const page = query.page ? Number(query.page) : 1;
     const limit = query.limit ? Number(query.limit) : 10;
     const { workspaces, total } =
-      await this._workspaceRepository.findAllWorkspace(page, limit);
+      await this._workspaceRepository.findAllWorkspace(
+        page,
+        limit,
+        query.search,
+      );
     const workspacesWithLogo = await Promise.all(
       workspaces.map(async (workspace) => {
         const logoUrl = workspace.logo

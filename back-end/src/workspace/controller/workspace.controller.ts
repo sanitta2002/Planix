@@ -12,6 +12,7 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 import type { IWorkspaceService } from '@/workspace/interface/IWorkspaceService';
 import { Request } from 'express';
@@ -50,9 +51,13 @@ export class WorkspaceController {
     );
   }
   @Get('workspace')
-  async getUserWorkspaces(@Req() req: AuthRequest) {
+  async getUserWorkspaces(
+    @Req() req: AuthRequest,
+    @Query('search') search?: string,
+  ) {
     const userWorkspaces = await this._workspaceService.getUserWorkspaces(
       req.user.userId,
+      search,
     );
     return ApiResponse.success(
       HttpStatus.OK,

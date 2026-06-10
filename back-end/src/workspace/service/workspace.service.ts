@@ -70,9 +70,15 @@ export class WorkspaceService implements IWorkspaceService {
     return WorkspaceMapper.toResponseDto(createdWorkspace);
   }
 
-  async getUserWorkspaces(userId: string): Promise<WorkspaceResponseDto[]> {
+  async getUserWorkspaces(
+    userId: string,
+    search?: string,
+  ): Promise<WorkspaceResponseDto[]> {
     this._logger.log(`fetch workspaces for user: ${userId}`);
-    const userWorkspaces = await this._workspaceRepository.findByUser(userId);
+    const userWorkspaces = await this._workspaceRepository.findByUser(
+      userId,
+      search,
+    );
     return userWorkspaces.map((ws) => WorkspaceMapper.toResponseDto(ws));
   }
 

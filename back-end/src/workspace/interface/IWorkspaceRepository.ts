@@ -2,7 +2,7 @@ import { IBaseRepository } from '@/users/interfaces/baseRepo.interface';
 import { WorkspaceDocument } from '@/workspace/Model/workspace.schema';
 
 export interface IWorkspaceRepository extends IBaseRepository<WorkspaceDocument> {
-  findByUser(ownerId: string): Promise<WorkspaceDocument[]>;
+  findByUser(ownerId: string, search?: string): Promise<WorkspaceDocument[]>;
   findAllWorkspace(
     page?: number,
     limit?: number,
