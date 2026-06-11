@@ -191,7 +191,7 @@ const UserProfile = () => {
                 </div>
 
                 <div className="space-y-4">
-                    {workspaces.map((workspace, index) => (
+                    {workspaces.map((workspace: { id: string; name: string; role?: string; ownerId?: { id: string } }, index: number) => (
                         <div key={workspace.id || index} className="card-hover bg-card p-4 rounded-xl border border-border flex items-center justify-between group transition-colors">
                             <div className="flex items-center space-x-4">
                                 <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">

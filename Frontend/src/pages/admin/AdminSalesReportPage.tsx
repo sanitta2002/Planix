@@ -251,7 +251,7 @@ const AdminSalesReportPage: React.FC = () => {
                 <Tooltip
                   contentStyle={{ backgroundColor: "#1e293b", borderColor: "#334155", borderRadius: "8px", color: "#f8fafc" }}
                   itemStyle={{ color: "#10b981" }}
-                  formatter={(value: number) => [`$${value}`, "Revenue"]}
+                  formatter={(value: number | string | readonly (string | number)[] | undefined) => [`$${value || 0}`, "Revenue"]}
                 />
                 <Line
                   type="monotone"
@@ -278,7 +278,7 @@ const AdminSalesReportPage: React.FC = () => {
                 <Tooltip
                   contentStyle={{ backgroundColor: "#1e293b", borderColor: "#334155", borderRadius: "8px", color: "#f8fafc" }}
                   itemStyle={{ color: "#8b5cf6" }}
-                  formatter={(value: number) => [`$${value}`, "MRR"]}
+                  formatter={(value: number | string | readonly (string | number)[] | undefined) => [`$${value || 0}`, "MRR"]}
                 />
                 <Line
                   type="monotone"
@@ -307,7 +307,7 @@ const AdminSalesReportPage: React.FC = () => {
                 cursor={{ fill: "#334155", opacity: 0.2 }}
                 contentStyle={{ backgroundColor: "#1e293b", borderColor: "#334155", borderRadius: "8px", color: "#f8fafc" }}
                 itemStyle={{ color: "#8b5cf6" }}
-                formatter={(value: number) => [value, "Subscriptions"]}
+                formatter={(value: number | string | readonly (string | number)[] | undefined) => [value as string | number || 0, "Subscriptions"]}
               />
               <Bar dataKey="subscriptions" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
             </BarChart>

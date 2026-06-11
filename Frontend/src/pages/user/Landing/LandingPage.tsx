@@ -1,4 +1,3 @@
-import React from 'react'
 import Header from '../../../components/Landing/Header'
 import FeaturesSection from '../../../components/Landing/FeaturesSection'
 import Footer from '../../../components/Landing/Footer'

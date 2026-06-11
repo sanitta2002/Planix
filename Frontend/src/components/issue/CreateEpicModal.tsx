@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Loader2, FileText, Link as LinkIcon, Image as ImageIcon, User, ArrowLeft, ChevronDown, Check, Paperclip } from "lucide-react";
+import { X, Loader2, FileText, Link as LinkIcon, Image as ImageIcon, User, ArrowLeft, ChevronDown, Paperclip } from "lucide-react";
 import { useSelector } from "react-redux";
 // import { getAttachmentUploadUrl, uploadFileToS3 } from "../../Service/issue/issue";
 import { IssueStatus } from "../../types/IssueType";

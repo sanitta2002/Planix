@@ -38,8 +38,8 @@ export const useStartSprint = () => {
       sprintId: string;
       data: UpdateSprintProps;
     }) => startSprint(sprintId, data),
-    onSuccess: (response) => {
-      const projectId = response?.data?.projectId;
+    onSuccess: (response: { projectId?: string; data?: { projectId?: string } }) => {
+      const projectId = response?.data?.projectId || response?.projectId;
       queryClient.invalidateQueries({ queryKey: ["sprints", projectId] });
       queryClient.invalidateQueries({ queryKey: ["sprints"] });
     },
@@ -56,8 +56,8 @@ export const useCompleteSprint = () => {
       sprintId: string;
       moveToSprintId?: string;
     }) => completeSprint(sprintId, moveToSprintId),
-    onSuccess: (response) => {
-      const projectId = response?.data?.projectId;
+    onSuccess: (response: { projectId?: string; data?: { projectId?: string } }) => {
+      const projectId = response?.data?.projectId || response?.projectId;
       queryClient.invalidateQueries({ queryKey: ["sprints", projectId] });
       queryClient.invalidateQueries({ queryKey: ["issues", projectId] });
       queryClient.invalidateQueries({ queryKey: ["sprints"] });

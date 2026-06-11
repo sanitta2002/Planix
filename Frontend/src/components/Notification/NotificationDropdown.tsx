@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Bell, CheckCheck, User, Clock, MessageSquare, AlertCircle, Info, Star } from 'lucide-react';
+import { Bell, CheckCheck } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNotifications } from '../../hooks/notification/notificationHook';
-import { NotificationType } from '../../Service/notification/notificationService';
+
 import { cn } from '../../lib/utils';
 import { createNotificationSocket } from '../../socket/socket';
 import { addNotification } from '../../store/notificationSlice';
@@ -61,9 +61,9 @@ export const NotificationDropdown: React.FC = () => {
                     "w-5 h-5 transition-colors duration-200",
                     isOpen ? "text-indigo-400" : "text-gray-400 group-hover:text-white"
                 )} />
-                {unreadCount > 0 && (
+                {(unreadCount || 0) > 0 && (
                     <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-red-600 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-[#000000]">
-                        {unreadCount > 9 ? '9+' : unreadCount}
+                        {(unreadCount || 0) > 9 ? '9+' : unreadCount}
                     </span>
                 )}
             </button>
@@ -72,7 +72,7 @@ export const NotificationDropdown: React.FC = () => {
                 <div className="absolute right-0 mt-3 w-80 md:w-96 bg-[#0F172A] border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                     <div className="p-4 border-b border-white/10 flex items-center justify-between bg-white/5">
                         <h3 className="font-semibold text-sm">Notifications</h3>
-                        {unreadCount > 0 && (
+                        {(unreadCount || 0) > 0 && (
                             <button
                                 onClick={() => markAllAsRead()}
                                 className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
@@ -93,7 +93,7 @@ export const NotificationDropdown: React.FC = () => {
                             )}
                         >
                             Unread
-                            {unreadCount > 0 && (
+                            {(unreadCount || 0) > 0 && (
                                 <span className="ml-1.5 px-1.5 py-0.5 bg-red-500/20 text-red-400 rounded-md text-[10px]">
                                     {unreadCount}
                                 </span>

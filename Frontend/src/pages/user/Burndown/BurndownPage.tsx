@@ -38,7 +38,7 @@ const BurndownPage: React.FC = () => {
     currentProject?.id || ""
   );
   
-  const sprints = sprintsResponse?.data || [];
+  const sprints = Array.isArray(sprintsResponse) ? sprintsResponse : (sprintsResponse as unknown as { data?: ISprint[] })?.data || [];
 
   const [selectedSprintId, setSelectedSprintId] = useState<string>("");
   const [viewMode, setViewMode] = useState<ViewMode>("points");

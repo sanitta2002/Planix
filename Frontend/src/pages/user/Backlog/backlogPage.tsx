@@ -64,8 +64,8 @@ function BacklogPage() {
   const { data: issuesResponse } = useGetIssuesByProject(currentProject?.id || "");
   const { data: sprintsResponse } = useGetSprintsByProject(currentProject?.id || "");
 
-  const allIssues = issuesResponse?.data || [];
-  const sprints = sprintsResponse?.data || [];
+  const allIssues = Array.isArray(issuesResponse) ? issuesResponse : (issuesResponse as unknown as { data?: import("../../../types/BacklogTypes").IssueData[] })?.data || [];
+  const sprints = Array.isArray(sprintsResponse) ? sprintsResponse : (sprintsResponse as unknown as { data?: ISprint[] })?.data || [];
 
   const handleCreateSprint = async () => {
     if (!currentProject) return;
@@ -129,7 +129,7 @@ function BacklogPage() {
         await addAttachments({
           issueId: issueId,
           files: formData.files || [],
-          links: formData.links || [],
+          link: formData.links?.map(l => l.url) || [],
         });
       }
 
@@ -405,8 +405,8 @@ function BacklogPage() {
         <IssueDetail
           isOpen={!!selectedDrawerIssue}
           onClose={() => setSelectedDrawerIssue(null)}
-          issue={activeDrawerIssue}
-          onIssueClick={(issue) => setSelectedDrawerIssue(issue)}
+          issue={activeDrawerIssue as unknown as React.ComponentProps<typeof IssueDetail>["issue"]}
+          onIssueClick={(issue) => setSelectedDrawerIssue(issue as unknown as import("../../../types/BacklogTypes").IssueData)}
         />
 
         <StartSprint

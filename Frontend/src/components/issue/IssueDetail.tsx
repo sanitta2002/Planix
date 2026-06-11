@@ -425,7 +425,7 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
             title: data.title,
             description: data.description,
             status: data.status,
-            issueType: data.issueType?.toUpperCase(),
+            issueType: data.issueType?.toUpperCase() as import("../../types/IssueType").IssueType,
             startDate: data.startDate,
             endDate: data.endDate,
             projectId: issue.projectId || currentProject?.id || "",
@@ -440,8 +440,9 @@ export default function IssueDetail({ isOpen, onClose, issue, onIssueClick }: Is
                 toast.success(`${subtaskTypeName} created successfully`);
                 setIsCreateModalOpen(false);
             },
-            onError: (error) => {
-                toast.error(error?.response?.data?.message || "Failed to create issue");
+            onError: (error: unknown) => {
+                const axiosError = error as { response?: { data?: { message?: string } } };
+                toast.error(axiosError?.response?.data?.message || "Failed to create issue");
             }
         });
     };

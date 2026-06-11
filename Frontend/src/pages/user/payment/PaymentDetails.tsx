@@ -39,15 +39,7 @@ type SubscriptionItem = {
   latestInvoiceId?: string;
 };
 
-const statusStyles: Record<string, string> = {
-  Paid: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30",
-  Failed: "bg-red-500/20 text-red-400 border border-red-500/30",
-  Refunded: "bg-purple-500/20 text-purple-400 border border-purple-500/30",
 
-  active: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30",
-  pending: "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30",
-  expired: "bg-slate-500/20 text-slate-400 border border-slate-500/30",
-};
 
 const PaymentDetails = () => {
   const currentWorkspace = useSelector(

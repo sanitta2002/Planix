@@ -516,7 +516,7 @@ const DashboardPage: React.FC = () => {
                 <Clock className="w-5 h-5 text-amber-400" />
                 <span className="text-sm font-bold text-white">Remaining Hours</span>
               </div>
-              <span className="text-lg font-black text-amber-400">{myProgress.remainingHours} hrs</span>
+              <span className="text-lg font-black text-amber-400">{(myProgress as { remainingHours?: number }).remainingHours || 0} hrs</span>
             </div>
           </div>
 

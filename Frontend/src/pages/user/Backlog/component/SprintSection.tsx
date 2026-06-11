@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { ChevronUp, ChevronDown, MoreHorizontal, Plus } from "lucide-react";
-import { SprintStatus, type ISprint } from "../../../../types/Sprint";
+import { type ISprint } from "../../../../types/Sprint";
 import type { IssueData } from "../../../../types/BacklogTypes";
 import DraggableIssueItem from "./DraggableIssueItem";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";

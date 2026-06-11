@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, ChevronDown, Calendar } from "lucide-react";
+import { ArrowLeft, Calendar } from "lucide-react";
 import { toast } from "sonner";
 
 interface StartSprintProps {

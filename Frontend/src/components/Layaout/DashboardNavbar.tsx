@@ -21,11 +21,13 @@ import { NotificationDropdown } from "../Notification/NotificationDropdown";
 
 interface DashboardNavbarProps {
     onMenuClick?: () => void;
+    isSidebarOpen?: boolean;
 }
 
 interface Workspace {
     id: string;
     name: string;
+    role?: "owner" | "member";
 }
 
 export const DashboardNavbar = ({ onMenuClick }: DashboardNavbarProps) => {
@@ -66,7 +68,7 @@ export const DashboardNavbar = ({ onMenuClick }: DashboardNavbarProps) => {
     const { data: workspacesData } = useUserWorkspaces();
 
     const handleWorkspaceSwitch = (workspace: Workspace) => {
-        dispatch(setCurrentWorkspace(workspace));
+        dispatch(setCurrentWorkspace(workspace as Parameters<typeof setCurrentWorkspace>[0]));
         dispatch(setCurrentProject(null));
         localStorage.setItem("workspaceId", workspace.id);
         setOpen(false);
@@ -210,7 +212,7 @@ export const DashboardNavbar = ({ onMenuClick }: DashboardNavbarProps) => {
                                     Projects
                                 </div>
 
-                                {projects.map((project) => (
+                                {projects.map((project: any) => (
                                     <div
                                         key={project.id}
                                         onClick={() => {

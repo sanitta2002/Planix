@@ -1,4 +1,4 @@
-import { Plus, Calendar, Tag, Users, Edit2, Trash2, } from "lucide-react";
+import { Plus, Calendar, Users, Edit2, Trash2, } from "lucide-react";
 import type { RootState } from "../../../store/Store";
 import { useDispatch, useSelector } from "react-redux";
 import ManageMembersModal from "../../../components/modal/ManageMembersModal";

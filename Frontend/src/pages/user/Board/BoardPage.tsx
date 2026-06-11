@@ -57,8 +57,8 @@ const BoardPage: React.FC = () => {
   const { mutateAsync: updateIssue } = useUpdateIssue();
   const { mutateAsync: completeSprint, isPending: isCompletingSprint } = useCompleteSprint();
 
-  const allIssues = issuesResponse?.data || [];
-  const allSprints = sprintsResponse?.data || [];
+  const allIssues = Array.isArray(issuesResponse) ? issuesResponse : (issuesResponse as unknown as { data?: IssueData[] })?.data || [];
+  const allSprints = Array.isArray(sprintsResponse) ? sprintsResponse : (sprintsResponse as unknown as { data?: ISprint[] })?.data || [];
 
  
   const activeSprint = useMemo<ISprint | undefined>(() => {
