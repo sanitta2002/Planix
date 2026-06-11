@@ -7,7 +7,7 @@ services:
       - .env
     environment:
       REDIS_URL: redis://redis:6379
-      DATABASE_URL: mongodb://mongo/planix
+      DATABASE_URL: mongodb+srv://sanusanittasanu_db_user:b4hpcnYSYWFLSJhc@cluster0.acbdyq1.mongodb.net/
     depends_on:
       - redis
 
