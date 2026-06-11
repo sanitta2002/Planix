@@ -1,4 +1,3 @@
-# Stage 1: Build
 FROM node:24-alpine AS builder
 
 WORKDIR /app
@@ -9,9 +8,8 @@ RUN npm ci
 
 COPY . .
 
-RUN npm run build
+RUN NODE_OPTIONS="--max-old-space-size=2048" npm run build
 
-# Stage 2: Production
 FROM node:24-alpine AS production
 
 WORKDIR /app
