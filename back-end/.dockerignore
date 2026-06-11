@@ -4,4 +4,3 @@ dist
 .env
 .dockerignore
 *.log
-.dockerfile
