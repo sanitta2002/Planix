@@ -4,3 +4,6 @@ dist
 .env
 .dockerignore
 *.log
+.gitignore
+Dockerfile
+docker-compose.yml
