@@ -56,7 +56,6 @@ const BurndownPage: React.FC = () => {
 
   const { data: burndownData, isLoading: isBurndownLoading, isError } = useGetSprintBurndown(selectedSprintId);
 
-  // --- Empty / Loading States ---
 
   if (!currentProject) {
     return (

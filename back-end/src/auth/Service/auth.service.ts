@@ -32,11 +32,8 @@ import type { ILogger } from '@/logger/ILogger';
 
 @Injectable()
 export class AuthService implements IuserService {
-  private googleClient = new OAuth2Client({
-    client_id: process.env.GOOGLE_CLIENT_ID,
-    client_secret: process.env.GOOGLE_CLIENT_SECRET,
-    redirectUri: 'postmessage',
-  });
+  private googleClient: OAuth2Client;
+
   constructor(
     @Inject('ILogger')
     private readonly _logger: ILogger,
@@ -46,7 +43,14 @@ export class AuthService implements IuserService {
     @Inject('IMailService') private readonly mailService: IMailService,
     @Inject('IJwtService') private readonly jwtService: IJwtService,
     @Inject('ITempStoreService') private readonly tempStore: ITempStoreService,
-  ) {}
+  ) {
+    this.googleClient = new OAuth2Client({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      redirectUri: 'postmessage',
+    });
+  }
+
   async registerUser(dto: RegisterUserDto): Promise<void> {
     const existingUser = await this.userRepository.findByEmail(dto.email);
     console.log('existing user checked', existingUser);
@@ -173,38 +177,48 @@ export class AuthService implements IuserService {
     this._logger.info(`Password reset successful for ${email}`);
   }
   async googleLogin(dto: GoogleLoginDto): Promise<LoginResponseDto> {
-    const token = await this.googleClient.getToken(dto.idToken);
-    const idToken = token.tokens.id_token;
+    try {
+      const token = await this.googleClient.getToken(dto.idToken);
+      const idToken = token.tokens.id_token;
 
-    if (!idToken) {
-      throw new Error('token invalid');
-    }
-    const ticket = await this.googleClient.verifyIdToken({
-      idToken,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-    const payload = ticket.getPayload();
-    if (!payload || !payload.email) {
-      throw new UnauthorizedException(AUTH_MESSAGES.INVALID_TOKEN);
-    }
-    let user = await this.userRepository.findByEmail(payload.email);
-    if (!user) {
-      user = await this.userRepository.create({
-        firstName: payload.given_name,
-        lastName: payload.family_name,
-        email: payload.email,
-        isEmailVerified: true,
+      if (!idToken) {
+        throw new UnauthorizedException('token invalid');
+      }
+      const ticket = await this.googleClient.verifyIdToken({
+        idToken,
+        audience: process.env.GOOGLE_CLIENT_ID,
       });
+      const payload = ticket.getPayload();
+      if (!payload || !payload.email) {
+        throw new UnauthorizedException(AUTH_MESSAGES.INVALID_TOKEN);
+      }
+      let user = await this.userRepository.findByEmail(payload.email);
+      if (!user) {
+        user = await this.userRepository.create({
+          firstName: payload.given_name || 'User',
+          lastName: payload.family_name || ' ',
+          email: payload.email,
+          isEmailVerified: true,
+        });
+      }
+      const JWTpayload = {
+        userId: user._id.toString(),
+        email: user.email,
+      };
+      const accessToken = this.jwtService.signAccessToken(JWTpayload);
+      const refreshToken = this.jwtService.signRefreshToken(JWTpayload);
+      console.log('accessToken', accessToken);
+      console.log('refreshToken', refreshToken);
+      return AuthMapper.toLoginResponse(accessToken, refreshToken, user);
+    } catch (error) {
+      const err = error as Error;
+      this._logger.error(
+        `Google Login Error: ${err?.message || String(error)}`,
+        err?.stack || '',
+      );
+      console.error('FULL GOOGLE LOGIN ERROR:', error);
+      throw new UnauthorizedException('Google authentication failed');
     }
-    const JWTpayload = {
-      userId: user._id.toString(),
-      email: user.email,
-    };
-    const accessToken = this.jwtService.signAccessToken(JWTpayload);
-    const refreshToken = this.jwtService.signRefreshToken(JWTpayload);
-    console.log('accessToken', accessToken);
-    console.log('refreshToken', refreshToken);
-    return AuthMapper.toLoginResponse(accessToken, refreshToken, user);
   }
   refreshToken(refreshToken: string): RefreshTokenResponseDto {
     const payload = this.jwtService.verifyRefreshToken(refreshToken);

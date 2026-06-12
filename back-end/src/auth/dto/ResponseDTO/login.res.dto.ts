@@ -1,7 +1,7 @@
 export class LoginResponseDto {
-  accessToken: string;
-  refreshToken: string;
-  user: {
+  accessToken!: string;
+  refreshToken!: string;
+  user!: {
     id: string;
     firstName: string;
     lastName: string;
