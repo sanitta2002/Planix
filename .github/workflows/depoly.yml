@@ -39,6 +39,5 @@ jobs:
           script: |
             cd /home/ubuntu/Planix/back-end
 
-            docker compose pull
-            docker compose down
-            docker compose up -d
+            sudo docker compose pull
+            sudo docker compose up -d
